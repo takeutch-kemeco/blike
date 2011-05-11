@@ -1,0 +1,125 @@
+使い方:
+
+!cons.batでコンソールを開いて、
+
+prompt>gcc test000a.c blw32.lib -lgdi32 -mwindows -o test000a.exe
+
+とする。これでコンパイルとリンクができる。
+コマンドラインが長くて面倒なのは申し訳ない。これは後日改良を計画している。
+
+test000a.cの中身は、
+
+#include "blike.h"
+
+blMain()
+{
+	printf("hello, world¥n");
+	wait(-1);
+}
+
+となっているが、これは本来は printf("hello, world¥n"); の一行で書けるべきもの。
+他の行は自動で補われるのが理想。しかし今はまだツールができていないので、
+とりあえず我慢してほしい。・・・ツールでは、#includeがソース中に見当たらない
+場合に#includeを書き足して、またmainやblMainが見当たらない場合にはblMainと
+末尾のwait(-1);を書き足す。
+
+使える関数：
+	printf()
+	putc()
+	puts()
+	color()
+	locate()
+	cls()
+	rnd()
+	setCol() : これだと色を6桁の16進数で書ける
+	setBCol() : これだと色を6桁の16進数で書ける
+	rgb() : rgb(255, 255, 255) とすると 0xffffff が返る
+	openWin() : デフォルトの640x400以外の大きさで使いたいときは、最初にこれを使う
+	setPix() : 点を打つ
+	getPix() : 画面上の（ウィンドウ上の）色を得る
+	fillRect() : 塗りつぶした長方形を描く
+	drawRect() : 枠だけの長方形を描く
+	wait() : ver.w32_01bから使えるようになった
+	bl_clock() : 3週間くらいまでなら使い物になる
+	setMode() : PSET/PAND/POR/PXORを選択できる
+	drawLine()
+	iCol()
+	gets()
+	inkey()
+	fillOval()
+	drawStr()
+	openVWin()
+	slctWin()
+	copyRct0()
+	copyRct1()
+	drawPtrn()
+
+使えない関数：
+	scanf() : これは作る予定。
+	inptInt() : 下請けのscanfが使えないのでまだ使えない。
+	inptFlot() : 下請けのscanfが使えないのでまだ使えない。
+
+とりあえず test001a.c や test002a.c を実行して、あとは将来に期待してほしい。
+あと現状では全角文字なども出力できない。半角カタカナは出るかもしれないが、
+将来のバージョンでは仕様が変わる予定なので、利用は推奨しない。
+
+バージョン01dから、アプリの実行サイズもまじめに考えることにした。win32版の場合、
+上記のコンパイルオプションではデバッグ情報などが付いていてむだなので、リリース時
+には以下を薦める。
+
+prompt>gcc test000a.c blw32.lib -lgdi32 -mwindows -Os -Wl,-s,-Bdynamic -o test000a.exe
+
+このアーカイブに含まれている.exeはさらにUPXがかけてある。
+
+バージョン01dから、「はりぼてOS」用のライブラリも用意した。「はりぼてOS」用
+アプリのMakefileをベースにして、リンク時にblhrb.libを加えるようにMakefileを
+書き直せば、blike用のアプリをmakeできるようになる。そうやって作ったいくつかの
+.hrbファイルもアーカイブには含めた。
+
+サイズ表(これはバージョン01eのときのもの)
+
+                .exe    .hrb
+    bball00a    6656    2028    元になったbball.hrbは350バイト
+    boxes00a    6656    1849
+    test002a    6144    1702    類似のアプリcolor2.hrbは399バイト
+    kcube00a    7680    2950
+    test000a   19968    4201    printf("hello, world¥n");
+    test006a    8192    3282    bl_puts("hello"); // bl_putsは自動改行しないputs
+
+  「はりぼてOS」のネイティブアプリは本当に小さい。blikeを使っても「はりぼてOS」
+  ではかなり小さくなる。win32版は大きいが、まあwin32のアプリとしてはまあまあ
+  小さいほうだろう。
+  文字表示をするとblikeの中のコンソールエミュレータがリンクされるので大きくなる
+  （test006aなど）。printfを使うとさらにサイズが増える。
+
+バージョン01e:
+  タイマの精度が悪いのを改良した。キー入力もある程度できるようにした。getsを
+書いた。
+  test008a : 初心者向きに書いたプログラム
+  test011a : getsのテスト用
+  test012a : タイマの精度を確認するためのもの
+  test013a : test008aの負荷を下げる目的で書いたもの
+  test014a : test013aのもっとも望ましい書き方(test013aでも悪くはないが)
+  test015a : お絵かきソフト（ドット絵）
+
+バージョン01f:
+  ドライバの仕様をわずかに改善し、bl_mainを呼ぶだけでいいようにした。裏画面の
+サポートの追加。デバッグモードの追加。fillOval, drawStr, copyRct0, copyRct1,
+drawPtrnの追加。
+  test016a : fillOvalとdrawStrのテストをしたときの残骸
+  test017a : 上から落ちてくる丸をキャッチするゲーム
+  test018a : 宇宙基地到着ゲーム
+  test019a : setMode(BL_RELEASE); の挙動をテストをしたときの残骸
+  test020a : 裏画面を使った重ねあわせ処理のテスト
+  test021a : drawPtrnのテスト  (blikeではこんなことも配列を使わずにできる！)
+
+優先順位：
+[1] 文字コード・文字表示について整理する
+[2] scanfできるようにする
+[3] コンパイル環境を整備する
+
+著作権と謝辞：
+  kcube00a.cは同名の第一世代OSASKアプリに由来し、その大半はSolidさんに
+よるものです。
+
+    Soildさんのページ： http://www.geocities.co.jp/SiliconValley/1157/
