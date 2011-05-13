@@ -187,23 +187,9 @@ void bld_free(void* p, unsigned int bytes)
 
 
 
-unsigned char hankaku[4096];
-//unsigned char* hankaku;
+extern unsigned char hankaku[4096];
 void bld_initFont()
 {
-	static gboolean font_init_flag = FALSE;
-	if(font_init_flag == FALSE) {
-//		hankaku = g_malloc(sizeof(*hankaku) * 4096);
-		
-		FILE* fp = fopen("hankaku.font", "rb");
-		fseek(fp, 140, SEEK_SET);
-		fread((void*)hankaku, sizeof(unsigned char), 4096, fp);
-		fclose(fp);
-		
-		font_init_flag = TRUE;
-	}
-
-
 	gint i;
 	for (i = 0; i < 256; i++) {
  		bl_work.ftyp[i]		= 1;

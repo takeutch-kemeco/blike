@@ -11,7 +11,8 @@ SRCS =	drvgtk_main.c \
 	drvgtk_transrate_keycode.c \
 	main_window.c \
 	main_screen.c \
-	create_xpm.c
+	create_xpm.c \
+	hankaku_font.c
 
 OBJS	= $(SRCS:.c=.o)
 SONAME	= libblike-gtk.a.0.1
