@@ -190,14 +190,7 @@ void bld_free(void* p, unsigned int bytes)
 extern unsigned char hankaku[4096];
 void bld_initFont()
 {
-	gint i;
-	for (i = 0; i < 256; i++) {
- 		bl_work.ftyp[i]		= 1;
-		bl_work.fptn[i]		= hankaku + 16 * i;
-		bl_work.ftyp[i + 256]	= 1;
-		bl_work.fptn[i + 256]	= hankaku + 16 * i + 8;
-	}
-
+	bl_initFont();
 	bl_work.mod |= BL_READYFONTS;
 	return;
 }

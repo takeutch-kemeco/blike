@@ -1,8 +1,8 @@
 #!/bin/bash
 
-cd ../lib_src/common
-make clean
-make
+#cd ../lib_src/common
+#make clean
+#make
 
 cd ../gtk
 make clean
