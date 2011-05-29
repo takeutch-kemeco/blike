@@ -48,8 +48,6 @@ void bld_flshWin(int sx, int sy, int x0, int y0)
 {
 	drvgtk_pthread_data->signal->flash_window.ready  		= TRUE;
 	drvgtk_pthread_data->signal->flash_window.src_frame_buffer	= (gpointer)(bl_work.win[0].buf);
-
-	wait_signal_compliate(&(drvgtk_pthread_data->signal->flash_window.ready));
 }
 
 
