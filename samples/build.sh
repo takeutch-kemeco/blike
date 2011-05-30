@@ -4,7 +4,7 @@
 #make clean
 #make
 
-cd ../gtk
+cd ../lib_src/gtk
 make clean
 make
 

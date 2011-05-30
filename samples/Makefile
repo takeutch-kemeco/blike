@@ -9,8 +9,7 @@ PROG =
 
 
 
-LIBBLIKE = ../lib_src/common/libblike.a.0.1.5 
-LIBDRV = ../lib_src/gtk/libblike-gtk.a.0.1.5
+LIBBLIKE = ../lib_src/gtk/libblike-gtk.a.0.1.5
 
 LIBS = `pkg-config gtk+-2.0 --libs` -lm -lpthread
 INCS = `pkg-config gtk+-2.0 --cflags` -I ../
@@ -25,7 +24,7 @@ BIN = /usr/local/bin
 all: $(PROG)
 
 $(PROG): $(OBJS)
-	$(CC) $(OPTS) -o $@ $(OBJS) $(LIBBLIKE) $(LIBDRV) $(LIBS) $(INCS)
+	$(CC) $(OPTS) -o $@ $(OBJS) $(LIBBLIKE) $(LIBS) $(INCS)
 
 .c.o:
 	$(CC) $(OPTS) $(INCS) $(DEFS) -c -o $@ $<
