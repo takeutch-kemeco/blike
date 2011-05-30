@@ -2,6 +2,8 @@
 #include <time.h>
 #include <unistd.h>
 
+#include <pthread.h>
+
 #include <gtk/gtk.h>
 #include "drvgtk_pthread.h"
 #include "drvgtk_transrate_keycode.h"
@@ -204,12 +206,16 @@ int bld_vsnprintf(char *b, int n, const char *f, va_list ap)
 
 
 
+static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
 void bld_lock()
 {
+	pthread_mutex_lock(&mutex);
 }
 
 void bld_unlock()
 {
+	pthread_mutex_unlock(&mutex);
 }
 
 
