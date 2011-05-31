@@ -9,6 +9,7 @@ SRCS =	drvgtk_main.c \
 	drvgtk_pthread.c \
 	drvgtk_key_ring_buffer.c \
 	drvgtk_transrate_keycode.c \
+	drvgtk_sleep.c\
 	main_window.c \
 	main_screen.c \
 	create_xpm.c \
