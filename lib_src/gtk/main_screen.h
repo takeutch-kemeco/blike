@@ -7,7 +7,6 @@
 struct MainScreen {
 	GtkWidget*	wgt;
 	GdkPixbuf*	pixbuf;
-	GdkImage*	image;
 	
 	guchar*		frame_buffer;
 	gint		frame_buffer_width;

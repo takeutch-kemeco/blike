@@ -12,7 +12,6 @@ SRCS =	drvgtk_main.c \
 	drvgtk_sleep.c\
 	main_window.c \
 	main_screen.c \
-	create_xpm.c \
 	hankaku_font.c
 
 COMMON_PATH = ../common
