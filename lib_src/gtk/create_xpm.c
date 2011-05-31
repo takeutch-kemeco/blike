@@ -23,6 +23,7 @@ GString* new_xpm(gint w, gint h)
 	g_string_append_c(a, '}');
 	g_string_append_c(a, ';');
 	g_string_append_c(a, '\n');
+	g_string_append_c(a, '\0');
 	
 	
 	return a;
