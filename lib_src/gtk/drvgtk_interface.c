@@ -1,10 +1,9 @@
 #include <stdio.h>
-#include <time.h>
-#include <unistd.h>
 
 #include <pthread.h>
 
 #include <gtk/gtk.h>
+#include "drvgtk_sleep.h"
 #include "drvgtk_pthread.h"
 #include "drvgtk_transrate_keycode.h"
 
@@ -62,11 +61,7 @@ void bld_flshSys()
 
 void bld_waitNF()
 {
-	struct timespec req, rem;
-	req.tv_sec  = 0;
-	req.tv_nsec = (1000 * 1000) * drvgtk_pthread_data->signal_check_interval;
-	
-	nanosleep(&req, &rem);
+	drvgtk_msleep(drvgtk_pthread_data->signal_check_interval);
 }
 
 
