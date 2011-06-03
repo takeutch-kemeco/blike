@@ -26,5 +26,5 @@ int main()
 	
 	run_DrvGtkSystem(drvgtk_pthread_data);
 	
-//	bl_exit();
+	bl_exit();
 }
