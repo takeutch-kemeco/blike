@@ -1,72 +1,44 @@
 #include <glib.h>
 #include "drvgtk_key_ring_buffer.h"
+#include "drvgtk_transrate_keycode.h"
 
-struct DrvGtkKeyRingBuffer* new_DrvGtkKeyRingBuffer(guint size)
+struct DrvGtkKeyRingBuffer* new_DrvGtkKeyRingBuffer(
+	gint32 key_len,
+	gint32* int_key,
+	gint32* read_index,
+	gint32* write_index,
+	gint32* key_count
+)
 {
 	struct DrvGtkKeyRingBuffer* a = g_malloc(sizeof(*a));
 	
-	a->key = g_malloc(sizeof(*(a->key)) * size);
-	a->key_len = size;
-	a->read_index = 0;
-	a->write_index = 0;
+	a->key		= g_malloc(sizeof(*(a->key)) * key_len);
+	a->key_len	= key_len;
+	
+	a->int_key	= int_key;
+	a->read_index	= read_index;
+	a->write_index	= write_index;
+	a->key_count	= key_count;
 	
 	return a;
 }
 
+extern void bl_putKeyB(int n, int *p);
+
 void write_c_DrvGtkKeyRingBuffer(struct DrvGtkKeyRingBuffer* a, struct DrvGtkKey* key)
 {
-	guint32 index = a->write_index;
-	
-	index++;
-	if(index >= a->key_len) {
-		index = 0;
-	}
-	
-	a->key[index] = *key;
-	a->write_index = index;
-}
+	gint32 c = transrate_keycode_DrvGtkKey(key);
 
-void read_c_DrvGtkKeyRingBuffer(struct DrvGtkKeyRingBuffer* a, struct DrvGtkKey* key)
-{
-	if(a->read_index == a->write_index) {
-		key->state = DrvGtkKeyState_none;
-		key->value = 0;
-	}
-	else {
-		guint32 index = a->read_index;
-	
-		index++;
-		if(index >= a->key_len) {
-			index = 0;
-		}
-		
-		*key = a->key[index];
-		a->read_index = index;
+	switch(key->state) {
+	case DrvGtkKeyState_none:
+		break;
+
+	case DrvGtkKeyState_press:
+		bl_putKeyB(1, &c);
+		break;
+
+	case DrvGtkKeyState_release:
+		bl_putKeyB(1, &c);
+		break;
 	}
 }
-
-void read_c_view_only_DrvGtkKeyRingBuffer(struct DrvGtkKeyRingBuffer* a, struct DrvGtkKey* key)
-{
-	if(a->read_index == a->write_index) {
-		key->state = DrvGtkKeyState_none;
-		key->value = 0;
-	}
-	else {
-		guint32 index = a->read_index;
-	
-		index++;
-		if(index >= a->key_len) {
-			index = 0;
-		}
-		
-		*key = a->key[index];
-	}
-}
-
-void clean_DrvGtkKeyRingBuffer(struct DrvGtkKeyRingBuffer* a)
-{
-	a->read_index = a->write_index;
-}
-
-
-

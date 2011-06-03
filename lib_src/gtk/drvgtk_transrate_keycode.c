@@ -3,7 +3,7 @@
 #include "drvgtk_key_ring_buffer.h"
 #include "blike0.h"
 
-guint32 transrate_keycode_DrvGtkKey(struct DrvGtkKey* a)
+gint32 transrate_keycode_DrvGtkKey(struct DrvGtkKey* a)
 {
 	// 入力が無いときは０を返す
 	if(a->state == GDK_KEY_VoidSymbol) {
@@ -32,6 +32,6 @@ guint32 transrate_keycode_DrvGtkKey(struct DrvGtkKey* a)
 	}
 	
 	
-	// 該当しないキーコードはそのまま返す（LSB側から16bit分）
-	return (a->value) & 0xFFFF;
+	// 該当しないキーコードはそのまま返す
+	return a->value;
 }

@@ -47,16 +47,16 @@ static void init_signal_MainWindow(struct MainWindow* a)
 	g_signal_connect(G_OBJECT(a->wgt), "destroy", 		G_CALLBACK(gtk_main_quit), 		NULL);
 }
 
-struct MainWindow* new_MainWindow(void)
+struct MainWindow* new_MainWindow(struct DrvGtkKeyRingBuffer* key_ring_buffer)
 {
 	struct MainWindow* a = g_malloc(sizeof(*a));
 
 
 	a->wgt = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 	gtk_window_set_title(GTK_WINDOW(a->wgt), " ");
-	
-	a->key_ring_buffer = new_DrvGtkKeyRingBuffer(0xFF);
-	
+
+	a->key_ring_buffer = key_ring_buffer;
+
 	init_signal_MainWindow(a);
 
 	

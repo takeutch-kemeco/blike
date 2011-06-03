@@ -7,7 +7,12 @@
 extern struct DrvGtkPthreadData* new_DrvGtkPthreadData(
 	gpointer	shared_data,
 	gint32* 	time_count,
-	int 		(*control_program)()
+	int 		(*control_program)(),
+	gint32		key_len,
+	gint32*		int_key,
+	gint32*		read_index,
+	gint32*		write_index,
+	gint32*		key_count
 );
 
 extern void run_DrvGtkSystem(struct DrvGtkPthreadData* a);

@@ -9,7 +9,7 @@ struct MainWindow {
 	struct DrvGtkKeyRingBuffer*	key_ring_buffer;
 };
 
-extern struct MainWindow* new_MainWindow(void);
+extern struct MainWindow* new_MainWindow(struct DrvGtkKeyRingBuffer* key_ring_buffer);
 
 extern void show_MainWindow(struct MainWindow* a);
 extern void hide_MainWindow(struct MainWindow* a);

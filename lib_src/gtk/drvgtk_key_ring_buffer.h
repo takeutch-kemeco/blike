@@ -16,13 +16,21 @@ struct DrvGtkKey {
 
 struct DrvGtkKeyRingBuffer {
 	struct DrvGtkKey*	key;
-	guint32			key_len;
+	gint32			key_len;
 	
-	guint32			read_index;
-	guint32			write_index;
+	gint32*			int_key;
+	gint32*			read_index;
+	gint32*			write_index;
+	gint32*			key_count;
 };
 
-extern struct DrvGtkKeyRingBuffer* new_DrvGtkKeyRingBuffer(guint size);
+extern struct DrvGtkKeyRingBuffer* new_DrvGtkKeyRingBuffer(
+	gint32 key_len,
+	gint32* int_key,
+	gint32* read_index,
+	gint32* write_index,
+	gint32* key_count
+);
 
 extern void write_c_DrvGtkKeyRingBuffer(struct DrvGtkKeyRingBuffer* a, struct DrvGtkKey* key);
 
