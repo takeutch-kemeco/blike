@@ -59,7 +59,7 @@ void bl_drawPtrn_err_d(const char *msg, unsigned char *nam);
 
 //	intは32bit, shortが16bit, charが8bit
 
-#define KEY_ENTER	'/n'
+#define KEY_ENTER	'\n'
 #define KEY_ESC		27
 #define KEY_BACKSPACE	8
 #define KEY_TAB		9
