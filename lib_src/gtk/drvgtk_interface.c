@@ -114,7 +114,7 @@ int bld_maxfonts()
 
 int bld_vsnprintf(char *b, int n, const char *f, va_list ap)
 {
-	vsnprintf(b, n, f, ap);
+	g_vsnprintf(b, n, f, ap);
 }
 
 
