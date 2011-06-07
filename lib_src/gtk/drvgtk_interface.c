@@ -80,9 +80,9 @@ void bld_exit()
 
 int bld_getSeed()
 {
-	time_t timer;
-	time(&timer);
-	return (int) timer;
+	GTimeVal a;
+	g_get_current_time(&a);
+	return (int)(a.tv_sec);
 }
 
 
