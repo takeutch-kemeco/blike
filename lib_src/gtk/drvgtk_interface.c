@@ -1,5 +1,3 @@
-#include <stdio.h>
-
 #include <pthread.h>
 
 #include <gtk/gtk.h>
