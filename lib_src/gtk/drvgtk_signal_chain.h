@@ -1,4 +1,4 @@
-#include <gtk/gtk.h>
+#include <glib.h>
 
 #ifndef __DRVGTK_SIGNAL_CHAIN_H__
 #define __DRVGTK_SIGNAL_CHAIN_H__

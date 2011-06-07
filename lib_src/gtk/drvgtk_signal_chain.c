@@ -1,6 +1,4 @@
-#include <stdio.h>
 #include <glib.h>
-#include <gtk/gtk.h>
 #include "drvgtk_pthread.h"
 #include "drvgtk_signal_chain.h"
 
