@@ -11,6 +11,10 @@ struct DrvGtkPthreadData*	drvgtk_pthread_data;
 
 int main()
 {
+	gtk_set_locale();
+	gtk_init(NULL, NULL);
+	gdk_rgb_init();
+
 	bl_init();
 	
 	drvgtk_pthread_data = new_DrvGtkPthreadData(
