@@ -22,6 +22,7 @@ int main()
 	gtk_init(NULL, NULL);
 	gtk_set_locale();
 	
+	
 	drvgtk_pthread_data = new_DrvGtkPthreadData(
 		(gpointer)&bl_work,
 		(gint32*)&bl_work.tmcount,
@@ -36,4 +37,6 @@ int main()
 	);
 	
 	run_DrvGtkSystem(drvgtk_pthread_data);
+	
+	free_DrvGtkPthreadData(drvgtk_pthread_data);
 }

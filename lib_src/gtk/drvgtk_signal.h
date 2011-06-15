@@ -1,4 +1,4 @@
-#include <gtk/gtk.h>
+#include <glib.h>
 
 #ifndef __DRVGTK_SIGNAL_H__
 #define __DRVGTK_SIGNAL_H__
@@ -30,5 +30,6 @@ struct DrvGtkSignal {
 };
 
 extern struct DrvGtkSignal* new_DrvGtkSignal(void);
+extern void free_DrvGtkSignal(struct DrvGtkSignal* a);
 
 #endif // __DRVGTK_SIGNAL_H__

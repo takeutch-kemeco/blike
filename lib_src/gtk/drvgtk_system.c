@@ -44,6 +44,21 @@ struct DrvGtkPthreadData* new_DrvGtkPthreadData(
 
 
 
+void free_DrvGtkPthreadData(struct DrvGtkPthreadData* a)
+{
+	g_mutex_free(a->mutex);
+	
+	free_DrvGtkKeyRingBuffer(a->key_ring_buffer);
+	
+	g_mutex_free(a->mutex);
+	
+	free_DrvGtkSignal(a->signal);
+	
+	g_free(a);
+}
+
+
+
 void run_DrvGtkSystem(struct DrvGtkPthreadData* a)
 {
 	show_MainWindow(a->main_window);
