@@ -27,6 +27,7 @@ struct DrvGtkPthreadData {
 	
 	pthread_t wtid;
 	pthread_t ptid;
+	gboolean		wt_run_flag;
 	
 	
 	struct DrvGtkKeyRingBuffer*	key_ring_buffer;

@@ -37,7 +37,9 @@ struct DrvGtkPthreadData* new_DrvGtkPthreadData(
 	
 	a->main_window = new_MainWindow(a->key_ring_buffer);
 	a->main_screen = new_MainScreen(64, 32, a->main_window);
-		
+	
+	a->wt_run_flag			= FALSE;
+	
 	return a;
 }
 
