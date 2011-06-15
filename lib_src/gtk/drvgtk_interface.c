@@ -115,8 +115,6 @@ int bld_vsnprintf(char *b, int n, const char *f, va_list ap)
 
 
 
-static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-
 void bld_lock()
 {
 	g_mutex_lock(drvgtk_pthread_data->mutex);
