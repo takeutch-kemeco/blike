@@ -17,9 +17,7 @@ rm test003a
 rm test004a
 rm test005a
 rm test006a
-rm test007a
 rm test008a
-rm test009a
 rm test010a
 rm test011a
 rm test012a
