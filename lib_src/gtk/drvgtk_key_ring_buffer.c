@@ -23,6 +23,11 @@ struct DrvGtkKeyRingBuffer* new_DrvGtkKeyRingBuffer(
 	return a;
 }
 
+void free_DrvGtkKeyRingBuffer(struct DrvGtkKeyRingBuffer* a)
+{
+	g_free(a);
+}
+
 extern void bl_putKeyB(int n, int *p);
 
 void write_c_DrvGtkKeyRingBuffer(struct DrvGtkKeyRingBuffer* a, struct DrvGtkKey* key)

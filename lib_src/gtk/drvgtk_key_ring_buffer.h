@@ -31,6 +31,7 @@ extern struct DrvGtkKeyRingBuffer* new_DrvGtkKeyRingBuffer(
 	gint32* write_index,
 	gint32* key_count
 );
+extern void free_DrvGtkKeyRingBuffer(struct DrvGtkKeyRingBuffer* a);
 
 extern void write_c_DrvGtkKeyRingBuffer(struct DrvGtkKeyRingBuffer* a, struct DrvGtkKey* key);
 

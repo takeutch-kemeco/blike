@@ -67,7 +67,7 @@ OBJS	= $(COMMON_SRCS:.c=.o) $(SRCS:.c=.o)
 SONAME	= libblike-gtk.a.0.1
 PROG	= $(SONAME).5
 
-LIBS	= `pkg-config gtk+-2.0 --libs` -lpthread
+LIBS	= `pkg-config gtk+-2.0 --libs`
 INCS	= -I../../ -I../common `pkg-config gtk+-2.0 --cflags`
 
 OPTS 	=

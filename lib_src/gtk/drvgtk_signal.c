@@ -1,4 +1,4 @@
-#include <gtk/gtk.h>
+#include <glib.h>
 #include "drvgtk_signal.h"
 
 struct DrvGtkSignal* new_DrvGtkSignal(void)
@@ -12,3 +12,10 @@ struct DrvGtkSignal* new_DrvGtkSignal(void)
 
 	return a;
 }
+
+void free_DrvGtkSignal(struct DrvGtkSignal* a)
+{
+	g_free(a);
+}
+
+

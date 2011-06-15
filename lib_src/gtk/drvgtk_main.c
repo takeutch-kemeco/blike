@@ -9,18 +9,26 @@ struct DrvGtkPthreadData*	drvgtk_pthread_data;
 
 
 
+extern void bl_init();
+extern void bl_exit();
+
 int main()
 {
-	gtk_set_locale();
-	gtk_init(NULL, NULL);
+	g_thread_init (NULL);
+	
+	gdk_threads_init();
 	gdk_rgb_init();
-
-	bl_init();
+	
+	gtk_init(NULL, NULL);
+	gtk_set_locale();
+	
 	
 	drvgtk_pthread_data = new_DrvGtkPthreadData(
 		(gpointer)&bl_work,
 		(gint32*)&bl_work.tmcount,
 		blMain,
+		bl_init,
+		bl_exit,
 		BL_SIZ_KBUF,
 		bl_work.kbuf,
 		&(bl_work.kbuf_rp),
@@ -30,5 +38,5 @@ int main()
 	
 	run_DrvGtkSystem(drvgtk_pthread_data);
 	
-	bl_exit();
+	free_DrvGtkPthreadData(drvgtk_pthread_data);
 }

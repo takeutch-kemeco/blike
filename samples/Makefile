@@ -11,7 +11,7 @@ PROG =
 
 LIBBLIKE = ../lib_src/gtk/libblike-gtk.a.0.1.5
 
-LIBS = `pkg-config gtk+-2.0 --libs` -lm -lpthread
+LIBS = `pkg-config gtk+-2.0 --libs`
 INCS = `pkg-config gtk+-2.0 --cflags` -I ../
 
 OPTS =
