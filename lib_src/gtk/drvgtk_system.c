@@ -30,7 +30,9 @@ struct DrvGtkPthreadData* new_DrvGtkPthreadData(
 	
 	a->signal = new_DrvGtkSignal();
 	a->signal_check_interval	= 1000 / 250;	// (250Hz)
-
+	       
+	a->mutex			= g_mutex_new();
+	
 	a->key_ring_buffer		= new_DrvGtkKeyRingBuffer(key_len, int_key, read_index, write_index, key_count);
 	
 	a->main_window = new_MainWindow(a->key_ring_buffer);

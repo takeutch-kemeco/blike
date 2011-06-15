@@ -20,7 +20,8 @@ struct DrvGtkPthreadData {
 	struct DrvGtkSignal*	signal;
 	guint32			signal_check_interval;
 	
-
+	GMutex*			mutex;
+	
 	gboolean (*window_update_program)(gpointer data);
 	int (*control_program)();
 	

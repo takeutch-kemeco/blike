@@ -1,5 +1,3 @@
-#include <pthread.h>
-
 #include <gtk/gtk.h>
 #include "drvgtk_sleep.h"
 #include "drvgtk_pthread.h"
@@ -121,12 +119,12 @@ static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
 void bld_lock()
 {
-	pthread_mutex_lock(&mutex);
+	g_mutex_lock(drvgtk_pthread_data->mutex);
 }
 
 void bld_unlock()
 {
-	pthread_mutex_unlock(&mutex);
+	g_mutex_lock(drvgtk_pthread_data->mutex);
 }
 
 
