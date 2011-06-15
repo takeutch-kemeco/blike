@@ -9,6 +9,8 @@ struct DrvGtkPthreadData* new_DrvGtkPthreadData(
 	gpointer	shared_data,
 	gint32* 	time_count,
 	int 		(*control_program)(),
+	void		(*init_control_program)(),
+	void		(*close_control_program)(),
 	gint32		key_len,
 	gint32*		int_key,
 	gint32*		read_index,
@@ -27,6 +29,8 @@ struct DrvGtkPthreadData* new_DrvGtkPthreadData(
 	a->time_count			= time_count;
 	a->window_update_program	= update_DrvGtkSignalChain;
 	a->control_program		= control_program;
+	a->init_control_program		= init_control_program;
+	a->close_control_program	= close_control_program;
 	
 	a->signal = new_DrvGtkSignal();
 	a->signal_check_interval	= 1000 / 250;	// (250Hz)

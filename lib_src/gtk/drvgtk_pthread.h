@@ -24,6 +24,8 @@ struct DrvGtkPthreadData {
 	
 	gboolean (*window_update_program)(gpointer data);
 	int (*control_program)();
+	void (*init_control_program)();
+	void (*close_control_program)();
 	
 	pthread_t wtid;
 	pthread_t ptid;

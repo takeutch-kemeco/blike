@@ -24,8 +24,11 @@ static void pthread_main_window(struct DrvGtkPthreadData* data)
 static void* __pthread_main_program(void* data)
 {
 	struct DrvGtkPthreadData* a = (struct DrvGtkPthreadData*)data;
-	a->control_program();
 
+	a->init_control_program();
+	a->control_program();
+	a->close_control_program();
+	
 	gtk_main_quit();
 	pthread_cancel(a->wtid);
 }
