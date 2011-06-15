@@ -27,8 +27,7 @@ struct DrvGtkPthreadData {
 	void (*init_control_program)();
 	void (*close_control_program)();
 	
-	pthread_t wtid;
-	pthread_t ptid;
+	GThread*		ptid;
 	gboolean		wt_run_flag;
 	
 	

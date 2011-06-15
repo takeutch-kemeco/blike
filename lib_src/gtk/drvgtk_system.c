@@ -18,11 +18,6 @@ struct DrvGtkPthreadData* new_DrvGtkPthreadData(
 	gint32*		key_count
 )
 {
-	gtk_set_locale();
-	gtk_init(NULL, NULL);
-	gdk_rgb_init();
-
-	
 	struct DrvGtkPthreadData* a 	= g_malloc(sizeof(*a));
 	
 	a->shared_data 			= shared_data;
