@@ -86,7 +86,7 @@ all: $(PROG)
 	ranlib $(PROG)
 
 $(PROG): $(OBJS)
-	$(AR) $(OPTS) -rv $@ $(OBJS)
+	$(AR) -rv $@ $(OBJS)
 
 .c.o:
 	$(CC) $(OPTS) $(INCS) $(LIBS) -c -o $@ $<
