@@ -39,6 +39,8 @@ rm mt_xor0a
 rm msgk00a
 rm msgk01a
 
+rm test_keybord_state
+
 A=test000a;	make SRCS="$A".c PROG=$A
 A=test001a;	make SRCS="$A".c PROG=$A
 A=test002a;	make SRCS="$A".c PROG=$A
@@ -68,3 +70,6 @@ A=kcube00a;	make SRCS="$A".c PROG=$A
 A=msgk00a;	make SRCS="$A".c PROG=$A
 A=msgk01a;	make SRCS="$A".c PROG=$A
 A=mt_xor0a;	make SRCS="$A".c PROG=$A
+
+A=test_keybord_state;	make SRCS="$A".c PROG=$A
+
