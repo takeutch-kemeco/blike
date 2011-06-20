@@ -2,6 +2,7 @@
 #include "drvgtk_sleep.h"
 #include "drvgtk_pthread.h"
 #include "drvgtk_transrate_keycode.h"
+#include "drvgtk_keybord_state.h"
 
 #include "blikedrv.h"
 #include "blike0.h"
@@ -156,6 +157,25 @@ void bld_lock()
 void bld_unlock()
 {
 	check_and_exit_wt_run_flag();
+	
+	g_mutex_unlock(drvgtk_pthread_data->mutex);
+}
+
+
+
+void __bld_get_keybord_state(unsigned long* press, unsigned long* release)
+{
+	check_and_exit_wt_run_flag();
+	
+	g_mutex_lock(drvgtk_pthread_data->mutex);
+	
+	gint i = 8;
+	while(i-->0){
+		press[i] 	= drvgtk_pthread_data->press->value[i];
+		release[i] 	= drvgtk_pthread_data->release->value[i];
+	}
+	
+	next_DrvGtkKeybordState(drvgtk_pthread_data->press, drvgtk_pthread_data->release);
 	
 	g_mutex_unlock(drvgtk_pthread_data->mutex);
 }
