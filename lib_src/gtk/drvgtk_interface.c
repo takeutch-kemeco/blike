@@ -14,10 +14,9 @@ extern struct DrvGtkPthreadData*	drvgtk_pthread_data;
 
 
 
-static void wait_signal_compliate(gboolean* ready)
+static void wait_signal_compliate(volatile gboolean* ready)
 {
 	while((*ready) == TRUE) {
-		g_usleep(0);
 	}
 }
 
