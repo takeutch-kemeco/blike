@@ -3,6 +3,7 @@
 #include "main_window.h"
 #include "main_screen.h"
 #include "drvgtk_key_ring_buffer.h"
+#include "drvgtk_keybord_state.h"
 
 
 
@@ -14,9 +15,12 @@ static gboolean press_key_MainWindow(GtkWidget *wgt, GdkEventExpose *event, gpoi
 	struct DrvGtkKey tmp;
 	tmp.state = DrvGtkKeyState_press;
 	tmp.value = key->keyval;
+	
+	add_DrvGtkKeybordState(a->press, a->release, a->key_transform_table, &tmp);
+	
 	write_c_DrvGtkKeyRingBuffer(a->key_ring_buffer, &tmp);
 	
-//	g_printf("%u %s", key->keyval, key->string);
+//	g_printf("%u %s\n", key->keyval, key->string);
 
 	return TRUE;
 }
@@ -29,9 +33,12 @@ static gboolean release_key_MainWindow(GtkWidget *wgt, GdkEventExpose *event, gp
 	struct DrvGtkKey tmp;
 	tmp.state = DrvGtkKeyState_release;
 	tmp.value = key->keyval;
+	
+	add_DrvGtkKeybordState(a->press, a->release, a->key_transform_table, &tmp);
+	
 	write_c_DrvGtkKeyRingBuffer(a->key_ring_buffer, &tmp);
 
-//	g_printf("%u %s", key->keyval, key->string);
+//	g_printf("%u %s\n", key->keyval, key->string);
 	if(key->keyval=='q'){gtk_main_quit();}
 
 	return TRUE;
@@ -47,7 +54,12 @@ static void init_signal_MainWindow(struct MainWindow* a)
 	g_signal_connect(G_OBJECT(a->wgt), "destroy", 		G_CALLBACK(gtk_main_quit), 		NULL);
 }
 
-struct MainWindow* new_MainWindow(struct DrvGtkKeyRingBuffer* key_ring_buffer)
+struct MainWindow* new_MainWindow(
+	struct DrvGtkKeyRingBuffer* key_ring_buffer,
+	struct DrvGtkKeybordState* press,
+	struct DrvGtkKeybordState* release,
+	struct DrvGtkKeybordState* key_transform_table
+)
 {
 	struct MainWindow* a = g_malloc(sizeof(*a));
 
@@ -56,6 +68,10 @@ struct MainWindow* new_MainWindow(struct DrvGtkKeyRingBuffer* key_ring_buffer)
 	gtk_window_set_title(GTK_WINDOW(a->wgt), " ");
 
 	a->key_ring_buffer = key_ring_buffer;
+	
+	a->press = press;
+	a->release = release;
+	a->key_transform_table = key_transform_table;
 
 	init_signal_MainWindow(a);
 

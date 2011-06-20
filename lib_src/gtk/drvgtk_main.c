@@ -1,5 +1,6 @@
 #include <gtk/gtk.h>
 #include "drvgtk_system.h"
+#include "drvgtk_language.h"
 
 #include "../common/blikedrv.h"
 
@@ -33,7 +34,8 @@ int main()
 		bl_work.kbuf,
 		&(bl_work.kbuf_rp),
 		&(bl_work.kbuf_wp),
-		&(bl_work.kbuf_c)
+		&(bl_work.kbuf_c),
+		DRVGTK_KEYBORD_STATE_LANGUAGE_JA
 	);
 	
 	run_DrvGtkSystem(drvgtk_pthread_data);

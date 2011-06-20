@@ -9,6 +9,7 @@ SRCS =	drvgtk_main.c \
 	drvgtk_pthread.c \
 	drvgtk_key_ring_buffer.c \
 	drvgtk_transrate_keycode.c \
+	drvgtk_keybord_state.c \
 	drvgtk_sleep.c\
 	main_window.c \
 	main_screen.c \
@@ -70,8 +71,8 @@ PROG	= $(SONAME).5
 LIBS	= `pkg-config gtk+-2.0 --libs`
 INCS	= -I../../ -I../common `pkg-config gtk+-2.0 --cflags`
 
-OPTS 	=
-#OPTS	= -O4 -march=core2 -msse3
+OPTS 	= -O2
+#OPTS	= -O2 -march=core2 -msse3
 
 PREFIX		= /usr/local
 PREFIX_LIB	= $(PREFIX)/lib

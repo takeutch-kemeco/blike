@@ -2,6 +2,7 @@
 #include "drvgtk_pthread.h"
 #include "drvgtk_signal_chain.h"
 #include "drvgtk_key_ring_buffer.h"
+#include "drvgtk_keybord_state.h"
 
 
 
@@ -15,7 +16,8 @@ struct DrvGtkPthreadData* new_DrvGtkPthreadData(
 	gint32*		int_key,
 	gint32*		read_index,
 	gint32*		write_index,
-	gint32*		key_count
+	gint32*		key_count,
+	gint		language
 )
 {
 	struct DrvGtkPthreadData* a 	= g_malloc(sizeof(*a));
@@ -34,7 +36,12 @@ struct DrvGtkPthreadData* new_DrvGtkPthreadData(
 	
 	a->key_ring_buffer		= new_DrvGtkKeyRingBuffer(key_len, int_key, read_index, write_index, key_count);
 	
-	a->main_window = new_MainWindow(a->key_ring_buffer);
+	a->press			= g_malloc0(sizeof(*(a->press)));
+	a->release			= g_malloc0(sizeof(*(a->release)));
+	a->key_transform_table		= new_transform_table_DrvGtkKeybordState(language);
+	
+	
+	a->main_window = new_MainWindow(a->key_ring_buffer, a->press, a->release, a->key_transform_table);
 	a->main_screen = new_MainScreen(64, 32, a->main_window);
 	
 	a->wt_run_flag			= FALSE;
@@ -47,7 +54,11 @@ struct DrvGtkPthreadData* new_DrvGtkPthreadData(
 void free_DrvGtkPthreadData(struct DrvGtkPthreadData* a)
 {
 	g_mutex_free(a->mutex);
-	
+
+	g_free(a->press);
+	g_free(a->release);
+	g_free(a->key_transform_table);
+
 	free_DrvGtkKeyRingBuffer(a->key_ring_buffer);
 	
 	g_mutex_free(a->mutex);

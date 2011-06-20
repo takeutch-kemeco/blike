@@ -1,4 +1,5 @@
 #include <glib.h>
+#include <gdk/gdkkeysyms.h>
 #include "drvgtk_key_ring_buffer.h"
 #include "drvgtk_transrate_keycode.h"
 

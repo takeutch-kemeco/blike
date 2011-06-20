@@ -14,7 +14,8 @@ extern struct DrvGtkPthreadData* new_DrvGtkPthreadData(
 	gint32*		int_key,
 	gint32*		read_index,
 	gint32*		write_index,
-	gint32*		key_count
+	gint32*		key_count,
+	gint		language
 );
 extern free_DrvGtkPthreadData(struct DrvGtkPthreadData* a);
 
