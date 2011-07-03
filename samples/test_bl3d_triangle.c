@@ -9,12 +9,12 @@ struct BL3D_TRIANGLE_G_T model_data[] = {
 	{
 		.type = BL3D_TRIANGLE_TYPE_G_T,
 		.texture_vram = 10,
-		.vertex[0]={-100,-100,0},
-		.vertex[1]={200,200,0},
-		.vertex[2]={-100,200,0},
+		.vertex[0]={-325/2,-551/2,0},
+		.vertex[1]={325/2,551/2,0},
+		.vertex[2]={-325/2,551/2,0},
 		.texture[0]={0,0},
-		.texture[1]={800,800},
-		.texture[2]={0,800},
+		.texture[1]={325,551},
+		.texture[2]={0,551},
 		.color[0]={0.0,0.0,0.0},
 		.color[1]={1.0,1.0,1.0},
 		.color[2]={1.0,1.0,1.0},
@@ -22,12 +22,12 @@ struct BL3D_TRIANGLE_G_T model_data[] = {
 	{
 		.type = BL3D_TRIANGLE_TYPE_G_T,
 		.texture_vram = 10,
-		.vertex[0]={-100,-100,0},
-		.vertex[1]={200,-100,0},
-		.vertex[2]={200,200,0},
+		.vertex[0]={-325/2,-551/2,0},
+		.vertex[1]={325/2,-551/2,0},
+		.vertex[2]={325/2,551/2,0},
 		.texture[0]={0,0},
-		.texture[1]={800,0},
-		.texture[2]={800,800},
+		.texture[1]={325,0},
+		.texture[2]={325,551},
 		.color[0]={0.0,0.0,0.0},
 		.color[1]={0.0,0.0,0.0},
 		.color[2]={1.0,1.0,1.0},
@@ -57,8 +57,8 @@ blMain()
 	
 	
 	
-	const int vram_width  = 1400;
-	const int vram_height = 1400;
+	const int vram_width  = 1000;
+	const int vram_height = 1000;
 	const int vram = 10;
 	openVWin(vram, vram_width, vram_height);
 
@@ -114,11 +114,11 @@ blMain()
 	
 	
 	while(1) {
-		copyRct0(
-			480, 270,
-			4, 0, 0,
-			0, 0, 0
-		);
+//		copyRct0(
+//			480, 270,
+//			4, 0, 0,
+//			0, 0, 0
+//		);
 		
 		
 		
@@ -133,6 +133,6 @@ blMain()
 		bl3d_sort_object(&dobj, &ot);
 		bl3d_draw_ot(&ot);
 	
-		wait(1000/24);
+		wait(1000/16);
 	}
 }
