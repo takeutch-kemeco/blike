@@ -12,9 +12,9 @@ PROG =
 LIBBLIKE = ../lib_src/gtk/libblike-gtk.a.0.1.5
 
 LIBS = `pkg-config gtk+-2.0 --libs`
-INCS = `pkg-config gtk+-2.0 --cflags` -I ../
+INCS = `pkg-config gtk+-2.0 --cflags` -I../ -I../lib_src/bl_load_xpm -I../lib_src/bl3d
 
-OPTS =
+OPTS = -O2
 #OPTS = -O4 -march=core2 -msse3
 
 BIN = /usr/local/bin
