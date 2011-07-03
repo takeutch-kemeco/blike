@@ -64,12 +64,22 @@ COMMON_SRCS = $(COMMON_PATH)/char8b.c \
 	$(COMMON_PATH)/drwptn_d.c \
 	$(COMMON_PATH)/test.c
 
-OBJS	= $(COMMON_SRCS:.c=.o) $(SRCS:.c=.o)
+BL3D_PATH = ../bl3d
+BL3D_SRCS = $(BL3D_PATH)/bl3d_system.c \
+	$(BL3D_PATH)/bl3d_matrix.c \
+	$(BL3D_PATH)/bl3d_math.c \
+	$(BL3D_PATH)/bl3d_dobj.c \
+	$(BL3D_PATH)/bl3d_triangle.c
+
+BL_LOAD_XPM_PATH = ../bl_load_xpm
+BL_LOAD_XPM_SRCS = $(BL_LOAD_XPM_PATH)/bl_load_xpm.c
+
+OBJS	= $(COMMON_SRCS:.c=.o) $(SRCS:.c=.o) $(BL_LOAD_XPM_SRCS:.c=.o) $(BL3D_SRCS:.c=.o)
 SONAME	= libblike-gtk.a.0.1
 PROG	= $(SONAME).5
 
-LIBS	= `pkg-config gtk+-2.0 --libs`
-INCS	= -I../../ -I../common `pkg-config gtk+-2.0 --cflags`
+LIBS	= `pkg-config gtk+-2.0 --libs` -lm
+INCS	= -I../../ -I../common -I../bl_load_xpm -I../bl3d `pkg-config gtk+-2.0 --cflags`
 
 OPTS 	= -O2
 #OPTS	= -O2 -march=core2 -msse3
