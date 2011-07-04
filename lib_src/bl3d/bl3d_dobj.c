@@ -6,7 +6,7 @@
 void bl3d_link_object(
 	struct BL3D_DOBJ* 	  	dobj,
 	struct BL3D_TRIANGLE_G_T*	model_data,
-	int				model_data_len
+	const int			model_data_len
 )
 {
 	dobj->model_data	= model_data;

@@ -334,8 +334,6 @@ struct BL3D_TRIANGLE_G_T {
 	struct BL3D_VECTOR	vertex[3];
 	struct BL3D_VECTOR	texture[3];
 	struct BL3D_CVECTOR	color[3];
-	struct BL3D_OT_TAG	ot_tag;
-	
 };
 
 extern void bl3d_init_triangle_g_t(
@@ -352,6 +350,19 @@ extern void bl3d_init_triangle_g_t(
 	struct BL3D_CVECTOR*		color2
 );
 
+/// テクスチャー・グロー三角形を、オーダリングテーブルに割り当てる。
+/// 手順としては、まずBL3D_TRIANGLE_G_Tからot_tagへ変換し、それをotに登録する。
+///
+/// このot_tagのメモリー領域は、各ポリゴンにユニークでなければならない。
+/// たとえば BL3D_DOBJ が全部で１００ポリゴンだとすれば、表示のために１００個のot_tag領域が必要。
+///
+/// ot_tagはユニークである必要があるが、BL3D_TRIANGLE_G_Tなどのポリゴンのオリジナルデータは
+/// 必ずしもユニークである必要はない（共有してもよい）
+/// たとえば１枚のBL3D_TRIANGLE_G_Tを、複数のot_tagに割り当てて、複数表示することは可能。
+///
+/// a: オリジナルのポリゴンデータのアドレス
+/// ot_tag: ポリゴンデータをオーダリングテーブルに登録する際のコンテナとして使用するメモリ領域
+/// ot: ポリゴンの登録先のオーダリングテーブル
 extern void bl3d_sort_triangle_g_t(
 	struct BL3D_TRIANGLE_G_T*	a,
 	struct BL3D_OT*			ot
@@ -386,7 +397,7 @@ struct BL3D_DOBJ {
 extern void bl3d_link_object(
 	struct BL3D_DOBJ* 	  	dobj,
 	struct BL3D_TRIANGLE_G_T*	model_data,
-	int				model_data_len
+	const int			model_data_len
 );
 
 /// オーダリングテーブルにオブジェクトを割り付ける。
@@ -396,6 +407,26 @@ extern void bl3d_sort_object(
 	struct BL3D_DOBJ*	dobj,
 	struct BL3D_OT*		ot
 );
+
+
+
+
+
+
+/// bl3d_packet_pool.c
+
+/// 8192個までOT_TAGを提供できる。
+/// つまり秒間30フレームだとすれば、秒間24万ポリゴンが理論上の限度となる。
+/// …もっとも、実際はそれよりも遥に性能低いので、この数すら不可能だと思う。
+/// なので現実的に十分な量のプールとして8192を選んだ。
+
+/// ot_tag として使えるメモリー領域のアドレスを借りる。
+/// （注意：）このアドレスはdeleteなどの開放操作は不要。
+/// bl3d_clear_ot()をトリガーとして、自動的にプールのインデックスがリセットされるので。
+extern struct BL3D_OT_TAG* bl3d_rental_ot_tag(void);
+
+/// pool をリセットし、全てのレンタルしてたパケットを無効にする。
+extern void bl3d_reset_packet_pool(void);
 
 
 

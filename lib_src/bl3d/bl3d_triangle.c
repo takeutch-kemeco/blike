@@ -33,25 +33,33 @@ void bl3d_init_triangle_g_t(
 	a->color[2] = *color2;
 }
 
-static float bl3d_get_min_z(
-	struct BL3D_VECTOR* vertex0,
-	struct BL3D_VECTOR* vertex1,
-	struct BL3D_VECTOR* vertex2
-)
+static float bl3d_get_min(const float a, const float b, const float c)
 {
-	float z = vertex0->z;
+	float z = a;
 	
-	if(z > vertex1->z) {
-		z = vertex1->z;
+	if(z > b) {
+		z = b;
 	}
 	
-	if(z > vertex2->z) {
-		z = vertex2->z;
+	if(z > c) {
+		z = c;
 	}
 	
 	return z;
 }
 
+/// テクスチャー・グロー三角形を、オーダリングテーブルに割り当てる。
+/// 手順としては、まずBL3D_TRIANGLE_G_Tからot_tagへ変換し、それをotに登録する。
+///
+/// このot_tagのメモリー領域は、各ポリゴンにユニークでなければならない。
+/// たとえば BL3D_DOBJ が全部で１００ポリゴンだとすれば、表示のために１００個のot_tag領域が必要。
+///
+/// ot_tagはユニークである必要があるが、BL3D_TRIANGLE_G_Tなどのポリゴンのオリジナルデータは
+/// 必ずしもユニークである必要はない（共有してもよい）
+/// たとえば１枚のBL3D_TRIANGLE_G_Tを、複数のot_tagに割り当てて、複数表示することは可能。
+///
+/// a: オリジナルのポリゴンデータのアドレス
+/// ot: ポリゴンの登録先のオーダリングテーブル
 void bl3d_sort_triangle_g_t(
 	struct BL3D_TRIANGLE_G_T*	a,
 	struct BL3D_OT*			ot
@@ -59,22 +67,20 @@ void bl3d_sort_triangle_g_t(
 {
 	int i;
 
+	struct BL3D_OT_TAG* ot_tag = bl3d_rental_ot_tag();
 	
-	a->ot_tag.type = BL3D_TRIANGLE_TYPE_G_T;
+	ot_tag->type = BL3D_TRIANGLE_TYPE_G_T;
 
-	a->ot_tag.texture_vram	= a->texture_vram;
+	ot_tag->texture_vram = a->texture_vram;
 
 	
 	
-	struct BL3D_VECTOR V[3];
-	bl3d_apply_matrix(&V[0], &bl3d_ls_matrix, &a->vertex[0]);
-	bl3d_apply_matrix(&V[1], &bl3d_ls_matrix, &a->vertex[1]);
-	bl3d_apply_matrix(&V[2], &bl3d_ls_matrix, &a->vertex[2]);
-
 	for(i = 0; i < 3; i++) {
-		V[i].x += bl3d_ls_matrix.t[0];
-		V[i].y += bl3d_ls_matrix.t[1];
-		V[i].z += bl3d_ls_matrix.t[2];
+		bl3d_apply_matrix(&ot_tag->vertex[i], &bl3d_ls_matrix, &a->vertex[i]);
+		
+		ot_tag->vertex[i].x += bl3d_ls_matrix.t[0];
+		ot_tag->vertex[i].y += bl3d_ls_matrix.t[1];
+		ot_tag->vertex[i].z += bl3d_ls_matrix.t[2];
 	}
 	
 #ifdef __DEBUG__
@@ -85,39 +91,35 @@ void bl3d_sort_triangle_g_t(
 		V[2].x, V[2].y, V[2].z
 	);
 #endif // __DEBUG__
-	
-	
+		
 	
 
 	for(i = 0; i < 3; i++) {
-		a->ot_tag.vertex[i]  = V[i];
-		a->ot_tag.texture[i] = a->texture[i];
-		a->ot_tag.color[i]   = a->color[i];
+		ot_tag->texture[i] = a->texture[i];
+		ot_tag->color[i]   = a->color[i];
 	}
 	
 	
 	
-	int z = (int)bl3d_get_min_z(
-		&a->ot_tag.vertex[0],
-		&a->ot_tag.vertex[1],
-		&a->ot_tag.vertex[2]
+	int z = (int)bl3d_get_min(
+		ot_tag->vertex[0].z, ot_tag->vertex[1].z, ot_tag->vertex[2].z
 	);
 	
 	z &= BL3D_OT_LENGTH - 1;		// 0x7FFF
 	
-	a->ot_tag.next = NULL;
+	ot_tag->next = NULL;
 
 	if(ot->ot_tag_top[z] == NULL) {
-		ot->ot_tag_top[z]   = &a->ot_tag;
-		ot->ot_tag_tail[z]  = &a->ot_tag;
+		ot->ot_tag_top[z]   = ot_tag;
+		ot->ot_tag_tail[z]  = ot_tag;
 	}
 	else {
-		ot->ot_tag_top[z]->next	= &a->ot_tag;
-		ot->ot_tag_tail[z]	= &a->ot_tag;
+		ot->ot_tag_tail[z]->next = ot_tag;
+		ot->ot_tag_tail[z]	 = ot_tag;
 	}
 }
 
-static float bl3d_get_max(float a, float b)
+static float bl3d_get_max(const float a, const float b)
 {
 	if(a >= b) {
 		return a;
@@ -213,9 +215,9 @@ static void bl3d_draw_line_g_t(
 		
 		slctWin(0);
 		bl_setPix(x+0, y+0, col);
-		bl_setPix(x+1, y+0, col);
-		bl_setPix(x+0, y+1, col);
-		bl_setPix(x+1, y+1, col);
+//		bl_setPix(x+1, y+0, col);
+//		bl_setPix(x+0, y+1, col);
+//		bl_setPix(x+1, y+1, col);
 		
 		
 		P.x += U.x;

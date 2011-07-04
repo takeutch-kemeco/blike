@@ -69,6 +69,7 @@ BL3D_SRCS = $(BL3D_PATH)/bl3d_system.c \
 	$(BL3D_PATH)/bl3d_matrix.c \
 	$(BL3D_PATH)/bl3d_math.c \
 	$(BL3D_PATH)/bl3d_dobj.c \
+	$(BL3D_PATH)/bl3d_packet_pool.c \
 	$(BL3D_PATH)/bl3d_triangle.c
 
 BL_LOAD_XPM_PATH = ../bl_load_xpm

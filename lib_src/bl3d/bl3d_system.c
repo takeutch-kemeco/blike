@@ -168,6 +168,8 @@ void bl3d_clear_ot(struct BL3D_OT* a)
 		g_printf("clear ot %d : BL3D_OT_LENGTH %d\n", i, BL3D_OT_LENGTH);
 #endif // __DEBUG__
 	}
+	
+	bl3d_reset_packet_pool();
 }
 
 /// ot_tagのリスト構造を辿りつつ、各ot_tag描画命令でblikeの描画バッファーに描画
