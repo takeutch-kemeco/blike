@@ -5,47 +5,38 @@
 
 static struct BL3D_OT ot;
 
-struct BL3D_TRIANGLE_G_T model_data[] = {
+static struct BL3D_TRIANGLE_G_T model_data[] = {
 	{
 		.type = BL3D_TRIANGLE_TYPE_G_T,
 		.texture_vram = 10,
-		.vertex[0]={-325/2,-551/2,0},
-		.vertex[1]={325/2,551/2,0},
-		.vertex[2]={-325/2,551/2,0},
+		.vertex[0]={-325/50,-551/50,0},
+		.vertex[1]={325/50,551/50,0},
+		.vertex[2]={-325/50,551/50,0},
 		.texture[0]={0,0},
 		.texture[1]={325,551},
 		.texture[2]={0,551},
-		.color[0]={0.0,0.0,0.0},
+		.color[0]={0.8,0.8,0.8},
 		.color[1]={1.0,1.0,1.0},
 		.color[2]={1.0,1.0,1.0},
 	},
 	{
 		.type = BL3D_TRIANGLE_TYPE_G_T,
 		.texture_vram = 10,
-		.vertex[0]={-325/2,-551/2,0},
-		.vertex[1]={325/2,-551/2,0},
-		.vertex[2]={325/2,551/2,0},
+		.vertex[0]={-325/50,-551/50,0},
+		.vertex[1]={325/50,-551/50,0},
+		.vertex[2]={325/50,551/50,0},
 		.texture[0]={0,0},
 		.texture[1]={325,0},
 		.texture[2]={325,551},
-		.color[0]={0.0,0.0,0.0},
-		.color[1]={0.0,0.0,0.0},
-		.color[2]={1.0,1.0,1.0},
-	},
-	{
-		.type = BL3D_TRIANGLE_TYPE_G_T,
-		.texture_vram = 10,
-		.vertex[0]={0,0,50},
-		.vertex[1]={300,300,100},
-		.vertex[2]={0,300,120},
-		.texture[0]={0,0},
-		.texture[1]={800,800},
-		.texture[2]={0,800},
-		.color[0]={0.0,0.0,0.0},
-		.color[1]={1.0,1.0,1.0},
+		.color[0]={1.0,1.0,1.0},
+		.color[1]={0.8,0.8,0.8},
 		.color[2]={1.0,1.0,1.0},
 	},
 };
+
+static struct BL3D_DOBJ dobj[1000];
+static struct BL3D_VECTOR tt[1000];
+static struct BL3D_VECTOR tr[1000];
 
 
 
@@ -67,33 +58,26 @@ blMain()
 
 	
 	
-	struct BL3D_DOBJ dobj;
-	bl3d_link_object(&dobj, model_data, 2);
-	
-	
-	
-	struct BL3D_MATRIX m0,m1,m2;
-	m0=bl3d_e_matrix;
-	m1=bl3d_e_matrix;
-	m2=bl3d_e_matrix;
-	bl3d_mul_matrix(&m2,&m0,&m1);
-	bl3d_print_matrix(&m2);
-	
-	struct BL3D_VECTOR rotate ={0,0,0};
-	bl3d_rot_matrix(&m2, &rotate);
-	bl3d_print_matrix(&m2);
-	
-	struct BL3D_COORDINATE coord = {
-		.compleate_flg = 0,
-		.rotate = {0,0,0},
-		.transfer = {0,0,0},
-		.super = NULL
-	};
-	bl3d_get_lws(&m2, &m1, &coord);
-	bl3d_print_matrix(&m1);
-	bl3d_print_matrix(&m2);
+	int i;
+	const int dobj_len = 100;
+	for(i=0;i<dobj_len;i++) {
+		bl3d_link_object(&dobj[i], model_data, 2);
 
+		dobj[i].local_coord.transfer.x = 0 + (i*4);
+		dobj[i].local_coord.transfer.y = 100;
+		dobj[i].local_coord.transfer.z = 0;
+		
+		tt[i].x = 1 + bl_rand() % 10;
+		tt[i].y = 1 + bl_rand() % 10;
+		
+		tr[i].x = (bl_rand() % 100) / 1000.0;
+		tr[i].y = (bl_rand() % 100) / 1000.0;
+		tr[i].z = (bl_rand() % 100) / 1000.0;
+
+		dobj[i].local_coord.compleate_flg = 0;
+	}
 	
+
 	
 	setCol(0xffffff);
 	slctWin(4);
@@ -103,36 +87,59 @@ blMain()
 
 	bl3d_ws_matrix = bl3d_e_matrix;
 	bl3d_ls_matrix = bl3d_e_matrix;
-
 	
 
-	dobj.local_coord.transfer.x = 480/2;
-	dobj.local_coord.transfer.y = 270/2;
-	dobj.local_coord.transfer.z = 1000;
-	dobj.local_coord.compleate_flg = 0;
-
-	
 	
 	while(1) {
-//		copyRct0(
-//			480, 270,
-//			4, 0, 0,
-//			0, 0, 0
-//		);
-		
-		
-		
-		dobj.local_coord.rotate.x += 0.01;
-		dobj.local_coord.rotate.y += 0.02;
-		dobj.local_coord.rotate.z += 0.03;
-		dobj.local_coord.compleate_flg = 0;
+		copyRct0(
+			480, 270,
+			4, 0, 0,
+			0, 0, 0
+		);
 		
 		
 		
 		bl3d_clear_ot(&ot);
-		bl3d_sort_object(&dobj, &ot);
+		
+		for(i=0; i<dobj_len; i++) {
+			dobj[i].local_coord.rotate.x += tr[i].x;
+			dobj[i].local_coord.rotate.y += tr[i].y;
+			dobj[i].local_coord.rotate.z += tr[i].z;
+
+			if(dobj[i].local_coord.transfer.x >= 480){
+				dobj[i].local_coord.transfer.x = 479;
+				tt[i].x *= -1 * ((bl_rand() % 200)/100.0);
+			}
+			else if(dobj[i].local_coord.transfer.x <= 0){
+				dobj[i].local_coord.transfer.x = 1;
+				tt[i].x *= -1 * ((bl_rand() % 200)/100.0);
+			}
+
+			if(dobj[i].local_coord.transfer.y >= 270){
+				dobj[i].local_coord.transfer.y = 269;
+				tt[i].y *= -1 * ((bl_rand() % 200)/100.0);
+			}
+			else if(dobj[i].local_coord.transfer.y <= 0){
+				dobj[i].local_coord.transfer.y = 1;
+				tt[i].y *= -1 * ((bl_rand() % 200)/100.0);
+			}
+
+
+
+			dobj[i].local_coord.transfer.x += tt[i].x;
+			dobj[i].local_coord.transfer.y += tt[i].y;
+
+			dobj[i].local_coord.compleate_flg = 0;
+			
+			
+			
+			bl3d_sort_object(&dobj[i], &ot);
+		}
+		
 		bl3d_draw_ot(&ot);
 	
-		wait(1000/16);
+
+
+		wait(1000/30);
 	}
 }
