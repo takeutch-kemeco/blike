@@ -48,6 +48,31 @@ static float bl3d_get_min(const float a, const float b, const float c)
 	return z;
 }
 
+/// 三角形の頂点ベクトルから法線ベクトルを得る。
+struct BL3D_VECTOR* bl3d_get_normal_triangle(
+	struct BL3D_VECTOR* dst,
+	struct BL3D_VECTOR* vertex0,
+	struct BL3D_VECTOR* vertex1,
+	struct BL3D_VECTOR* vertex2
+)
+{
+	struct BL3D_VECTOR A = {
+		.x = vertex1->x - vertex0->x,
+		.y = vertex1->y - vertex0->y,
+		.z = vertex1->z - vertex0->z
+	};
+
+	struct BL3D_VECTOR B = {
+		.x = vertex2->x - vertex0->x,
+		.y = vertex2->y - vertex0->y,
+		.z = vertex2->z - vertex0->z
+	};
+
+	bl3d_outer_product_vector(dst, &A, &B);
+
+	return dst;
+}
+
 /// テクスチャー・グロー三角形を、オーダリングテーブルに割り当てる。
 /// 手順としては、まずBL3D_TRIANGLE_G_Tからot_tagへ変換し、それをotに登録する。
 ///

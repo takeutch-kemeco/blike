@@ -379,6 +379,14 @@ extern void bl3d_init_triangle_g_t(
 	struct BL3D_CVECTOR*		color2
 );
 
+/// 三角形の頂点ベクトルから法線ベクトルを得る。
+extern struct BL3D_VECTOR* bl3d_get_normal_triangle(
+	struct BL3D_VECTOR* dst,
+	struct BL3D_VECTOR* vertex0,
+	struct BL3D_VECTOR* vertex1,
+	struct BL3D_VECTOR* vertex2
+);
+
 /// テクスチャー・グロー三角形を、オーダリングテーブルに割り当てる。
 /// 手順としては、まずBL3D_TRIANGLE_G_Tからot_tagへ変換し、それをotに登録する。
 ///
