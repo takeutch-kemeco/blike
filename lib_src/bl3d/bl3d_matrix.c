@@ -36,7 +36,8 @@ struct BL3D_VECTOR* bl3d_apply_matrix(
 	struct BL3D_VECTOR* v
 )
 {
-	float* p = &(v->x);
+	struct BL3D_VECTOR A = *v;
+	float* p = &(A.x);
 	float* q = &(dst->x);
 
 	int j;
