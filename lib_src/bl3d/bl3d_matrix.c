@@ -174,6 +174,120 @@ struct BL3D_MATRIX* bl3d_comp_matrix(
 	return dst;
 }
 
+///ベクトルのノルムを返す
+float bl3d_norm_vector(struct BL3D_VECTOR* a)
+{
+	return bl3d_sqrt(a->x * a->x + a->y * a->y + a->z * a->z);
+}
+
+/// ベクトルの正規化
+struct BL3D_VECTOR* bl3d_unit_vector(
+	struct BL3D_VECTOR* dst,
+	struct BL3D_VECTOR* src
+)
+{
+	float ir = 1 / bl3d_norm_vector(src);
+	dst->x = src->x * ir;
+	dst->y = src->y * ir;
+	dst->z = src->z * ir;
+
+	return dst;
+}
+
+/// ２ベクトルから外積を得る
+struct BL3D_VECTOR* bl3d_outer_product_vector(
+	struct BL3D_VECTOR* dst,
+	struct BL3D_VECTOR* A,
+	struct BL3D_VECTOR* B
+)
+{
+	struct BL3D_MATRIX M = {
+		.m[0][0]=0,	.m[0][1]=B->z,	.m[0][2]=-B->y,
+		.m[1][0]=-B->z,	.m[1][1]=0,	.m[1][2]=B->x,
+		.m[2][0]=B->y,	.m[2][1]=-B->x,	.m[2][2]=0
+	};
+
+	bl3d_apply_matrix(dst, &M, A);
+	
+	bl3d_unit_vector(dst, dst);
+
+	return dst;
+}
+
+/// ベクトル同士の内積を得る
+struct BL3D_VECTOR* bl3d_inner_product_vector(
+	struct BL3D_VECTOR* dst,
+	struct BL3D_VECTOR* A,
+	struct BL3D_VECTOR* B
+)
+{
+	dst->x = A->x * B->x;
+	dst->y = A->y * B->y;
+	dst->z = A->z * B->z;
+
+	bl3d_unit_vector(dst, dst);
+
+	return dst;
+}
+
+/// 逆行列を得る
+struct BL3D_MATRIX* bl3d_invert_matrix(
+	struct BL3D_MATRIX* dst,
+	struct BL3D_MATRIX* src
+)
+{
+	*dst = bl3d_e_matrix;
+	struct BL3D_MATRIX _L = *src;
+
+	struct BL3D_MATRIX* L = &_L;
+	struct BL3D_MATRIX* R = dst;
+
+
+	float a = 1 / L->m[0][0];
+	L->m[0][0]*=a;	L->m[0][1]*=a;	L->m[0][2]*=a;
+	R->m[0][0]*=a;	R->m[0][1]*=a;	R->m[0][2]*=a;
+
+	a = L->m[1][0];
+	L->m[1][0]-=L->m[0][0]*a;	L->m[1][1]-=L->m[0][1]*a;	L->m[1][2]-=L->m[0][2]*a;
+	R->m[1][0]-=R->m[0][0]*a;	R->m[1][1]-=R->m[0][1]*a;	R->m[1][2]-=R->m[0][2]*a;
+	
+	a = L->m[2][0];
+	L->m[2][0]-=L->m[0][0]*a;	L->m[2][1]-=L->m[0][1]*a;	L->m[2][2]-=L->m[0][2]*a;
+	R->m[2][0]-=R->m[0][0]*a;	R->m[2][1]-=R->m[0][1]*a;	R->m[2][2]-=R->m[0][2]*a;
+
+	
+	a = 1 / L->m[1][1];
+			L->m[1][1]*=a;	L->m[1][2]*=a;
+	R->m[1][0]*=a;	R->m[1][1]*=a;	R->m[1][2]*=a;
+
+	a = L->m[0][1];
+					L->m[0][1]-=L->m[1][1]*a;	L->m[0][2]-=L->m[1][2]*a;
+	R->m[0][0]-=R->m[1][0]*a;	R->m[0][1]-=R->m[1][1]*a;	R->m[0][2]-=R->m[1][2]*a;
+	
+	a = L->m[2][1];
+					L->m[2][1]-=L->m[1][1]*a;	L->m[2][2]-=L->m[1][2]*a;
+	R->m[2][0]-=R->m[1][0]*a;	R->m[2][1]-=R->m[1][1]*a;	R->m[2][2]-=R->m[1][2]*a;
+
+	
+	a = 1 / L->m[2][2];
+					L->m[2][2]*=a;
+	R->m[2][0]*=a;	R->m[2][1]*=a;	R->m[2][2]*=a;
+
+	a = L->m[0][2];
+									L->m[0][2]-=L->m[2][2]*a;
+	R->m[0][0]-=R->m[2][0]*a;	R->m[0][1]-=R->m[2][1]*a;	R->m[0][2]-=R->m[2][2]*a;
+	
+	a = L->m[1][2];
+									L->m[1][2]-=L->m[2][2]*a;
+	R->m[1][0]-=R->m[2][0]*a;	R->m[1][1]-=R->m[2][1]*a;	R->m[1][2]-=R->m[2][2]*a;
+
+
+	R->t[0] = -L->t[0];	R->t[1] = -L->t[1];	R->t[2] = -L->t[2];
+
+
+	return dst;	
+}
+
 void bl3d_print_matrix(struct BL3D_MATRIX* a)
 {
 	g_printf("\nmatrix:\n");

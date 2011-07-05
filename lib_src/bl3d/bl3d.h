@@ -225,6 +225,35 @@ extern struct BL3D_MATRIX* bl3d_comp_matrix(
 	struct BL3D_MATRIX* src1
 );
 
+///ベクトルのノルムを返す
+extern float bl3d_norm_vector(struct BL3D_VECTOR* a);
+
+/// ベクトルの正規化
+extern struct BL3D_VECTOR* bl3d_unit_vector(
+	struct BL3D_VECTOR* dst,
+	struct BL3D_VECTOR* src
+);
+
+/// ２ベクトルから外積を得る
+extern struct BL3D_VECTOR* bl3d_outer_product_vector(
+	struct BL3D_VECTOR* dst,
+	struct BL3D_VECTOR* A,
+	struct BL3D_VECTOR* B
+);
+
+/// ベクトル同士の内積を得る
+extern struct BL3D_VECTOR* bl3d_inner_product_vector(
+	struct BL3D_VECTOR* dst,
+	struct BL3D_VECTOR* A,
+	struct BL3D_VECTOR* B
+);
+
+/// 逆行列を得る
+extern struct BL3D_MATRIX* bl3d_invert_matrix(
+	struct BL3D_MATRIX* dst,
+	struct BL3D_MATRIX* src
+);
+
 ///　コンソールへの値出力
 /// デバッグ用
 extern void bl3d_print_matrix(struct BL3D_MATRIX* a);
