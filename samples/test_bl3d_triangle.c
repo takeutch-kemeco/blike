@@ -9,35 +9,61 @@ static struct BL3D_TRIANGLE_G_T model_data[] = {
 	{
 		.type = BL3D_TRIANGLE_TYPE_G_T,
 		.texture_vram = 10,
-		.vertex[0]={-325/50,-551/50,0},
-		.vertex[1]={325/50,551/50,0},
-		.vertex[2]={-325/50,551/50,0},
+		.vertex[0]={-325/10,-551/10,0},
+		.vertex[1]={325/10,551/10,0},
+		.vertex[2]={-325/10,551/10,0},
 		.texture[0]={0,0},
-		.texture[1]={325,551},
+		.texture[1]={324,551},
 		.texture[2]={0,551},
-		.color[0]={0.8,0.8,0.8},
+		.color[0]={1.0,1.0,1.0},
 		.color[1]={1.0,1.0,1.0},
 		.color[2]={1.0,1.0,1.0},
 	},
 	{
 		.type = BL3D_TRIANGLE_TYPE_G_T,
 		.texture_vram = 10,
-		.vertex[0]={-325/50,-551/50,0},
-		.vertex[1]={325/50,-551/50,0},
-		.vertex[2]={325/50,551/50,0},
+		.vertex[0]={-325/10,-551/10,0},
+		.vertex[1]={325/10,-551/10,0},
+		.vertex[2]={325/10,551/10,0},
 		.texture[0]={0,0},
-		.texture[1]={325,0},
-		.texture[2]={325,551},
+		.texture[1]={324,0},
+		.texture[2]={324,551},
 		.color[0]={1.0,1.0,1.0},
-		.color[1]={0.8,0.8,0.8},
+		.color[1]={1.0,1.0,1.0},
 		.color[2]={1.0,1.0,1.0},
 	},
 };
 
-static struct BL3D_DOBJ dobj[1000];
-static struct BL3D_VECTOR tt[1000];
-static struct BL3D_VECTOR tr[1000];
+static struct BL3D_DOBJ dobj;
 
+
+
+void x_fill_gradation(int width, int height, int vram, struct BL3D_CVECTOR* color)
+{
+	struct BL3D_CVECTOR cur_color = color[0];
+	struct BL3D_CVECTOR unit_color = {
+		.r = (color[1].r - color[0].r) / height,
+		.g = (color[1].g - color[0].g) / height,
+		.b = (color[1].b - color[0].b) / height,
+	};
+
+	slctWin(vram);
+
+	int i,j;
+	for(j = 0; j < height; j++) {
+		for(i = 0; i < width; i++) {
+			int r = (int)(cur_color.r * 255);
+			int g = (int)(cur_color.g * 255);
+			int b = (int)(cur_color.b * 255);
+			int col =(r<<16) | (g<<8) | (b<<0);
+			bl_setPix(i, j, col);
+		}
+		
+		cur_color.r += unit_color.r;
+		cur_color.g += unit_color.g;
+		cur_color.b += unit_color.b;
+	}
+}
 
 
 #include "test_h.xpm"
@@ -45,6 +71,7 @@ static struct BL3D_VECTOR tr[1000];
 blMain()
 {
 	openWin(480, 270);
+	bl3d_init(480, 270);
 	
 	
 	
@@ -58,38 +85,47 @@ blMain()
 
 	
 	
-	int i;
-	const int dobj_len = 100;
-	for(i=0;i<dobj_len;i++) {
-		bl3d_link_object(&dobj[i], model_data, 2);
+	bl3d_link_object(&dobj, model_data, 2);
 
-		dobj[i].local_coord.transfer.x = 0 + (i*4);
-		dobj[i].local_coord.transfer.y = 100;
-		dobj[i].local_coord.transfer.z = 0;
-		
-		tt[i].x = 1 + bl_rand() % 10;
-		tt[i].y = 1 + bl_rand() % 10;
-		
-		tr[i].x = (bl_rand() % 100) / 1000.0;
-		tr[i].y = (bl_rand() % 100) / 1000.0;
-		tr[i].z = (bl_rand() % 100) / 1000.0;
-
-		dobj[i].local_coord.compleate_flg = 0;
-	}
+	dobj.local_coord.transfer.x = 0;
+	dobj.local_coord.transfer.y = 0;
+	dobj.local_coord.transfer.z = 1200;
+	dobj.local_coord.compleate_flg = 0;
 	
 
 	
-	setCol(0xffffff);
-	slctWin(4);
-	fillRect(480,270,0,0);
+	struct BL3D_CVECTOR gradation_color[2] = {
+		{
+			.r = 0.3, .g = 0.4, .b = 0.5
+		},
+		{
+			.r = 1.0, .g = 1.0, .b = 1.0
+		}
+	};
+	x_fill_gradation(480, 270, 4, gradation_color);
 
 	
 
-	bl3d_ws_matrix = bl3d_e_matrix;
-	bl3d_ls_matrix = bl3d_e_matrix;
-	
+	struct BL3D_FLAT_LIGHT fl[3] = {
+		{
+			.vector.x=0,	.vector.y=0,	.vector.z=1,
+			.color.r=2, 	.color.g=1,	.color.b=2
+		},
+		{
+			.vector.x=1,	.vector.y=0,	.vector.z=1,
+			.color.r=1, 	.color.g=0,	.color.b=0
+		},
+		{
+			.vector.x=0,	.vector.y=1,	.vector.z=1,
+			.color.r=0, 	.color.g=0,	.color.b=3
+		}
+	};
+	bl3d_set_flat_light(&fl[0], 0);
+	bl3d_set_flat_light(&fl[1], 1);
+	bl3d_set_flat_light(&fl[2], 2);
 
 	
+
 	while(1) {
 		copyRct0(
 			480, 270,
@@ -100,41 +136,26 @@ blMain()
 		
 		
 		bl3d_clear_ot(&ot);
-		
-		for(i=0; i<dobj_len; i++) {
-			dobj[i].local_coord.rotate.x += tr[i].x;
-			dobj[i].local_coord.rotate.y += tr[i].y;
-			dobj[i].local_coord.rotate.z += tr[i].z;
-
-			if(dobj[i].local_coord.transfer.x >= 480){
-				dobj[i].local_coord.transfer.x = 479;
-				tt[i].x *= -1 * ((bl_rand() % 200)/100.0);
-			}
-			else if(dobj[i].local_coord.transfer.x <= 0){
-				dobj[i].local_coord.transfer.x = 1;
-				tt[i].x *= -1 * ((bl_rand() % 200)/100.0);
-			}
-
-			if(dobj[i].local_coord.transfer.y >= 270){
-				dobj[i].local_coord.transfer.y = 269;
-				tt[i].y *= -1 * ((bl_rand() % 200)/100.0);
-			}
-			else if(dobj[i].local_coord.transfer.y <= 0){
-				dobj[i].local_coord.transfer.y = 1;
-				tt[i].y *= -1 * ((bl_rand() % 200)/100.0);
-			}
-
-
-
-			dobj[i].local_coord.transfer.x += tt[i].x;
-			dobj[i].local_coord.transfer.y += tt[i].y;
-
-			dobj[i].local_coord.compleate_flg = 0;
-			
-			
-			
-			bl3d_sort_object(&dobj[i], &ot);
+	
+		int a = inkey();
+		switch(a) {
+		case 'j': dobj.local_coord.rotate.y+=0.1;	break;
+		case 'k': dobj.local_coord.rotate.y-=0.1;	break;
+		case 'h': dobj.local_coord.rotate.x-=0.1;	break;
+		case 'l': dobj.local_coord.rotate.x+=0.1;	break;
+		case 'm': dobj.local_coord.rotate.z-=0.1;	break;
+		case 'u': dobj.local_coord.rotate.z+=0.1;	break;
 		}
+		
+//		dobj.local_coord.rotate.x+=0.01;
+//		dobj.local_coord.rotate.y+=0.02;
+//		dobj.local_coord.rotate.z+=0.03;
+
+		dobj.local_coord.compleate_flg = 0;
+			
+			
+			
+		bl3d_sort_object(&dobj, &ot);
 		
 		bl3d_draw_ot(&ot);
 	
