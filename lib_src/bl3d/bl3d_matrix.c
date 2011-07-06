@@ -1,3 +1,5 @@
+//#define __DEBUG__
+
 #include "bl3d.h"
 
 /// ２つの行列の積をとります。
@@ -11,16 +13,20 @@ struct BL3D_MATRIX* bl3d_mul_matrix(
 	struct BL3D_MATRIX* src1
 )
 {
+	struct BL3D_MATRIX a;
+	
 	int j, i;
 	
 	for(j=0; j<3; j++) {
 		for(i=0; i<3; i++) {
-			dst->m[j][i] =
+			a.m[j][i] =
 				src0->m[j][0] * src1->m[0][i] +
 				src0->m[j][1] * src1->m[1][i] +
 				src0->m[j][2] * src1->m[2][i];
 		}
 	}
+	
+	*dst = a;
 	
 	return dst;
 }
@@ -159,17 +165,21 @@ struct BL3D_MATRIX* bl3d_comp_matrix(
 	struct BL3D_MATRIX* src1
 )
 {
-	bl3d_mul_matrix(dst, src0, src1);
+	struct BL3D_MATRIX a;
+	
+	bl3d_mul_matrix(&a, src0, src1);
 
 	bl3d_apply_matrix(
-		(struct BL3D_VECTOR*)(dst->t),
+		(struct BL3D_VECTOR*)(a.t),
 		src0,
 		(struct BL3D_VECTOR*)(src1->t)
 	);
 	
-	dst->t[0] += src0->t[0];
-	dst->t[1] += src0->t[1];
-	dst->t[2] += src0->t[2];
+	a.t[0] += src0->t[0];
+	a.t[1] += src0->t[1];
+	a.t[2] += src0->t[2];
+
+	*dst = a;
 	
 	return dst;
 }
@@ -186,7 +196,7 @@ struct BL3D_VECTOR* bl3d_unit_vector(
 	struct BL3D_VECTOR* src
 )
 {
-	float ir = 1 / bl3d_norm_vector(src);
+	float ir = 1.0 / bl3d_norm_vector(src);
 	dst->x = src->x * ir;
 	dst->y = src->y * ir;
 	dst->z = src->z * ir;
@@ -215,19 +225,13 @@ struct BL3D_VECTOR* bl3d_outer_product_vector(
 }
 
 /// ベクトル同士の内積を得る
-struct BL3D_VECTOR* bl3d_inner_product_vector(
-	struct BL3D_VECTOR* dst,
+float bl3d_inner_product_vector(
 	struct BL3D_VECTOR* A,
 	struct BL3D_VECTOR* B
 )
 {
-	dst->x = A->x * B->x;
-	dst->y = A->y * B->y;
-	dst->z = A->z * B->z;
-
-	bl3d_unit_vector(dst, dst);
-
-	return dst;
+	float a = A->x * B->x + A->y * B->y + A->z * B->z;
+	return (a < 0)? 0: a;
 }
 
 /// 逆行列を得る
@@ -243,7 +247,7 @@ struct BL3D_MATRIX* bl3d_invert_matrix(
 	struct BL3D_MATRIX* R = dst;
 
 
-	float a = 1 / L->m[0][0];
+	float a = 1.0 / L->m[0][0];
 	L->m[0][0]*=a;	L->m[0][1]*=a;	L->m[0][2]*=a;
 	R->m[0][0]*=a;	R->m[0][1]*=a;	R->m[0][2]*=a;
 
@@ -256,7 +260,7 @@ struct BL3D_MATRIX* bl3d_invert_matrix(
 	R->m[2][0]-=R->m[0][0]*a;	R->m[2][1]-=R->m[0][1]*a;	R->m[2][2]-=R->m[0][2]*a;
 
 	
-	a = 1 / L->m[1][1];
+	a = 1.0 / L->m[1][1];
 			L->m[1][1]*=a;	L->m[1][2]*=a;
 	R->m[1][0]*=a;	R->m[1][1]*=a;	R->m[1][2]*=a;
 
@@ -269,7 +273,7 @@ struct BL3D_MATRIX* bl3d_invert_matrix(
 	R->m[2][0]-=R->m[1][0]*a;	R->m[2][1]-=R->m[1][1]*a;	R->m[2][2]-=R->m[1][2]*a;
 
 	
-	a = 1 / L->m[2][2];
+	a = 1.0 / L->m[2][2];
 					L->m[2][2]*=a;
 	R->m[2][0]*=a;	R->m[2][1]*=a;	R->m[2][2]*=a;
 
@@ -290,6 +294,7 @@ struct BL3D_MATRIX* bl3d_invert_matrix(
 
 void bl3d_print_matrix(struct BL3D_MATRIX* a)
 {
+#ifdef __DEBUG__
 	g_printf("\nmatrix:\n");
 	g_printf("(rotate)\n");
 	g_printf("\t[%08f, %08f, %08f]\n",a->m[0][0], a->m[0][1], a->m[0][2]);
@@ -297,4 +302,5 @@ void bl3d_print_matrix(struct BL3D_MATRIX* a)
 	g_printf("\t[%08f, %08f, %08f]\n",a->m[2][0], a->m[2][1], a->m[2][2]);
 	g_printf("(transfer)\n");
 	g_printf("\t[%08f, %08f, %08f]\n\n",a->t[0], a->t[1], a->t[2]);
+#endif // __DEBUG__
 }

@@ -242,8 +242,7 @@ extern struct BL3D_VECTOR* bl3d_outer_product_vector(
 );
 
 /// ベクトル同士の内積を得る
-extern struct BL3D_VECTOR* bl3d_inner_product_vector(
-	struct BL3D_VECTOR* dst,
+float bl3d_inner_product_vector(
 	struct BL3D_VECTOR* A,
 	struct BL3D_VECTOR* B
 );
@@ -265,13 +264,19 @@ extern void bl3d_print_matrix(struct BL3D_MATRIX* a);
 
 /// bl3d_system.c
 
+/// システムの初期設定
+/// bl3dで３次元表示を行う場合は、最初にこれを実行しておくのが望ましい
+/// screen_width:スクリーンの横幅（ピクセル単位）
+/// screen_height:スクリーンの縦幅（ピクセル単位）
+extern void bl3d_init(const int screen_width, const int screen_height);
+
 /// 画面の中心位置のXY座標
 /// これを使って、画面中心を（０、０）として考える
 extern int bl3d_screen_offset[2];
 
 /// 投影面のZ座標位置の設定
 /// デフォルトは1000
-extern int bl3d_screen_projection;
+extern float bl3d_screen_projection;
 
 /// 単位行列
 extern const struct BL3D_MATRIX bl3d_e_matrix;
@@ -288,13 +293,17 @@ extern struct BL3D_MATRIX bl3d_ls_matrix;
 
 /// システムの環境光。
 /// 光の当たってない部分が、光の当たってる部分に対してどれだけ減衰するかの割合を設定する。
-/// デフォルトでは各色 1/4 となる。
+/// デフォルトでは各色 1/2 となる。
 extern struct BL3D_CVECTOR bl3d_ambient_depth;
 
 /// システムの平行光源のベクトルと色。
 /// 平行光源は３個まで使用できる。
-extern struct BL3D_VECTOR bl3d_flat_light_vector[3];
-extern struct BL3D_CVECTOR bl3d_flat_light_color[3];
+extern struct BL3D_FLAT_LIGHT bl3d_system_flat_light[3];
+
+///　システム平行光源の使用フラグ
+/// 1(true)なら、そのインデックスの平行光減を、ポリゴン描画時のシェーディング計算に含める。
+/// 0(false)なら含めない。
+extern int bl3d_system_flat_light_use_flag[3];
 
 /// システムの平行光源の、ローカルtoワールド行列。
 /// 平行光源をワールド座標を用いて設定するのであれば、単位行列でいい。
