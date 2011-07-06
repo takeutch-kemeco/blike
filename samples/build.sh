@@ -73,6 +73,6 @@ A=msgk01a;	make SRCS="$A".c PROG=$A
 A=mt_xor0a;	make SRCS="$A".c PROG=$A
 
 A=test_keybord_state;	make SRCS="$A".c PROG=$A
-
-make SRCS="test_bl3d_triangle.c ../lib_src/bl_load_xpm/bl_load_xpm.c ../lib_src/bl3d/bl3d_math.c ../lib_src/bl3d/bl3d_matrix.c ../lib_src/bl3d/bl3d_system.c ../lib_src/bl3d/bl3d_triangle.c  ../lib_src/bl3d/bl3d_dobj.c" PROG=test_bl3d_triangle
+A=test_bl3d_triangle;	make SRCS="$A".c PROG=$A
+A=bl3d_cube;		make SRCS="$A".c PROG=$A
 
