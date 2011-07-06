@@ -48,6 +48,21 @@ static float bl3d_get_min(const float a, const float b, const float c)
 	return z;
 }
 
+static float bl3d_get_big(const float a, const float b, const float c)
+{
+	float z = a;
+	
+	if(z < b) {
+		z = b;
+	}
+	
+	if(z < c) {
+		z = c;
+	}
+	
+	return z;
+}
+
 /// 三角形の頂点ベクトルから法線ベクトルを得る。
 struct BL3D_VECTOR* bl3d_get_normal_triangle(
 	struct BL3D_VECTOR* dst,
@@ -63,9 +78,9 @@ struct BL3D_VECTOR* bl3d_get_normal_triangle(
 	};
 
 	struct BL3D_VECTOR B = {
-		.x = vertex2->x - vertex0->x,
-		.y = vertex2->y - vertex0->y,
-		.z = vertex2->z - vertex0->z
+		.x = vertex2->x - vertex1->x,
+		.y = vertex2->y - vertex1->y,
+		.z = vertex2->z - vertex1->z
 	};
 
 	bl3d_outer_product_vector(dst, &A, &B);
@@ -106,31 +121,106 @@ void bl3d_sort_triangle_g_t(
 		ot_tag->vertex[i].x += bl3d_ls_matrix.t[0];
 		ot_tag->vertex[i].y += bl3d_ls_matrix.t[1];
 		ot_tag->vertex[i].z += bl3d_ls_matrix.t[2];
-	}
-	
-#ifdef __DEBUG__
-	g_printf(
-		"V0[%f, %f, %f] V1[%f, %f, %f] V2[%f, %f, %f]\n",
-		V[0].x, V[0].y, V[0].z,
-		V[1].x, V[1].y, V[1].z,
-		V[2].x, V[2].y, V[2].z
-	);
-#endif // __DEBUG__
-		
-	
 
-	for(i = 0; i < 3; i++) {
-		ot_tag->texture[i] = a->texture[i];
-		ot_tag->color[i]   = a->color[i];
+		const float a = (1.0 / ot_tag->vertex[i].z) * bl3d_screen_projection;
+#ifdef __DEBUG__
+g_printf("%f ",a);
+#endif // __DEBUG__
+		ot_tag->vertex[i].x *= a;
+		ot_tag->vertex[i].y *= a;
 	}
 	
 	
 	
-	int z = (int)bl3d_get_min(
+	int big_z = (int)bl3d_get_big(
 		ot_tag->vertex[0].z, ot_tag->vertex[1].z, ot_tag->vertex[2].z
 	);
 	
-	z &= BL3D_OT_LENGTH - 1;		// 0x7FFF
+	if(big_z >= BL3D_OT_LENGTH - 1) {
+		return;
+	}
+
+	int min_z = (int)bl3d_get_min(
+		ot_tag->vertex[0].z, ot_tag->vertex[1].z, ot_tag->vertex[2].z
+	);
+
+	if(min_z < bl3d_screen_projection) {
+		return;
+	}
+	
+	int z = min_z & (BL3D_OT_LENGTH - 1);		// 0x7FFF
+
+	
+	
+	struct BL3D_VECTOR normal_vector;
+	bl3d_get_normal_triangle(&normal_vector, &ot_tag->vertex[0], &ot_tag->vertex[1], &ot_tag->vertex[2]);
+	if(normal_vector.z < 0) {
+		return;
+	}
+
+	
+	
+	struct BL3D_CVECTOR ambient_base_color[3] = {
+		{
+			.r = a->color[0].r * bl3d_ambient_depth.r,
+			.g = a->color[0].g * bl3d_ambient_depth.g,
+			.b = a->color[0].b * bl3d_ambient_depth.b
+		},
+		{
+			.r = a->color[1].r * bl3d_ambient_depth.r,
+			.g = a->color[1].g * bl3d_ambient_depth.g,
+			.b = a->color[1].b * bl3d_ambient_depth.b
+		},
+		{
+			.r = a->color[2].r * bl3d_ambient_depth.r,
+			.g = a->color[2].g * bl3d_ambient_depth.g,
+			.b = a->color[2].b * bl3d_ambient_depth.b
+		}
+	};
+
+	for(i = 0; i < 3; i++) {
+		ot_tag->color[i] = ambient_base_color[i];
+
+		ot_tag->texture[i] = a->texture[i];
+
+		ot_tag->vertex[i].x += bl3d_screen_offset[0];
+		ot_tag->vertex[i].y += bl3d_screen_offset[1];
+	}
+
+	for(i = 0; i < 3; i++) {
+		if(bl3d_system_flat_light_use_flag[i] == TRUE) {
+			float power = bl3d_inner_product_vector(
+				&normal_vector,
+				&bl3d_system_flat_light[i].vector
+			);
+
+			struct BL3D_CVECTOR color = {
+				.r = bl3d_system_flat_light[i].color.r * power,
+				.g = bl3d_system_flat_light[i].color.g * power,
+				.b = bl3d_system_flat_light[i].color.b * power
+			};
+
+			int li;
+			for(li = 0; li < 3; li++) {
+				ot_tag->color[li].r += ambient_base_color[li].r * color.r;
+				ot_tag->color[li].g += ambient_base_color[li].g * color.g;
+				ot_tag->color[li].b += ambient_base_color[li].b * color.b;
+			}
+
+#ifdef __DEBUG__
+			g_printf(
+				"index[%d], normal_vector[%f, %f, %f], color[%f, %f, %f], ot_tag.color[%f, %f, %f], power[%f]\n",
+				i,
+				normal_vector.x, normal_vector.y, normal_vector.z,
+				color.r, color.g, color.b,
+    				ot_tag->color[0].r, ot_tag->color[0].g, ot_tag->color[0].b,
+				power
+			);
+#endif // __DEBUG__
+		}
+	}
+	
+
 	
 	ot_tag->next = NULL;
 
@@ -170,10 +260,11 @@ static void bl3d_draw_line_g_t(
 	};
 	
 	float r = bl3d_sqrt(L.x * L.x + L.y * L.y);
+	float ir = 1.0 / r;
 	
 	struct BL3D_VECTOR U = {
-		.x = L.x / r,
-		.y = L.y / r
+		.x = L.x * ir,
+		.y = L.y * ir
 	};
 
 	struct BL3D_VECTOR P = *A;
@@ -186,8 +277,8 @@ static void bl3d_draw_line_g_t(
 	};
 	
 	struct BL3D_VECTOR UT = {
-		.x = LT.x / r,
-		.y = LT.y / r
+		.x = LT.x * ir,
+		.y = LT.y * ir
 	};
 	
 	struct BL3D_VECTOR PT = *AT;
@@ -201,9 +292,9 @@ static void bl3d_draw_line_g_t(
 	};
 	
 	struct BL3D_CVECTOR UC = {
-		.r = LC.r / r,
-		.g = LC.g / r,
-		.b = LC.b / r
+		.r = LC.r * ir,
+		.g = LC.g * ir,
+		.b = LC.b * ir
 	};
 	
 	struct BL3D_CVECTOR PC = *AC;
@@ -240,9 +331,9 @@ static void bl3d_draw_line_g_t(
 		
 		slctWin(0);
 		bl_setPix(x+0, y+0, col);
-//		bl_setPix(x+1, y+0, col);
-//		bl_setPix(x+0, y+1, col);
-//		bl_setPix(x+1, y+1, col);
+		bl_setPix(x+1, y+0, col);
+		bl_setPix(x+0, y+1, col);
+		bl_setPix(x+1, y+1, col);
 		
 		
 		P.x += U.x;
@@ -292,14 +383,16 @@ void bl3d_draw_triangle_g_t(struct BL3D_OT_TAG* a)
 		SP = a->vertex[0];
 	}
 	
+	float ilr = 1.0 / lr;
+	
 	struct BL3D_VECTOR LU = {
-		.x = L->x / lr,
-		.y = L->y / lr
+		.x = L->x * ilr,
+		.y = L->y * ilr
 	};
 	
 	struct BL3D_VECTOR SU = {
-		.x = S->x / lr,
-		.y = S->y / lr
+		.x = S->x * ilr,
+		.y = S->y * ilr
 	};
 	
 #ifdef __DEBUG__
@@ -346,13 +439,13 @@ void bl3d_draw_triangle_g_t(struct BL3D_OT_TAG* a)
 	}
 	
 	struct BL3D_VECTOR LTU = {
-		.x = LT->x / lr,
-		.y = LT->y / lr
+		.x = LT->x * ilr,
+		.y = LT->y * ilr
 	};
 	
 	struct BL3D_VECTOR STU = {
-		.x = ST->x / lr,
-		.y = ST->y / lr
+		.x = ST->x * ilr,
+		.y = ST->y * ilr
 	};
 	
 	
@@ -387,15 +480,15 @@ void bl3d_draw_triangle_g_t(struct BL3D_OT_TAG* a)
 	}
 	
 	struct BL3D_CVECTOR LCU = {
-		.r = LC->r / lr,
-		.g = LC->g / lr,
-		.b = LC->b / lr
+		.r = LC->r * ilr,
+		.g = LC->g * ilr,
+		.b = LC->b * ilr
 	};
 
 	struct BL3D_CVECTOR SCU = {
-		.r = SC->r / lr,
-		.g = SC->g / lr,
-		.b = SC->b / lr
+		.r = SC->r * ilr,
+		.g = SC->g * ilr,
+		.b = SC->b * ilr
 	};
 
 	
@@ -434,7 +527,7 @@ void bl3d_draw_triangle_g_t(struct BL3D_OT_TAG* a)
 
 		
 #ifdef __DEBUG__
-		wait(1000/100);
+//		wait(1000/100);
 #endif // __DEBUG__
 	}
 }

@@ -8,7 +8,7 @@ int bl3d_screen_offset[2];
 
 /// 投影面のZ座標位置の設定
 /// デフォルトは1000
-int bl3d_screen_projection = 1000;
+float bl3d_screen_projection = 1000;
 
 /// 単位行列
 const struct BL3D_MATRIX bl3d_e_matrix = {
@@ -30,20 +30,52 @@ struct BL3D_MATRIX bl3d_ls_matrix;
 
 /// システムの環境光。
 /// 光の当たってない部分が、光の当たってる部分に対してどれだけ減衰するかの割合を設定する。
-/// デフォルトでは各色 1/4 となる。
+/// デフォルトでは各色 1/2 となる。
 struct BL3D_CVECTOR bl3d_ambient_depth = {
-	.r = 1.0/4, .g = 1.0/4, .b = 1.0/4
+	.r = 1.0/2, .g = 1.0/2, .b = 1.0/2
 };
 
 /// システムの平行光源のベクトルと色。
 /// 平行光源は３個まで使用できる。
-struct BL3D_VECTOR bl3d_flat_light_vector[3];
-struct BL3D_CVECTOR bl3d_flat_light_color[3];
+struct BL3D_FLAT_LIGHT bl3d_system_flat_light[3] = {
+	{
+		.vector.x = 0,	.vector.y = 0,	.vector.z = 1.0,
+		.color.r =1.0,	.color.g =1.0,	.color.b =1.0
+	},
+	{
+		.vector.x = 0,	.vector.y = 1.0,.vector.z = 0,
+		.color.r =1.0,	.color.g =1.0,	.color.b =1.0
+	},
+	{
+		.vector.x = 1.0,.vector.y = 0,	.vector.z = 0,
+		.color.r =1.0,	.color.g =1.0,	.color.b =1.0
+	}
+};
+
+///　システム平行光源の使用フラグ
+/// 1(true)なら、そのインデックスの平行光減を、ポリゴン描画時のシェーディング計算に含める。
+/// 0(false)なら含めない。
+int bl3d_system_flat_light_use_flag[3] = {0, 0, 0};
 
 /// システムの平行光源の、ローカルtoワールド行列。
 /// 平行光源をワールド座標を用いて設定するのであれば、単位行列でいい。
 /// ３光源で同じ座標系を共有する。
 struct BL3D_MATRIX bl3d_flat_light_matrix;
+
+/// システムの初期設定
+/// bl3dで３次元表示を行う場合は、最初にこれを実行しておくのが望ましい。
+/// 画像表示のオフセットや、各種変換行列の初期化などを行う。
+///
+/// screen_width:スクリーンの横幅（ピクセル単位）
+/// screen_height:スクリーンの縦幅（ピクセル単位）
+void bl3d_init(const int screen_width, const int screen_height)
+{
+	bl3d_screen_offset[0] = screen_width / 2;
+	bl3d_screen_offset[1] = screen_height / 2;
+	
+	bl3d_ws_matrix = bl3d_e_matrix;
+	bl3d_ls_matrix = bl3d_e_matrix;
+}
 
 /// システムのワールドtoスクリーン行列を設定する。
 /// BL3D_VIEWの親座標をワールド以外に設定した場合は、
@@ -62,10 +94,15 @@ void bl3d_set_flat_light(struct BL3D_FLAT_LIGHT* lt, int id)
 {
 	id &= 0x03;
 	
-	bl3d_flat_light_color[id] = lt->color;
 	
-	struct BL3D_VECTOR tmp = lt->vector;
-	bl3d_apply_matrix(&bl3d_flat_light_vector[id], &bl3d_ws_matrix, &tmp);
+	bl3d_system_flat_light[id].color = lt->color;
+	
+	
+	struct BL3D_VECTOR* p = &bl3d_system_flat_light[id].vector;
+	bl3d_apply_matrix(p, &bl3d_ws_matrix, &lt->vector);
+	bl3d_unit_vector(p, p);
+	
+	bl3d_system_flat_light_use_flag[id] = TRUE;
 }
 
 /// ローカル座標系の初期化
