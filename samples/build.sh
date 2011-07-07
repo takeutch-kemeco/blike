@@ -75,4 +75,5 @@ A=mt_xor0a;	make SRCS="$A".c PROG=$A
 A=test_keybord_state;	make SRCS="$A".c PROG=$A
 A=test_bl3d_triangle;	make SRCS="$A".c PROG=$A
 A=bl3d_cube;		make SRCS="$A".c PROG=$A
+A=bl3d_cube2;		make SRCS="$A".c PROG=$A
 
