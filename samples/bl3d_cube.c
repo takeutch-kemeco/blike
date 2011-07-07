@@ -279,15 +279,15 @@ blMain()
 	struct BL3D_FLAT_LIGHT fl[3] = {
 		{
 			.vector.x=0,	.vector.y=1,	.vector.z=1,
-			.color.r=1, 	.color.g=1,	.color.b=1
+			.color.r=0.3, 	.color.g=0.3,	.color.b=0.3
 		},
 		{
 			.vector.x=1,	.vector.y=1,	.vector.z=-1,
-			.color.r=1, 	.color.g=1,	.color.b=1
+			.color.r=0.29, 	.color.g=0.28,	.color.b=0.27
 		},
 		{
 			.vector.x=-1,	.vector.y=1,	.vector.z=-1,
-			.color.r=1, 	.color.g=1,	.color.b=1
+			.color.r=0.27, 	.color.g=0.28,	.color.b=0.29
 		}
 	};
 	bl3d_set_flat_light(&fl[0], 0);
