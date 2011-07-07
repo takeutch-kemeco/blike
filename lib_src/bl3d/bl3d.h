@@ -49,7 +49,10 @@ struct BL3D_MATRIX {
 /// vertex[3]: ３角形の頂点座標0,1,2
 /// texture[3]: vertexに対応した頂点のテクスチャー座標0,1,2
 /// color[3]: vertexに対応した頂点の色値
-/// 
+/// base_color: ３つの平行光源を合成した結果。
+///	この値は色値の0位置を、どこにするかという下駄を設定する。
+///	たとえばこれが50%ならば、128なので、128を0として、下駄を履かせて色を計算することになる。
+///	結果、255を飛び出した分は、飽和色として、255に丸める。
 struct BL3D_OT_TAG {
 	int			type;
 	int			texture_vram;
@@ -57,6 +60,7 @@ struct BL3D_OT_TAG {
 	struct BL3D_VECTOR	vertex[3];
 	struct BL3D_VECTOR	texture[3];
 	struct BL3D_CVECTOR	color[3];
+	struct BL3D_CVECTOR	base_color;
 };
 
 /// オーダリングテーブル
@@ -110,7 +114,9 @@ struct BL3D_COORDINATE {
 /// super: 視点を設定する座標系へのポインタ
 struct BL3D_VIEW {
 	struct BL3D_MATRIX	view;
-	struct BL3D_COORDINATE*	super;
+	struct BL3D_VECTOR	rotate;
+	struct BL3D_VECTOR	transfer;
+	struct BL3D_COORDINATE	local_coord;
 };
 
 /// 平行光源
@@ -138,6 +144,9 @@ extern float bl3d_cos(float a);
 
 /// sqrt
 extern float bl3d_sqrt(float a);
+
+/// atan2
+extern float bl3d_atan2(float a, float b);
 
 
 
@@ -282,7 +291,8 @@ extern float bl3d_screen_projection;
 extern const struct BL3D_MATRIX bl3d_e_matrix;
 
 /// 0ベクトル
-extern const struct BL3D_VECTOR bl3d_0_vector;
+extern const struct BL3D_VECTOR  bl3d_0_vector;
+extern const struct BL3D_CVECTOR bl3d_0_cvector;
 
 /// ワールドからスクリーンへの行列
 extern struct BL3D_MATRIX bl3d_ws_matrix;
@@ -338,6 +348,14 @@ extern void bl3d_init_coordinate(
 extern void bl3d_get_lws(
 	struct BL3D_MATRIX*	lw,
 	struct BL3D_MATRIX*	ls,
+	struct BL3D_COORDINATE*	coord
+);
+
+/// ローカルtoワールド行列を計算
+/// coord の compleate_flg を見て1(true)ならば、既に計算済みならば計算を省略する。
+/// ただし、親側のノードのうち、いずれかが変更（flgが0）されてた場合は、通常どうり全て計算される。
+extern void bl3d_get_lw(
+	struct BL3D_MATRIX*	lw,
 	struct BL3D_COORDINATE*	coord
 );
 

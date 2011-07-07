@@ -19,7 +19,8 @@ const struct BL3D_MATRIX bl3d_e_matrix = {
 };
 
 /// 0ベクトル
-const struct BL3D_VECTOR bl3d_0_vector = {.x = 0, .y = 0, .z = 0, .pad = 0};
+const struct BL3D_VECTOR  bl3d_0_vector  = {.x = 0, .y = 0, .z = 0, .pad = 0};
+const struct BL3D_CVECTOR bl3d_0_cvector = {.r = 0, .g = 0, .b = 0, .pad = 0};
 
 /// ワールドからスクリーンへの行列
 struct BL3D_MATRIX bl3d_ws_matrix;
@@ -82,7 +83,18 @@ void bl3d_init(const int screen_width, const int screen_height)
 /// 親座標系の値の変化した場合、視点も影響を受けるため、この関数を毎フレーム実行する必要がある。
 void bl3d_set_view(struct BL3D_VIEW* pv)
 {
-	bl3d_ws_matrix = bl3d_e_matrix;
+	struct BL3D_MATRIX lw;
+	bl3d_get_lw(&lw, &pv->local_coord);
+	
+	struct BL3D_MATRIX im;
+	bl3d_rot_matrix(&im, &pv->rotate);
+	bl3d_invert_matrix(&pv->view, &im);
+		
+	pv->view.t[0] = -pv->transfer.x;
+	pv->view.t[1] = -pv->transfer.y;
+	pv->view.t[2] = -pv->transfer.z;
+	
+	bl3d_comp_matrix(&bl3d_ws_matrix, &pv->view, &lw);
 }
 
 /// システムの平行光源を設定する。
@@ -179,6 +191,23 @@ void bl3d_get_lws(
 	}
 
 	bl3d_comp_matrix(ls, &bl3d_ws_matrix, lw);
+}
+
+/// ローカルtoワールド行列を計算
+/// coord の compleate_flg を見て1(true)ならば、既に計算済みならば計算を省略する。
+/// ただし、親側のノードのうち、いずれかが変更（flgが0）されてた場合は、通常どうり全て計算される。
+void bl3d_get_lw(
+	struct BL3D_MATRIX*	lw,
+	struct BL3D_COORDINATE*	coord
+)
+{
+	if(coord != NULL) {
+		bl3d_recalc_coord(coord);
+		*lw = coord->workm;
+	}
+	else {
+		*lw = bl3d_e_matrix;
+	}
 }
 
 /// システムのローカルtoスクリーン行列をセットする

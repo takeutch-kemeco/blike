@@ -160,26 +160,10 @@ g_printf("%f ",a);
 
 	
 	
-	struct BL3D_CVECTOR ambient_base_color[3] = {
-		{
-			.r = a->color[0].r * bl3d_ambient_depth.r,
-			.g = a->color[0].g * bl3d_ambient_depth.g,
-			.b = a->color[0].b * bl3d_ambient_depth.b
-		},
-		{
-			.r = a->color[1].r * bl3d_ambient_depth.r,
-			.g = a->color[1].g * bl3d_ambient_depth.g,
-			.b = a->color[1].b * bl3d_ambient_depth.b
-		},
-		{
-			.r = a->color[2].r * bl3d_ambient_depth.r,
-			.g = a->color[2].g * bl3d_ambient_depth.g,
-			.b = a->color[2].b * bl3d_ambient_depth.b
-		}
-	};
-
 	for(i = 0; i < 3; i++) {
-		ot_tag->color[i] = ambient_base_color[i];
+		ot_tag->color[i].r = a->color[i].r * bl3d_ambient_depth.r;
+		ot_tag->color[i].g = a->color[i].g * bl3d_ambient_depth.g;
+		ot_tag->color[i].b = a->color[i].b * bl3d_ambient_depth.b;
 
 		ot_tag->texture[i] = a->texture[i];
 
@@ -187,6 +171,10 @@ g_printf("%f ",a);
 		ot_tag->vertex[i].y += bl3d_screen_offset[1];
 	}
 
+
+
+	ot_tag->base_color = bl3d_0_cvector;
+	
 	for(i = 0; i < 3; i++) {
 		if(bl3d_system_flat_light_use_flag[i] == TRUE) {
 			float power = bl3d_inner_product_vector(
@@ -200,25 +188,15 @@ g_printf("%f ",a);
 				.b = bl3d_system_flat_light[i].color.b * power
 			};
 
-			int li;
-			for(li = 0; li < 3; li++) {
-				ot_tag->color[li].r += ambient_base_color[li].r * color.r;
-				ot_tag->color[li].g += ambient_base_color[li].g * color.g;
-				ot_tag->color[li].b += ambient_base_color[li].b * color.b;
-			}
-
-#ifdef __DEBUG__
-			g_printf(
-				"index[%d], normal_vector[%f, %f, %f], color[%f, %f, %f], ot_tag.color[%f, %f, %f], power[%f]\n",
-				i,
-				normal_vector.x, normal_vector.y, normal_vector.z,
-				color.r, color.g, color.b,
-    				ot_tag->color[0].r, ot_tag->color[0].g, ot_tag->color[0].b,
-				power
-			);
-#endif // __DEBUG__
+			ot_tag->base_color.r += bl3d_system_flat_light[i].color.r * power;
+			ot_tag->base_color.g += bl3d_system_flat_light[i].color.g * power;
+			ot_tag->base_color.b += bl3d_system_flat_light[i].color.b * power;
 		}
 	}
+	
+	ot_tag->base_color.r *= 255;
+	ot_tag->base_color.g *= 255;
+	ot_tag->base_color.b *= 255;
 	
 
 	
@@ -251,7 +229,8 @@ static void bl3d_draw_line_g_t(
 	struct BL3D_VECTOR* BT,
 	const int texture_vram,
 	struct BL3D_CVECTOR* AC,
-	struct BL3D_CVECTOR* BC
+	struct BL3D_CVECTOR* BC,
+	struct BL3D_CVECTOR* BASE_C
 )
 {
 	struct BL3D_VECTOR L = {
@@ -318,9 +297,9 @@ static void bl3d_draw_line_g_t(
 		float Cg = (C >> 8 ) & 0xFF;
 		float Cb = (C >> 0 ) & 0xFF;
 
-		int col_r = Cr * PC.r;
-		int col_g = Cg * PC.g;
-		int col_b = Cb * PC.b;
+		int col_r = (Cr * PC.r) + BASE_C->r;
+		int col_g = (Cg * PC.g) + BASE_C->g;
+		int col_b = (Cb * PC.b) + BASE_C->b;
 		
 		col_r = (col_r > 255)? 255: col_r;
 		col_g = (col_g > 255)? 255: col_g;
@@ -331,8 +310,8 @@ static void bl3d_draw_line_g_t(
 		
 		slctWin(0);
 		bl_setPix(x+0, y+0, col);
-		bl_setPix(x+1, y+0, col);
-		bl_setPix(x+0, y+1, col);
+	//	bl_setPix(x+1, y+0, col);
+	//	bl_setPix(x+0, y+1, col);
 		bl_setPix(x+1, y+1, col);
 		
 		
@@ -499,7 +478,8 @@ void bl3d_draw_triangle_g_t(struct BL3D_OT_TAG* a)
 		bl3d_draw_line_g_t(
 			&LP, &SP,
 			&LTP, &STP, texture_vram,
-			&LCP, &SCP
+			&LCP, &SCP,
+			&a->base_color
 		);
 
 		
