@@ -13,7 +13,7 @@ struct DrvGtkPthreadData*	drvgtk_pthread_data;
 extern void bl_init();
 extern void bl_exit();
 
-int main()
+int main(int argc char** argv)
 {
 	g_thread_init (NULL);
 	
@@ -41,4 +41,6 @@ int main()
 	run_DrvGtkSystem(drvgtk_pthread_data);
 	
 	free_DrvGtkPthreadData(drvgtk_pthread_data);
+	
+	return 0;
 }
