@@ -97,7 +97,7 @@ void hide_MainWindow(struct MainWindow* a)
 
 void resize_MainWindow(struct MainWindow* a, gint width, gint height)
 {
-	gtk_window_resize((GtkWindow*)(a->wgt), width, height);
+	gtk_window_resize((GtkWindow*)(a->wgt), width + 6, height + 6);
 }
 
 
