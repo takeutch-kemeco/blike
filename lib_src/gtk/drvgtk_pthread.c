@@ -1,11 +1,12 @@
 #include <glib.h>
 #include "drvgtk_pthread.h"
+#include "drvgtk_sleep.h"
 
 
 
 static gpointer __pthread_main_window(gpointer data)
 {
-	struct DrvGtkPthreadData* a = (struct DrvGtkPthreadData*)data;
+	volatile struct DrvGtkPthreadData* a = (struct DrvGtkPthreadData*)data;
 	
 	if(a->wt_run_flag == FALSE) {
 		gtk_timeout_add(a->signal_check_interval, a->window_update_program, (gpointer)a);
@@ -26,7 +27,7 @@ static void pthread_main_window(struct DrvGtkPthreadData* data)
 
 static gpointer __pthread_main_program(gpointer data)
 {
-	struct DrvGtkPthreadData* a = (struct DrvGtkPthreadData*)data;
+	volatile struct DrvGtkPthreadData* a = (struct DrvGtkPthreadData*)data;
 	
 	while(a->wt_run_flag == FALSE) {
 	}
