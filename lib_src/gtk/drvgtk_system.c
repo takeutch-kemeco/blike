@@ -30,7 +30,6 @@ struct DrvGtkPthreadData* new_DrvGtkPthreadData(
 	a->close_control_program	= close_control_program;
 	
 	a->signal = new_DrvGtkSignal();
-	a->signal_check_interval	= 1000 / 250;	// (250Hz)
 	       
 	a->mutex			= g_mutex_new();
 	

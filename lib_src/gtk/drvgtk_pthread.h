@@ -9,6 +9,8 @@
 #ifndef __DRVGTK_PTHREAD_H__
 #define __DRVGTK_PTHREAD_H__
 
+#define DRVGTK_SYGNAL_CHECK_INTERVAL	(1000/250)	/* 250Hz */
+
 struct DrvGtkPthreadData {
 	struct MainWindow*	main_window;
 	struct MainScreen*	main_screen;
@@ -19,7 +21,6 @@ struct DrvGtkPthreadData {
 	
 	
 	struct DrvGtkSignal*	signal;
-	guint32			signal_check_interval;
 	
 	GMutex*			mutex;
 	

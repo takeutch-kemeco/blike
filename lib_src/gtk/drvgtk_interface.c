@@ -74,7 +74,7 @@ void bld_waitNF()
 {
 	check_and_exit_wt_run_flag();
 	
-	drvgtk_msleep(drvgtk_pthread_data->signal_check_interval);
+	drvgtk_msleep(DRVGTK_SYGNAL_CHECK_INTERVAL);
 }
 
 

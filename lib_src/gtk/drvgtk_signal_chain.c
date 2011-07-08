@@ -56,7 +56,7 @@ gboolean update_DrvGtkSignalChain(gpointer data)
 	struct DrvGtkPthreadData* a = (struct DrvGtkPthreadData*)data;
 	
 
-	(*(a->time_count)) += a->signal_check_interval;
+	(*(a->time_count)) += DRVGTK_SYGNAL_CHECK_INTERVAL;
 	
 	
 	if(a->signal->resize_window.ready == TRUE) {
