@@ -6,12 +6,11 @@
 
 static void resize_window(struct DrvGtkPthreadData* a, gint width, gint height)
 {
-	show_MainWindow(a->main_window);
-	resize_MainScreen(a->main_screen, width, height, a->main_window);
 	resize_MainWindow(a->main_window, width, height);
+	resize_MainScreen(a->main_screen, width, height, a->main_window);
 
-	redraw_MainScreen(a->main_screen);
 	show_MainWindow(a->main_window);
+	redraw_MainScreen(a->main_screen);
 }
 
 
