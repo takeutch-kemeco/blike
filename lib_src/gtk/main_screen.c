@@ -80,7 +80,6 @@ void resize_MainScreen(struct MainScreen* a, gint width, gint height, struct Mai
 	
 
 	gtk_widget_show(a->wgt);
-	gtk_widget_show_all(window->wgt);
 }
 
 
