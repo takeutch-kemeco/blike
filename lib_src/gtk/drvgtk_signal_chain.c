@@ -28,16 +28,7 @@ static void flash_window(struct DrvGtkPthreadData* a, gpointer src_frame_buffer)
 	guchar*  q = a->main_screen->frame_buffer;
 
 	gint i = a->main_screen->frame_buffer_width * a->main_screen->frame_buffer_height;
-	if(p == NULL) {
-		while(i-->0){
-			*q++ = rand()%0xFF;
-			*q++ = rand()%0xFF;
-			*q++ = rand()%0xFF;
-			
-			p++;
-		}
-	}
-	else {
+	if(p != NULL) {
 		while(i-->0){
 			*q++ = ((*p)>>16) & 0xFF;
 			*q++ = ((*p)>>8 ) & 0xFF;
@@ -46,6 +37,7 @@ static void flash_window(struct DrvGtkPthreadData* a, gpointer src_frame_buffer)
 			p++;
 		}
 	}
+
 
 	redraw_MainScreen(a->main_screen);
 }
