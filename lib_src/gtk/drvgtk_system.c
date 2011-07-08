@@ -72,9 +72,6 @@ void free_DrvGtkPthreadData(struct DrvGtkPthreadData* a)
 
 void run_DrvGtkSystem(struct DrvGtkPthreadData* a)
 {
-	show_MainWindow(a->main_window);
-//	hide_MainWindow(a->main_window);
-	
 	pthread_main(a);
 }
 
