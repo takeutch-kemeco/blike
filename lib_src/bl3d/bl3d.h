@@ -160,6 +160,15 @@ extern float bl3d_atan2(float a, float b);
 
 /// bl3d_matrix.c
 
+/// ベクトルの各要素同士を乗算したものを合計した値を得る
+///
+/// (Ax, Ay, Az) *= (Bx, By, Bz)
+/// Ax + Ay + Az
+extern float bl3d_muladd_vector(
+	struct BL3D_VECTOR* a,
+	struct BL3D_VECTOR* b
+);
+
 /// 転値行列を得る
 ///
 /// A B C    A D G

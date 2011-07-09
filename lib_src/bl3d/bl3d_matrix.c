@@ -2,6 +2,50 @@
 
 #include "bl3d.h"
 
+/// ベクトルの各要素同士を乗算したものを合計した値を得る
+///
+/// (Ax, Ay, Az) *= (Bx, By, Bz)
+/// Ax + Ay + Az
+float bl3d_muladd_vector(
+	struct BL3D_VECTOR* a,
+	struct BL3D_VECTOR* b
+)
+{
+#ifdef __ENABLE_SSE3__
+	// SSE3 を使用可能な場合
+	const unsigned long __attribute__((aligned(16)))msk[4] = {
+		0xFFFFFFFF,
+		0xFFFFFFFF,
+		0xFFFFFFFF,
+		0x00000000
+	};
+
+	float __attribute__((aligned(16)))c[4];
+	
+	__asm__ volatile(
+		"movups (%0),   %%xmm0;"
+		"andps  (%3),   %%xmm0;"
+
+		"movups (%1),   %%xmm1;"
+		"andps  (%3),   %%xmm1;"
+
+		"mulps  %%xmm0, %%xmm1;"
+
+		"haddps %%xmm1, %%xmm1;"
+		"haddps %%xmm1, %%xmm1;"
+		"movaps %%xmm1, (%2);"
+		:
+		:"r"(a), "r"(b), "r"(c), "r"(msk)
+		:"memory"
+	);
+	
+	return c[0];
+#else
+	// SSE3 を使用不可能な場合
+	return a->x * b->x + a->y * b->y + a->z * b->z; 
+#endif // __ENABLE_SSE3__
+}
+
 /// 転値行列を得る
 ///
 /// A B C    A D G
@@ -14,17 +58,9 @@ struct BL3D_MATRIX* bl3d_transpose_matrix(
 	struct BL3D_MATRIX* src
 )
 {
-	float* p0 = src->m[0];
-	float* p1 = src->m[1];
-	float* p2 = src->m[2];
-	
-	float* q0 = dst->m[0];
-	float* q1 = dst->m[1];
-	float* q2 = dst->m[2];
-	
-      /*q0[0] = p0[0];*/	  q0[1] = p1[0];	  q0[2] = p2[0];
-        q1[0] = p0[1];		/*q1[1] = p1[1];*/	  q1[2] = p2[1];
-        q2[0] = p0[2];		  q2[1] = p1[2];	/*q2[2] = p2[2];*/
+	dst->m[0][0] = src->m[0][0];	dst->m[0][1] = src->m[1][0];	dst->m[0][2] = src->m[2][0];
+	dst->m[1][0] = src->m[0][1];	dst->m[1][1] = src->m[1][1];	dst->m[1][2] = src->m[2][1];
+	dst->m[2][0] = src->m[0][2];	dst->m[2][1] = src->m[1][2];	dst->m[2][2] = src->m[2][2];
 
 	return dst;
 }
@@ -40,6 +76,33 @@ struct BL3D_MATRIX* bl3d_mul_matrix(
 	struct BL3D_MATRIX* src1
 )
 {
+#ifdef __ENABLE_SSE3__
+	// SSE3 を使用可能な場合
+	struct BL3D_VECTOR __attribute__((aligned(16)))t_src1[3] = {
+		{.x = src1->m[0][0], .y = src1->m[1][0], .z = src1->m[2][0], .pad = 0},
+		{.x = src1->m[0][1], .y = src1->m[1][1], .z = src1->m[2][1], .pad = 0},
+		{.x = src1->m[0][2], .y = src1->m[1][2], .z = src1->m[2][2], .pad = 0}
+	};
+
+	struct BL3D_MATRIX __attribute__((aligned(16)))c;
+	
+	c.m[0][0] = bl3d_muladd_vector((struct BL3D_VECTOR*)(src0->m[0]), &t_src1[0]);
+	c.m[0][1] = bl3d_muladd_vector((struct BL3D_VECTOR*)(src0->m[0]), &t_src1[1]);
+	c.m[0][2] = bl3d_muladd_vector((struct BL3D_VECTOR*)(src0->m[0]), &t_src1[2]);
+
+	c.m[1][0] = bl3d_muladd_vector((struct BL3D_VECTOR*)(src0->m[1]), &t_src1[0]);
+	c.m[1][1] = bl3d_muladd_vector((struct BL3D_VECTOR*)(src0->m[1]), &t_src1[1]);
+	c.m[1][2] = bl3d_muladd_vector((struct BL3D_VECTOR*)(src0->m[1]), &t_src1[2]);
+
+	c.m[2][0] = bl3d_muladd_vector((struct BL3D_VECTOR*)(src0->m[2]), &t_src1[0]);
+	c.m[2][1] = bl3d_muladd_vector((struct BL3D_VECTOR*)(src0->m[2]), &t_src1[1]);
+	c.m[2][2] = bl3d_muladd_vector((struct BL3D_VECTOR*)(src0->m[2]), &t_src1[2]);
+	
+	*dst = c;
+	
+	return dst;
+#else
+	// SSE3 を使用不可能な場合
 	struct BL3D_MATRIX a;
 	
 	int j, i;
@@ -56,6 +119,7 @@ struct BL3D_MATRIX* bl3d_mul_matrix(
 	*dst = a;
 	
 	return dst;
+#endif // __ENABLE_SSE3__
 }
 
 /// ベクトルに行列を乗算します。
@@ -216,19 +280,28 @@ float bl3d_norm_vector(struct BL3D_VECTOR* a)
 {
 #ifdef __ENABLE_SSE3__
 	// SSE3 を使用可能な場合
-	a->pad = 0;
+	const unsigned long __attribute__((aligned(16)))msk[4] = {
+		0xFFFFFFFF,
+		0xFFFFFFFF,
+		0xFFFFFFFF,
+		0x00000000
+	};
 
 	float __attribute__((aligned(16)))dst[4];
 	
 	__asm__ volatile(
 		"movups (%0),   %%xmm0;"
+		"andps  (%2),   %%xmm0;"
+
 		"mulps  %%xmm0, %%xmm0;"
 		"haddps %%xmm0, %%xmm0;"
 		"haddps %%xmm0, %%xmm0;"
 		"sqrtss %%xmm0, %%xmm0;"
+		
 		"movaps %%xmm0, (%1);"
 		:
-		:"r"(a), "r"(dst)
+		:"r"(a), "r"(dst), "r"(msk)
+		:"memory"
 	);
 	
 	return dst[0];
