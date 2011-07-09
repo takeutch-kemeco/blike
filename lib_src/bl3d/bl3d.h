@@ -160,6 +160,18 @@ extern float bl3d_atan2(float a, float b);
 
 /// bl3d_matrix.c
 
+/// 転値行列を得る
+///
+/// A B C    A D G
+/// D E F -> B E H
+/// G H I    C F I
+///
+/// （注意：平行移動t[]は計算しません）
+extern struct BL3D_MATRIX* bl3d_transpose_matrix(
+	struct BL3D_MATRIX* dst,
+	struct BL3D_MATRIX* src
+);
+
 /// ２つの行列の積をとります。
 /// 計算結果はdstに格納されます。
 /// 計算順序は src0 * src1 = dst です。

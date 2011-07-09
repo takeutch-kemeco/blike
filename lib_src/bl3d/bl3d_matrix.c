@@ -2,6 +2,33 @@
 
 #include "bl3d.h"
 
+/// 転値行列を得る
+///
+/// A B C    A D G
+/// D E F -> B E H
+/// G H I    C F I
+///
+/// （注意：平行移動t[]は計算しません）
+struct BL3D_MATRIX* bl3d_transpose_matrix(
+	struct BL3D_MATRIX* dst,
+	struct BL3D_MATRIX* src
+)
+{
+	float* p0 = src->m[0];
+	float* p1 = src->m[1];
+	float* p2 = src->m[2];
+	
+	float* q0 = dst->m[0];
+	float* q1 = dst->m[1];
+	float* q2 = dst->m[2];
+	
+      /*q0[0] = p0[0];*/	  q0[1] = p1[0];	  q0[2] = p2[0];
+        q1[0] = p0[1];		/*q1[1] = p1[1];*/	  q1[2] = p2[1];
+        q2[0] = p0[2];		  q2[1] = p1[2];	/*q2[2] = p2[2];*/
+
+	return dst;
+}
+
 /// ２つの行列の積をとります。
 /// 計算結果はdstに格納されます。
 /// 計算順序は src0 * src1 = dst です。
