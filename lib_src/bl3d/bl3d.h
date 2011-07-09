@@ -1,6 +1,11 @@
 #ifndef __BL3D_H__
 #define __BL3D_H__
 
+/// SSE3を使用する。
+/// もしSSE3を使用しないライブラリとしてコンパイルしたい場合は
+/// この宣言をコメントアウトする。
+#define __ENABLE_SSE3__
+
 #ifndef NULL
 #define NULL  0
 #endif // NULL

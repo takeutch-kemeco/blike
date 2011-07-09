@@ -187,7 +187,25 @@ struct BL3D_MATRIX* bl3d_comp_matrix(
 ///ベクトルのノルムを返す
 float bl3d_norm_vector(struct BL3D_VECTOR* a)
 {
+#ifdef __ENABLE_SSE3__
+	// SSE3 を使用可能な場合
+	float __attribute__((aligned(16)))dst[4];
+	__asm__ volatile(
+		"movups (%0),   %%xmm0;"
+		"mulps  %%xmm0, %%xmm0;"
+		"haddps %%xmm0, %%xmm0;"
+		"haddps %%xmm0, %%xmm0;"
+		"sqrtss %%xmm0, %%xmm0;"
+		"movaps %%xmm0, (%1);"
+		:
+		:"r"(a), "r"(dst)
+	);
+	
+	return dst[0];
+#else
+	// SSE3 を使用不可能な場合
 	return bl3d_sqrt(a->x * a->x + a->y * a->y + a->z * a->z);
+#endif // __ENABLE_SSE3__	
 }
 
 /// ベクトルの正規化
