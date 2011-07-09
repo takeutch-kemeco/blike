@@ -86,7 +86,7 @@ static void enable_sse_flash_window(guchar* dst, guint32* src, gint _i)
 			"movl %%eax, 9(%1);"
 			:
 			:"r"(src), "r"(dst), "r"(tmp)
-			:"%eax"
+			:"%eax", "memory"
 		);
 		
 		src += 4;
