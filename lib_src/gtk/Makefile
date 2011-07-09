@@ -82,8 +82,7 @@ PROG	= $(SONAME).5
 LIBS	= `pkg-config gtk+-2.0 --libs` -lm
 INCS	= -I../../ -I../common -I../bl_load_xpm -I../bl3d `pkg-config gtk+-2.0 --cflags`
 
-OPTS 	= -O2 -g
-#OPTS	= -O2 -g -march=core2 -msse3
+OPTS	= -O2 -g -march=core2 -msse3
 
 PREFIX		= /usr/local
 PREFIX_LIB	= $(PREFIX)/lib

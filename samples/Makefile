@@ -14,8 +14,7 @@ LIBBLIKE = ../lib_src/gtk/libblike-gtk.a.0.1.5
 LIBS = `pkg-config gtk+-2.0 --libs`
 INCS = `pkg-config gtk+-2.0 --cflags` -I../ -I../lib_src/bl_load_xpm -I../lib_src/bl3d
 
-OPTS = -O2 -g
-#OPTS = -O2 -g -march=core2 -msse3
+OPTS = -O2 -g -march=core2 -msse3
 
 BIN = /usr/local/bin
 
