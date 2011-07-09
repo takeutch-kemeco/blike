@@ -76,22 +76,18 @@ static void enable_sse_flash_window(guchar* dst, guint32* src, gint _i)
 			"orpd   %%xmm1, %%xmm0;"
 
 			"movdqa %%xmm0, (%2);"
-//			"movd (%2), %%mm0;"
-//			"movd %%mm0, (%1);"
-//			"movd 4(%2), %%mm1;"
-//			"movd %%mm1, 3(%1);"
-//			"movd 8(%2), %%mm2;"
-//			"movd %%mm2, 6(%1);"
-//			"movd 12(%2), %%mm3;"
-//			"movd %%mm3, 9(%1);"
+			"movl (%2), %%eax;"
+			"movl %%eax, (%1);"
+			"movl 4(%2), %%eax;"
+			"movl %%eax, 3(%1);"
+			"movl 8(%2), %%eax;"
+			"movl %%eax, 6(%1);"
+			"movl 12(%2), %%eax;"
+			"movl %%eax, 9(%1);"
 			:
 			:"r"(src), "r"(dst), "r"(tmp)
+			:"%eax"
 		);
-		
-		*((gint32*)(dst + 0)) = *((gint32*)(tmp + 0));
-		*((gint32*)(dst + 3)) = *((gint32*)(tmp + 4));
-		*((gint32*)(dst + 6)) = *((gint32*)(tmp + 8));
-		*((gint32*)(dst + 9)) = *((gint32*)(tmp + 12));
 		
 		src += 4;
 		dst += 12;
