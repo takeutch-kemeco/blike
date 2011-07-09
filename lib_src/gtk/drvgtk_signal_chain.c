@@ -1,4 +1,7 @@
 #include <glib.h>
+#include "drvgtk_build_flag.h"
+
+#include "drvgtk_build_flag.h"
 #include "drvgtk_pthread.h"
 #include "drvgtk_signal_chain.h"
 
@@ -22,20 +25,94 @@ static void show_window(struct DrvGtkPthreadData* a)
 
 
 
+static void disable_sse_flash_window(guchar* dst, guint32* src, gint i)
+{
+	while(i-->0){
+		*dst++ = ((*src)>>16) & 0xFF;
+		*dst++ = ((*src)>>8 ) & 0xFF;
+		*dst++ = ((*src)>>0 ) & 0xFF;
+		
+		src++;
+	}
+}
+
+static void enable_sse_flash_window(guchar* dst, guint32* src, gint _i)
+{
+	gint ii = (_i % 4) + 2;
+	gint i = (_i - ii) / 4;
+	
+	const guint32 __attribute__((aligned(16)))mskR[4] = {0xFF,     0xFF,     0xFF,     0xFF}; 
+	const guint32 __attribute__((aligned(16)))mskG[4] = {0xFF00,   0xFF00,   0xFF00,   0xFF00}; 
+	const guint32 __attribute__((aligned(16)))mskB[4] = {0xFF0000, 0xFF0000, 0xFF0000, 0xFF0000};
+
+	guint8 __attribute__((aligned(16)))tmp[16];
+	
+	
+	__asm__ volatile(
+		"movdqa (%0), %%xmm5;"
+		"movdqa (%1), %%xmm6;"
+		"movdqa (%2), %%xmm7;"
+		:
+		:"r"(mskR), "r"(mskG), "r"(mskB)
+	);
+
+	
+	while(i-->0){
+		__asm__ volatile(
+			"prefetchnta 1024(%0);"
+			
+			"movdqu (%0),   %%xmm1;"
+			"movdqa %%xmm1, %%xmm0;"
+			"movdqa %%xmm1, %%xmm2;"
+
+			"psrld $16, %%xmm0;"
+			"pslld $16, %%xmm2;"
+
+			"andpd %%xmm5, %%xmm0;"
+			"andpd %%xmm6, %%xmm1;"
+			"andpd %%xmm7, %%xmm2;"
+
+			"orpd   %%xmm2, %%xmm1;"
+			"orpd   %%xmm1, %%xmm0;"
+
+			"movdqa %%xmm0, (%2);"
+//			"movd (%2), %%mm0;"
+//			"movd %%mm0, (%1);"
+//			"movd 4(%2), %%mm1;"
+//			"movd %%mm1, 3(%1);"
+//			"movd 8(%2), %%mm2;"
+//			"movd %%mm2, 6(%1);"
+//			"movd 12(%2), %%mm3;"
+//			"movd %%mm3, 9(%1);"
+			:
+			:"r"(src), "r"(dst), "r"(tmp)
+		);
+		
+		*((gint32*)(dst + 0)) = *((gint32*)(tmp + 0));
+		*((gint32*)(dst + 3)) = *((gint32*)(tmp + 4));
+		*((gint32*)(dst + 6)) = *((gint32*)(tmp + 8));
+		*((gint32*)(dst + 9)) = *((gint32*)(tmp + 12));
+		
+		src += 4;
+		dst += 12;
+	}
+	
+
+	disable_sse_flash_window(dst, src, ii);
+}
+
 static void flash_window(struct DrvGtkPthreadData* a, gpointer src_frame_buffer)
 {
-	guint32* p = (guint32*)src_frame_buffer;
-	guchar*  q = a->main_screen->frame_buffer;
+	guint32* src = (guint32*)src_frame_buffer;
+	guchar*  dst = a->main_screen->frame_buffer;
 
 	gint i = a->main_screen->frame_buffer_width * a->main_screen->frame_buffer_height;
-	if(p != NULL) {
-		while(i-->0){
-			*q++ = ((*p)>>16) & 0xFF;
-			*q++ = ((*p)>>8 ) & 0xFF;
-			*q++ = ((*p)>>0 ) & 0xFF;
-			
-			p++;
-		}
+	if(src != NULL) {
+#ifdef __ENABLE_SSE2__
+		enable_sse_flash_window(dst, src, i);
+#else
+		disable_sse_flash_window(dst, src, i);
+#endif // __ENABLE_SSE2__
 	}
 
 

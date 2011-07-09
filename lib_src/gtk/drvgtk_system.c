@@ -1,4 +1,6 @@
 #include <gtk/gtk.h>
+#include "drvgtk_build_flag.h"
+
 #include "drvgtk_pthread.h"
 #include "drvgtk_signal_chain.h"
 #include "drvgtk_key_ring_buffer.h"

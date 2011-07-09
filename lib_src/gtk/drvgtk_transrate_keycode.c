@@ -1,5 +1,7 @@
 #include <glib.h>
 #include <gdk/gdkkeysyms.h>
+#include "drvgtk_build_flag.h"
+
 #include "drvgtk_key_ring_buffer.h"
 #include "blike0.h"
 

@@ -1,4 +1,6 @@
 #include <gtk/gtk.h>
+#include "drvgtk_build_flag.h"
+
 #include "main_screen.h"
 
 static gboolean update_frame_buffer(struct MainScreen* a)

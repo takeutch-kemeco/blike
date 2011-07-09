@@ -1,4 +1,6 @@
 #include <glib.h>
+#include "drvgtk_build_flag.h"
+
 #include "drvgtk_signal.h"
 
 struct DrvGtkSignal* new_DrvGtkSignal(void)

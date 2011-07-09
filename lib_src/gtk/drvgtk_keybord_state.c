@@ -1,5 +1,7 @@
 #include <glib.h>
 #include <gdk/gdkkeysyms.h>
+#include "drvgtk_build_flag.h"
+
 #include "drvgtk_language.h"
 #include "drvgtk_key_ring_buffer.h"
 #include "drvgtk_keybord_state.h"

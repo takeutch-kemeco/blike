@@ -1,4 +1,6 @@
 #include <gtk/gtk.h>
+#include "drvgtk_build_flag.h"
+
 #include "drvgtk_system.h"
 #include "drvgtk_language.h"
 

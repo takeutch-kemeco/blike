@@ -1,4 +1,6 @@
 #include <glib.h>
+#include "drvgtk_build_flag.h"
+
 #include "drvgtk_pthread.h"
 #include "drvgtk_sleep.h"
 
