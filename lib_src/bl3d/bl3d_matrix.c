@@ -189,7 +189,10 @@ float bl3d_norm_vector(struct BL3D_VECTOR* a)
 {
 #ifdef __ENABLE_SSE3__
 	// SSE3 を使用可能な場合
+	a->pad = 0;
+
 	float __attribute__((aligned(16)))dst[4];
+	
 	__asm__ volatile(
 		"movups (%0),   %%xmm0;"
 		"mulps  %%xmm0, %%xmm0;"
