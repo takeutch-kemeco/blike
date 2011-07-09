@@ -132,6 +132,23 @@ g_printf("%f ",a);
 	
 	
 	
+	for(i = 0; i < 3; i++) {
+		struct BL3D_VECTOR vertex = {
+			.x = ot_tag->vertex[i].x, .y = ot_tag->vertex[i].y, .z = 0
+		};
+
+		float r = bl3d_norm_vector(&vertex);
+		if(r < bl3d_screen_radius) {
+			break;
+		}
+	}
+	
+	if(i >= 3) {
+		return;
+	}
+	
+	
+	
 	int big_z = (int)bl3d_get_big(
 		ot_tag->vertex[0].z, ot_tag->vertex[1].z, ot_tag->vertex[2].z
 	);
@@ -198,7 +215,7 @@ g_printf("%f ",a);
 	ot_tag->base_color.g *= 255;
 	ot_tag->base_color.b *= 255;
 	
-
+	
 	
 	ot_tag->next = NULL;
 
@@ -507,7 +524,7 @@ void bl3d_draw_triangle_g_t(struct BL3D_OT_TAG* a)
 
 		
 #ifdef __DEBUG__
-//		wait(1000/100);
+		wait(1000/100);
 #endif // __DEBUG__
 	}
 }

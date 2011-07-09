@@ -6,6 +6,12 @@
 /// これを使って、画面中心を（０、０）として考える
 int bl3d_screen_offset[2];
 
+/// 画面範囲
+/// 描画範囲を表す、中心位置からの半径。
+/// あるポリゴンを構成する頂点が、全てこの円よりも外側ならば、そのポリゴンは描画しない。
+/// デフォルトではbl3d_init()時に、画面の２次元座標のノルムがセットされる。
+float bl3d_screen_radius;
+
 /// 投影面のZ座標位置の設定
 /// デフォルトは1000
 float bl3d_screen_projection = 1000;
@@ -73,6 +79,11 @@ void bl3d_init(const int screen_width, const int screen_height)
 {
 	bl3d_screen_offset[0] = screen_width / 2;
 	bl3d_screen_offset[1] = screen_height / 2;
+	
+	struct BL3D_VECTOR scr = {
+		.x =screen_width / 2.0, .y = screen_height / 2.0, .z = 0.0
+	};
+	bl3d_screen_radius = bl3d_norm_vector(&scr);
 	
 	bl3d_ws_matrix = bl3d_e_matrix;
 	bl3d_ls_matrix = bl3d_e_matrix;
