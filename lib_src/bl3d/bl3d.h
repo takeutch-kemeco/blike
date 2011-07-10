@@ -142,16 +142,16 @@ struct BL3D_FLAT_LIGHT {
 /// bl3d_math.c
 
 /// sin
-extern float bl3d_sin(float a);
+extern float bl3d_sin(const float a);
 
 /// cos
-extern float bl3d_cos(float a);
+extern float bl3d_cos(const float a);
 
 /// sqrt
-extern float bl3d_sqrt(float a);
+extern float bl3d_sqrt(const float a);
 
 /// atan2
-extern float bl3d_atan2(float a, float b);
+extern float bl3d_atan2(const float a, const float b);
 
 
 
@@ -209,7 +209,7 @@ extern struct BL3D_VECTOR* bl3d_apply_matrix(
 /// （注意：計算するのは回転行列m[][]のみで、平行移動t[]は計算しません）
 extern struct BL3D_MATRIX* bl3d_rot_matrix_x(
 	struct BL3D_MATRIX* 	m,
-	float			r
+	const float		r
 );
 
 /// y軸の回転角から回転行列を求める。
@@ -218,7 +218,7 @@ extern struct BL3D_MATRIX* bl3d_rot_matrix_x(
 /// （注意：計算するのは回転行列m[][]のみで、平行移動t[]は計算しません）
 extern struct BL3D_MATRIX* bl3d_rot_matrix_y(
 	struct BL3D_MATRIX* 	m,
-	float			r
+	const float		r
 );
 
 /// z軸の回転角から回転行列を求める。
@@ -227,7 +227,7 @@ extern struct BL3D_MATRIX* bl3d_rot_matrix_y(
 /// （注意：計算するのは回転行列m[][]のみで、平行移動t[]は計算しません）
 extern struct BL3D_MATRIX* bl3d_rot_matrix_z(
 	struct BL3D_MATRIX* 	m,
-	float			r
+	const float		r
 );
 
 /// 回転角から回転行列を求める。
@@ -262,6 +262,9 @@ extern struct BL3D_MATRIX* bl3d_comp_matrix(
 
 ///ベクトルのノルムを返す
 extern float bl3d_norm_vector(struct BL3D_VECTOR* a);
+
+///ベクトルのノルムの逆数を返す
+extern float bl3d_invert_norm_vector(struct BL3D_VECTOR* a);
 
 /// ベクトルの正規化
 extern struct BL3D_VECTOR* bl3d_unit_vector(
