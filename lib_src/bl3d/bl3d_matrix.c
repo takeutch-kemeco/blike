@@ -5,7 +5,7 @@
 /// float型の x, y, z, pad で padを0にする目的のマスク
 /// （padにゴミが入ってると、SSEでのノルム計算の際に正しく計算できないので、padは0でなければならない）
 /// これをローカル変数にすると、データの作成時間が勿体無いので。
-static const unsigned long __attribute__((aligned(16)))bl3d_mask_vector_xyz[4] = {
+const unsigned long __attribute__((aligned(16)))bl3d_mask_vector_xyz[4] = {
 	0xFFFFFFFF,
 	0xFFFFFFFF,
 	0xFFFFFFFF,
