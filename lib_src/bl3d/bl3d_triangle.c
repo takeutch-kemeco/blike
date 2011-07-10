@@ -120,9 +120,11 @@ void bl3d_sort_triangle_g_t(
 		
 		ot_tag->vertex[i].x += bl3d_ls_matrix.t[0];
 		ot_tag->vertex[i].y += bl3d_ls_matrix.t[1];
+		
 		ot_tag->vertex[i].z += bl3d_ls_matrix.t[2];
-
-		const float a = (1.0 / ot_tag->vertex[i].z) * bl3d_screen_projection;
+		ot_tag->vertex[i].z *= bl3d_ot_scale;
+		
+		const float a = (1.0 / ot_tag->vertex[i].z) * bl3d_ot_projection;
 #ifdef __DEBUG__
 g_printf("%f ",a);
 #endif // __DEBUG__
@@ -161,7 +163,7 @@ g_printf("%f ",a);
 		ot_tag->vertex[0].z, ot_tag->vertex[1].z, ot_tag->vertex[2].z
 	);
 
-	if(min_z < bl3d_screen_projection) {
+	if(min_z < bl3d_ot_projection) {
 		return;
 	}
 	
