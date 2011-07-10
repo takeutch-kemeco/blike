@@ -12,12 +12,11 @@ static const unsigned long __attribute__((aligned(16)))bl3d_mask_vector_xyz[4] =
 	0x00000000
 };
 
-
 /// ベクトルの各要素同士を乗算したものを合計した値を得る
 ///
 /// (Ax, Ay, Az) *= (Bx, By, Bz)
 /// Ax + Ay + Az
-float bl3d_muladd_vector(
+inline float bl3d_muladd_vector(
 	struct BL3D_VECTOR* a,
 	struct BL3D_VECTOR* b
 )
@@ -58,7 +57,7 @@ float bl3d_muladd_vector(
 /// G H I    C F I
 ///
 /// （注意：平行移動t[]は計算しません）
-struct BL3D_MATRIX* bl3d_transpose_matrix(
+inline struct BL3D_MATRIX* bl3d_transpose_matrix(
 	struct BL3D_MATRIX* dst,
 	struct BL3D_MATRIX* src
 )
@@ -152,7 +151,7 @@ struct BL3D_MATRIX* bl3d_mul_matrix(
 /// 計算順序は m * v = dst です。
 ///
 /// （注意：計算するのは回転行列m[][]のみで、平行移動t[]は計算しません）
-struct BL3D_VECTOR* bl3d_apply_matrix(
+inline struct BL3D_VECTOR* bl3d_apply_matrix(
 	struct BL3D_VECTOR* dst,
 	struct BL3D_MATRIX* m,
 	struct BL3D_VECTOR* v
@@ -220,7 +219,7 @@ struct BL3D_VECTOR* bl3d_apply_matrix(
 /// 計算結果は m に格納されます。
 ///
 /// （注意：計算するのは回転行列m[][]のみで、平行移動t[]は計算しません）
-struct BL3D_MATRIX* bl3d_rot_matrix_x(
+inline struct BL3D_MATRIX* bl3d_rot_matrix_x(
 	struct BL3D_MATRIX* 	m,
 	const float		r
 )
@@ -239,7 +238,7 @@ struct BL3D_MATRIX* bl3d_rot_matrix_x(
 /// 計算結果は m に格納されます。
 ///
 /// （注意：計算するのは回転行列m[][]のみで、平行移動t[]は計算しません）
-struct BL3D_MATRIX* bl3d_rot_matrix_y(
+inline struct BL3D_MATRIX* bl3d_rot_matrix_y(
 	struct BL3D_MATRIX* 	m,
 	const float		r
 )
@@ -258,7 +257,7 @@ struct BL3D_MATRIX* bl3d_rot_matrix_y(
 /// 計算結果は m に格納されます。
 ///
 /// （注意：計算するのは回転行列m[][]のみで、平行移動t[]は計算しません）
-struct BL3D_MATRIX* bl3d_rot_matrix_z(
+inline struct BL3D_MATRIX* bl3d_rot_matrix_z(
 	struct BL3D_MATRIX* 	m,
 	const float		r
 )
@@ -278,7 +277,7 @@ struct BL3D_MATRIX* bl3d_rot_matrix_z(
 /// 回転行列の乗算順序は z * y * x = m です。
 ///
 /// （注意：計算するのは回転行列m[][]のみで、平行移動t[]は計算しません）
-struct BL3D_MATRIX* bl3d_rot_matrix(
+inline struct BL3D_MATRIX* bl3d_rot_matrix(
 	struct BL3D_MATRIX* m,
 	struct BL3D_VECTOR* r
 )
@@ -297,7 +296,7 @@ struct BL3D_MATRIX* bl3d_rot_matrix(
 
 /// 平行移動量を行列にセットする。
 /// 計算結果は m に格納されます。
-struct BL3D_MATRIX* bl3d_trans_matrix(
+inline struct BL3D_MATRIX* bl3d_trans_matrix(
 	struct BL3D_MATRIX* m,
 	struct BL3D_VECTOR* v
 )
@@ -343,7 +342,7 @@ struct BL3D_MATRIX* bl3d_comp_matrix(
 }
 
 ///ベクトルのノルムを返す
-float bl3d_norm_vector(struct BL3D_VECTOR* a)
+inline float bl3d_norm_vector(struct BL3D_VECTOR* a)
 {
 #ifdef __ENABLE_SSE3__
 	// SSE3 を使用可能な場合
@@ -372,7 +371,7 @@ float bl3d_norm_vector(struct BL3D_VECTOR* a)
 }
 
 ///ベクトルのノルムの逆数を返す
-float bl3d_invert_norm_vector(struct BL3D_VECTOR* a)
+inline float bl3d_invert_norm_vector(struct BL3D_VECTOR* a)
 {
 #ifdef __ENABLE_SSE3__
 	// SSE3 を使用可能な場合
@@ -402,7 +401,7 @@ float bl3d_invert_norm_vector(struct BL3D_VECTOR* a)
 }
 
 /// ベクトルの正規化
-struct BL3D_VECTOR* bl3d_unit_vector(
+inline struct BL3D_VECTOR* bl3d_unit_vector(
 	struct BL3D_VECTOR* dst,
 	struct BL3D_VECTOR* src
 )
@@ -434,7 +433,7 @@ struct BL3D_VECTOR* bl3d_unit_vector(
 }
 
 /// ２ベクトルから外積を得る
-struct BL3D_VECTOR* bl3d_outer_product_vector(
+inline struct BL3D_VECTOR* bl3d_outer_product_vector(
 	struct BL3D_VECTOR* dst,
 	struct BL3D_VECTOR* A,
 	struct BL3D_VECTOR* B
@@ -454,7 +453,7 @@ struct BL3D_VECTOR* bl3d_outer_product_vector(
 }
 
 /// ベクトル同士の内積を得る
-float bl3d_inner_product_vector(
+inline float bl3d_inner_product_vector(
 	struct BL3D_VECTOR* A,
 	struct BL3D_VECTOR* B
 )
