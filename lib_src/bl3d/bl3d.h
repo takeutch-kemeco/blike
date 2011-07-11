@@ -180,6 +180,35 @@ extern inline struct BL3D_VECTOR* bl3d_sub_vector(
 	struct BL3D_VECTOR* src
 );
 
+/// ベクトル同士の乗算
+///
+/// dst, src: struct BL3D_VECTOR*
+///
+/// dst *= src
+///
+/// 備考：
+/// スカラー倍したい場合も、ベクトルにして乗算する必要がある
+/// そのベクトル化したスカラー量を使いまわせるならば、高速化を期待できる
+extern inline struct BL3D_VECTOR* bl3d_mul_vector(
+	struct BL3D_VECTOR* dst,
+	struct BL3D_VECTOR* src
+);
+
+/// ベクトル同士の乗算（dst = src0 * src1）
+///
+/// dst, src0, src1: struct BL3D_VECTOR*
+///
+/// dst = src0 * src1
+///
+/// 備考：
+/// スカラー倍したい場合も、ベクトルにして乗算する必要がある
+/// そのベクトル化したスカラー量を使いまわせるならば、高速化を期待できる
+extern inline struct BL3D_VECTOR* bl3d_mul2_vector(
+	struct BL3D_VECTOR* dst,
+	struct BL3D_VECTOR* src0,
+	struct BL3D_VECTOR* src1
+);
+
 /// ベクトルの差を得る
 ///
 /// dst, esrc, ssrc: struct BL3D_VECTOR*

@@ -92,6 +92,70 @@
 
 
 
+/// ベクトル同士の乗算
+///
+/// dst, src: struct BL3D_VECTOR*
+///
+/// dst *= src
+///
+/// 備考：
+/// スカラー倍したい場合も、ベクトルにして乗算する必要がある
+/// そのベクトル化したスカラー量を使いまわせるならば、高速化を期待できる
+// SSE3 を使用可能な場合
+#ifdef __ENABLE_SSE3__
+#define BL3D_MUL_VECTOR(dst, src) {			\
+	__asm__ volatile(				\
+		"movaps (%1),   %%xmm0;"		\
+		"mulps  (%0),   %%xmm0;"		\
+		"movaps %%xmm0, (%1);"			\
+		:					\
+		:"r"((src)), "r"((dst))			\
+		:"memory"				\
+	);						\
+}
+// SSE3 を使用不可能な場合
+#else
+#define BL3D_MUL_VECTOR(dst, src) {			\
+	(dst)->x *= (src)->x;				\
+	(dst)->y *= (src)->y;				\
+	(dst)->z *= (src)->z;				\
+}
+#endif // __ENABLE_SSE3__
+
+
+
+/// ベクトル同士の乗算（dst = src0 * src1）
+///
+/// dst, src0, src1: struct BL3D_VECTOR*
+///
+/// dst = src0 * src1
+///
+/// 備考：
+/// スカラー倍したい場合も、ベクトルにして乗算する必要がある
+/// そのベクトル化したスカラー量を使いまわせるならば、高速化を期待できる
+// SSE3 を使用可能な場合
+#ifdef __ENABLE_SSE3__
+#define BL3D_MUL2_VECTOR(dst, src0, src1) {		\
+	__asm__ volatile(				\
+		"movaps (%0),   %%xmm0;"		\
+		"mulps  (%1),   %%xmm0;"		\
+		"movaps %%xmm0, (%2);"			\
+		:					\
+		:"r"((src0)), "r"((src1)), "r"((dst))	\
+		:"memory"				\
+	);						\
+}
+// SSE3 を使用不可能な場合
+#else
+#define BL3D_MUL2_VECTOR(dst, src0, src1) {		\
+	(dst)->x = (src0)->x * (src1)->x;		\
+	(dst)->y = (src0)->y * (src1)->y;		\
+	(dst)->z = (src0)->z * (src1)->z;		\
+}
+#endif // __ENABLE_SSE3__
+
+
+
 /// ベクトルの差を得る
 ///
 /// dst, esrc, ssrc: struct BL3D_VECTOR*
@@ -115,7 +179,7 @@
 #define BL3D_DIFF_VECTOR(dst, esrc, ssrc) {		\
 	(dst)->x = (esrc)->x - (ssrc)->x;		\
 	(dst)->y = (esrc)->y - (ssrc)->y;		\
-	(dst)->z = (esrc)->z - (ssrc)->Z;		\
+	(dst)->z = (esrc)->z - (ssrc)->z;		\
 }
 #endif // __ENABLE_SSE3__
 
@@ -294,17 +358,16 @@
 // SSE3 を使用不可能な場合
 #else
 #define BL3D_APPLY_MATRIX(dst, msrc, vsrc) {		\
-	struct BL3D_VECTOR A = (*vsrc);			\
-	float* p = &(A.x);				\
-	float* q = &((dst)->x);				\
+	struct BL3D_VECTOR tmp_vsrc = *(vsrc);		\
+	float* ptr_dst = &((dst)->x);			\
 							\
 	int j;						\
 							\
 	for(j=0; j<3; j++) {				\
-		q[j] =					\
-			(msrc)->m[j][0] * p[0] +	\
-			(msrc)->m[j][1] * p[1] +	\
-			(msrc)->m[j][2] * p[2];		\
+		ptr_dst[j] =				\
+			(msrc)->m[j][0] * tmp_vsrc.x + 	\
+			(msrc)->m[j][1] * tmp_vsrc.y + 	\
+			(msrc)->m[j][2] * tmp_vsrc.z;	\
 	}						\
 }
 #endif // __ENABLE_SSE3__
@@ -502,7 +565,7 @@
 #define BL3D_INVERT_NORM_VECTOR(dst, src) {			\
 	*(dst) = ((src)->x * (src)->x) + ((src)->y * (src)->y) + ((src)->z * (src)->z);		\
 	*(dst) = BL3D_SQRT(*(dst));				\
-	*(dst) = (*dst != 0)? 1.0 / *(dst): 0;			\
+	*(dst) = (*dst != 0)? (1.0 / *(dst)): 0;		\
 }
 #endif // __ENABLE_SSE3__
 
