@@ -21,12 +21,12 @@
 /// 色用ベクトル
 struct BL3D_CVECTOR {
 	float r, g, b, pad;
-};
+} __attribute__((aligned(16)));
 
 /// 3次元ベクトル
 struct BL3D_VECTOR {
 	float x, y, z, pad;
-};
+} __attribute__((aligned(16)));
 
 /// 3x3行列
 ///
@@ -42,7 +42,7 @@ struct BL3D_VECTOR {
 struct BL3D_MATRIX {
 	float m[3][4];
 	float t[4];
-};
+} __attribute__((aligned(16)));
 
 /// オーダリングテーブルを構成するパケット単位
 ///
@@ -66,7 +66,7 @@ struct BL3D_OT_TAG {
 	struct BL3D_VECTOR	texture[3];
 	struct BL3D_CVECTOR	color[3];
 	struct BL3D_CVECTOR	base_color;
-};
+} __attribute__((aligned(16)));
 
 /// オーダリングテーブル
 ///
@@ -93,7 +93,7 @@ struct BL3D_OT_TAG {
 struct BL3D_OT {
 	struct BL3D_OT_TAG*	ot_tag_top[BL3D_OT_LENGTH];
 	struct BL3D_OT_TAG*	ot_tag_tail[BL3D_OT_LENGTH];
-};
+} __attribute__((aligned(16)));
 
 /// 行列型の座標系
 /// compleate_flg: workmの値が計算済みの場合は1(true)がセットされる。
@@ -112,7 +112,7 @@ struct BL3D_COORDINATE {
 	struct BL3D_VECTOR	transfer;
 	struct BL3D_MATRIX	workm;
 	struct BL3D_COORDINATE*	super;	
-};
+} __attribute__((aligned(16)));
 
 /// 視点位置
 /// view: ワールド座標から視点座標への変換行列
@@ -122,7 +122,7 @@ struct BL3D_VIEW {
 	struct BL3D_VECTOR	rotate;
 	struct BL3D_VECTOR	transfer;
 	struct BL3D_COORDINATE	local_coord;
-};
+} __attribute__((aligned(16)));
 
 /// 平行光源
 /// これを bl3d_set_flat_light()によってシステムにセットする。
@@ -132,7 +132,7 @@ struct BL3D_VIEW {
 struct BL3D_FLAT_LIGHT {
 	struct BL3D_VECTOR	vector;
 	struct BL3D_CVECTOR	color;
-};
+} __attribute__((aligned(16)));
 
 
 
@@ -463,7 +463,7 @@ struct BL3D_TRIANGLE_G_T {
 	struct BL3D_VECTOR	vertex[3];
 	struct BL3D_VECTOR	texture[3];
 	struct BL3D_CVECTOR	color[3];
-};
+} __attribute__((aligned(16)));
 
 extern void bl3d_init_triangle_g_t(
 	struct BL3D_TRIANGLE_G_T*	a,
@@ -526,7 +526,7 @@ struct BL3D_DOBJ {
 	struct BL3D_COORDINATE 		local_coord;
 	struct BL3D_TRIANGLE_G_T*	model_data;
 	int				model_data_len;
-};
+} __attribute__((aligned(16)));
 
 
 
