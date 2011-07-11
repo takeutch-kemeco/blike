@@ -250,7 +250,7 @@ inline struct BL3D_VECTOR* bl3d_outer_product_vector(
 	struct BL3D_VECTOR* src1
 )
 {
-	BL3D_OUTER_PRODUCT(dst, src0, src1);
+	BL3D_OUTER_PRODUCT_VECTOR(dst, src0, src1);
 	
 	return dst;
 }

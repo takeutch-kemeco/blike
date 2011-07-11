@@ -550,7 +550,7 @@
 /// dst, src0, src1: struct BL3D_VECTOR*
 ///
 // SSE3 を使用可能な場合
-#define BL3D_OUTER_PRODUCT(dst, src0, src1) {			\
+#define BL3D_OUTER_PRODUCT_VECTOR(dst, src0, src1) {		\
 	struct BL3D_MATRIX m_src1 = {				\
 		.m[0][0]= 0,		.m[0][1]= (src1)->z,	.m[0][2]=-(src1)->y,	\
 		.m[1][0]=-(src1)->z,	.m[1][1]= 0,		.m[1][2]= (src1)->x,	\
