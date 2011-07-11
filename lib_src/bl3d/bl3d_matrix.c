@@ -1,6 +1,7 @@
 //#define __DEBUG__
 
 #include "bl3d.h"
+#include "bl3d_matrix_macro.h"
 
 /// float型の x, y, z, pad で padを0にする目的のマスク
 /// （padにゴミが入ってると、SSEでのノルム計算の際に正しく計算できないので、padは0でなければならない）
@@ -21,33 +22,11 @@ inline float bl3d_muladd_vector(
 	struct BL3D_VECTOR* b
 )
 {
-#ifdef __ENABLE_SSE3__
-	// SSE3 を使用可能な場合
+	float __attribute__((aligned(16))) dst;
 
-	float __attribute__((aligned(16)))c;
+	BL3D_MULADD_VECTOR(&dst, a, b);
 	
-	__asm__ volatile(
-		"movups (%0),   %%xmm0;"
-		"andps  (%3),   %%xmm0;"
-
-		"movups (%1),   %%xmm1;"
-		"andps  (%3),   %%xmm1;"
-
-		"mulps  %%xmm0, %%xmm1;"
-
-		"haddps %%xmm1, %%xmm1;"
-		"haddps %%xmm1, %%xmm1;"
-		"movss %%xmm1, (%2);"
-		:
-		:"r"(a), "r"(b), "r"(&c), "r"(bl3d_mask_vector_xyz)
-		:"memory"
-	);
-	
-	return c;
-#else
-	// SSE3 を使用不可能な場合
-	return a->x * b->x + a->y * b->y + a->z * b->z; 
-#endif // __ENABLE_SSE3__
+	return dst;
 }
 
 /// 転値行列を得る
@@ -62,9 +41,7 @@ inline struct BL3D_MATRIX* bl3d_transpose_matrix(
 	struct BL3D_MATRIX* src
 )
 {
-	dst->m[0][0] = src->m[0][0];	dst->m[0][1] = src->m[1][0];	dst->m[0][2] = src->m[2][0];
-	dst->m[1][0] = src->m[0][1];	dst->m[1][1] = src->m[1][1];	dst->m[1][2] = src->m[2][1];
-	dst->m[2][0] = src->m[0][2];	dst->m[2][1] = src->m[1][2];	dst->m[2][2] = src->m[2][2];
+	BL3D_TRANSPOSE_MATRIX(dst, src)
 
 	return dst;
 }
@@ -74,76 +51,17 @@ inline struct BL3D_MATRIX* bl3d_transpose_matrix(
 /// 計算順序は src0 * src1 = dst です。
 ///
 /// （注意：計算するのは回転行列m[][]のみで、平行移動t[]は計算しません）
+/// 
+/// （注意： src0 または src1 が dst と同じアドレスの場合、不正な計算結果となります！！）
 struct BL3D_MATRIX* bl3d_mul_matrix(
 	struct BL3D_MATRIX* dst,
 	struct BL3D_MATRIX* src0,
 	struct BL3D_MATRIX* src1
 )
 {
-#ifdef __ENABLE_SSE3__
-	// SSE3 を使用可能な場合
-	struct BL3D_VECTOR __attribute__((aligned(16)))t_src1[3] = {
-		{.x = src1->m[0][0], .y = src1->m[1][0], .z = src1->m[2][0], .pad = 0},
-		{.x = src1->m[0][1], .y = src1->m[1][1], .z = src1->m[2][1], .pad = 0},
-		{.x = src1->m[0][2], .y = src1->m[1][2], .z = src1->m[2][2], .pad = 0}
-	};
-
-	int j;
-	for(j = 0; j < 3; j++) {
-		__asm__ volatile(
-			"movups (%0),   %%xmm0;"
-			"andps  (%3),   %%xmm0;"
-			"movups 0(%1),  %%xmm1;"
-			
-			"mulps  %%xmm0, %%xmm1;"
-
-			"haddps %%xmm1, %%xmm1;"
-			"haddps %%xmm1, %%xmm1;"
-			"movss  %%xmm1, 0(%2);"
-			
-			
-			"movups 16(%1), %%xmm1;"
-
-			"mulps  %%xmm0, %%xmm1;"
-
-			"haddps %%xmm1, %%xmm1;"
-			"haddps %%xmm1, %%xmm1;"
-			"movss  %%xmm1, 4(%2);"
-
-			
-			"movups 32(%1), %%xmm1;"
-
-			"mulps  %%xmm0, %%xmm1;"
-
-			"haddps %%xmm1, %%xmm1;"
-			"haddps %%xmm1, %%xmm1;"
-			"movss  %%xmm1, 8(%2);"
-			:
-			:"r"(src0->m[j]), "r"(t_src1), "r"(dst->m[j]), "r"(bl3d_mask_vector_xyz)
-			:"memory"
-		);
-	}
+	BL3D_MUL_MATRIX(dst, src0, src1);
 	
 	return dst;
-#else
-	// SSE3 を使用不可能な場合
-	struct BL3D_MATRIX a;
-	
-	int j, i;
-	
-	for(j=0; j<3; j++) {
-		for(i=0; i<3; i++) {
-			a.m[j][i] =
-				src0->m[j][0] * src1->m[0][i] +
-				src0->m[j][1] * src1->m[1][i] +
-				src0->m[j][2] * src1->m[2][i];
-		}
-	}
-	
-	*dst = a;
-	
-	return dst;
-#endif // __ENABLE_SSE3__
 }
 
 /// ベクトルに行列を乗算します。
@@ -157,62 +75,9 @@ inline struct BL3D_VECTOR* bl3d_apply_matrix(
 	struct BL3D_VECTOR* v
 )
 {
-#ifdef __ENABLE_SSE3__
-	// SSE3 を使用可能な場合
-	__asm__ volatile(
-		"movups 0(%0),  %%xmm0;"
-		"andps  (%3),   %%xmm0;"
-		"movups (%1),   %%xmm1;"
-		"andps  (%3),   %%xmm1;"
-		
-		"mulps  %%xmm1, %%xmm0;"
-
-		"haddps %%xmm0, %%xmm0;"
-		"haddps %%xmm0, %%xmm0;"
-		"movss  %%xmm0, 0(%2);"
-
-		
-		"movups 16(%0), %%xmm0;"
-		"andps  (%3),   %%xmm0;"
-
-		"mulps  %%xmm1, %%xmm0;"
-
-		"haddps %%xmm0, %%xmm0;"
-		"haddps %%xmm0, %%xmm0;"
-		"movss  %%xmm0, 4(%2);"
-
-		
-		"movups 32(%0), %%xmm0;"
-		"andps  (%3),   %%xmm0;"
-
-		"mulps  %%xmm1, %%xmm0;"
-
-		"haddps %%xmm0, %%xmm0;"
-		"haddps %%xmm0, %%xmm0;"
-		"movss  %%xmm0, 8(%2);"
-		:
-		:"r"(m->m[0]), "r"(v), "r"(dst), "r"(bl3d_mask_vector_xyz)
-		:"memory"
-	);
+	BL3D_APPLY_MATRIX(dst, m, v);
 	
 	return dst;
-#else
-	// SSE3 を使用不可能な場合
-	struct BL3D_VECTOR A = *v;
-	float* p = &(A.x);
-	float* q = &(dst->x);
-
-	int j;
-	
-	for(j=0; j<3; j++) {
-		q[j] =
-			m->m[j][0] * p[0] +
-			m->m[j][1] * p[1] +
-			m->m[j][2] * p[2];
-	}
-	
-	return dst;
-#endif // __ENABLE_SSE3__
 }
 
 /// x軸の回転角から回転行列を求める。
@@ -224,12 +89,7 @@ inline struct BL3D_MATRIX* bl3d_rot_matrix_x(
 	const float		r
 )
 {
-	const float s = bl3d_sin(r);
-	const float c = bl3d_cos(r);
-	
-	m->m[0][0] = 1;	m->m[0][1] = 0; m->m[0][2] = 0;
-	m->m[1][0] = 0;	m->m[1][1] = c; m->m[1][2] = -s;
-	m->m[2][0] = 0;	m->m[2][1] = s; m->m[2][2] = c;
+	BL3D_ROT_MATRIX_X(m, r);
 	
 	return m;
 }
@@ -243,12 +103,7 @@ inline struct BL3D_MATRIX* bl3d_rot_matrix_y(
 	const float		r
 )
 {
-	const float s = bl3d_sin(r);
-	const float c = bl3d_cos(r);
-	
-	m->m[0][0] = c;	 m->m[0][1] = 0; m->m[0][2] = s;
-	m->m[1][0] = 0;	 m->m[1][1] = 1; m->m[1][2] = 0;
-	m->m[2][0] = -s; m->m[2][1] = 0; m->m[2][2] = c;
+	BL3D_ROT_MATRIX_Y(m, r);
 	
 	return m;
 }
@@ -262,12 +117,7 @@ inline struct BL3D_MATRIX* bl3d_rot_matrix_z(
 	const float		r
 )
 {
-	const float s = bl3d_sin(r);
-	const float c = bl3d_cos(r);
-	
-	m->m[0][0] = c;	m->m[0][1] = -s; m->m[0][2] = 0;
-	m->m[1][0] = s;	m->m[1][1] = c;  m->m[1][2] = 0;
-	m->m[2][0] = 0;	m->m[2][1] = 0;  m->m[2][2] = 1;
+	BL3D_ROT_MATRIX_Z(m, r);
 	
 	return m;
 }
@@ -282,14 +132,7 @@ inline struct BL3D_MATRIX* bl3d_rot_matrix(
 	struct BL3D_VECTOR* r
 )
 {
-	struct BL3D_MATRIX mx, my, mz, tmp;
-
-	bl3d_rot_matrix_x(&mx, r->x);
-	bl3d_rot_matrix_y(&my, r->y);
-	bl3d_rot_matrix_z(&mz, r->z);
-	
-	bl3d_mul_matrix(&tmp, &mz, &my);
-	bl3d_mul_matrix(m, &tmp, &mx);
+	BL3D_ROT_MATRIX(m, r);
 	
 	return m;
 }
@@ -301,10 +144,7 @@ inline struct BL3D_MATRIX* bl3d_trans_matrix(
 	struct BL3D_VECTOR* v
 )
 {
-	float* p = &(v->x);
-	m->t[0] = p[0];
-	m->t[1] = p[1];
-	m->t[2] = p[2];
+	BL3D_TRANS_MATRIX(m, v);
 	
 	return m;
 }
@@ -322,21 +162,7 @@ struct BL3D_MATRIX* bl3d_comp_matrix(
 	struct BL3D_MATRIX* src1
 )
 {
-	struct BL3D_MATRIX a;
-	
-	bl3d_mul_matrix(&a, src0, src1);
-
-	bl3d_apply_matrix(
-		(struct BL3D_VECTOR*)(a.t),
-		src0,
-		(struct BL3D_VECTOR*)(src1->t)
-	);
-	
-	a.t[0] += src0->t[0];
-	a.t[1] += src0->t[1];
-	a.t[2] += src0->t[2];
-
-	*dst = a;
+	BL3D_COMP_MATRIX(dst, src0, src1);
 	
 	return dst;
 }
@@ -344,60 +170,21 @@ struct BL3D_MATRIX* bl3d_comp_matrix(
 ///ベクトルのノルムを返す
 inline float bl3d_norm_vector(struct BL3D_VECTOR* a)
 {
-#ifdef __ENABLE_SSE3__
-	// SSE3 を使用可能な場合
-	float __attribute__((aligned(16)))dst;
+	float __attribute__((aligned(16)))tmp;
 	
-	__asm__ volatile(
-		"movups (%0),   %%xmm0;"
-		"andps  (%2),   %%xmm0;"
-
-		"mulps  %%xmm0, %%xmm0;"
-		"haddps %%xmm0, %%xmm0;"
-		"haddps %%xmm0, %%xmm0;"
-		"sqrtss %%xmm0, %%xmm0;"
-		
-		"movss  %%xmm0, (%1);"
-		:
-		:"r"(a), "r"(&dst), "r"(bl3d_mask_vector_xyz)
-		:"memory"
-	);
+	BL3D_NORM_VECTOR(&tmp, a);
 	
-	return dst;
-#else
-	// SSE3 を使用不可能な場合
-	return bl3d_sqrt(a->x * a->x + a->y * a->y + a->z * a->z);
-#endif // __ENABLE_SSE3__	
+	return tmp;
 }
 
 ///ベクトルのノルムの逆数を返す
 inline float bl3d_invert_norm_vector(struct BL3D_VECTOR* a)
 {
-#ifdef __ENABLE_SSE3__
-	// SSE3 を使用可能な場合
-	float __attribute__((aligned(16)))dst;
+	float __attribute__((aligned(16)))tmp;
 	
-	__asm__ volatile(
-		"movups  (%0),   %%xmm0;"
-		"andps   (%2),   %%xmm0;"
-
-		"mulps   %%xmm0, %%xmm0;"
-		"haddps  %%xmm0, %%xmm0;"
-		"haddps  %%xmm0, %%xmm0;"
-		"rsqrtss %%xmm0, %%xmm0;"
-		
-		"movss   %%xmm0, (%1);"
-		:
-		:"r"(a), "r"(&dst), "r"(bl3d_mask_vector_xyz)
-		:"memory"
-	);
+	BL3D_INVERT_NORM_VECTOR(&tmp, a);
 	
-	return dst;
-#else
-	// SSE3 を使用不可能な場合
-	float norm = bl3d_sqrt(a->x * a->x + a->y * a->y + a->z * a->z);
-	return (norm != 0)? 1.0 / norm: 0;
-#endif // __ENABLE_SSE3__	
+	return tmp;
 }
 
 /// ベクトルの正規化
@@ -406,30 +193,9 @@ inline struct BL3D_VECTOR* bl3d_unit_vector(
 	struct BL3D_VECTOR* src
 )
 {
-#ifdef __ENABLE_SSE3__
-	// SSE3 を使用可能な場合
-	const float tmp = bl3d_invert_norm_vector(src);
-	float __attribute__((aligned(16)))invert_norm[4] = {tmp, tmp, tmp, 0};
-	
-	__asm__ volatile(
-		"movups  (%0),   %%xmm0;"
-		"mulps   (%2),   %%xmm0;"
-		"movups  %%xmm0, (%1);"
-		:
-		:"r"(src), "r"(dst), "r"(invert_norm)
-		:"memory"
-	);
+	BL3D_UNIT_VECTOR(dst, src);
 	
 	return dst;
-#else
-	// SSE3 を使用不可能な場合
-	float ir = bl3d_invert_norm_vector(src);
-	dst->x = src->x * ir;
-	dst->y = src->y * ir;
-	dst->z = src->z * ir;
-
-	return dst;
-#endif // __ENABLE_SSE3__	
 }
 
 /// ２ベクトルから外積を得る
