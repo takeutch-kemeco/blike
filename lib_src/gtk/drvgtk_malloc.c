@@ -21,16 +21,21 @@ gpointer drvgtk_malloc_aligned16(gsize size)
 #ifdef __DEBUG__
 	g_printf(
 		"header[%p], *header[0x%x], ret_address[%p], *ret_address[%d], ret_address%16[%d]\n\n", 
-		header,
-		*header,
-		a,
-		*a,
-		(*a) % 16
+		header, *header, a, *a, (*a) % 16
 	);
 #endif // __DEBUG__
 	
 	
-	if((*a % 16)!=0) {
+	guint32 a_address = (guint32)a;
+	
+	if((a_address % 16) !=0) {
+		g_printf("org[%p], org_address[0x%x], diff_address[[%d]\n", org, org_address, diff_address);
+
+		g_printf(
+			"header[%p], *header[0x%x], ret_address[%p], *ret_address[%d], ret_address%16[%d]\n\n", 
+			header, *header, a, *a, (*a) % 16
+		);
+		
 		g_printf("err: drvgtk_malloc_aligned16()\n");
 	}
 
