@@ -92,6 +92,35 @@
 
 
 
+/// ベクトルの差を得る
+///
+/// dst, esrc, ssrc: struct BL3D_VECTOR*
+///
+/// esrc - ssrc = dst
+/// esrc が終点、 ssrc が始点 
+// SSE3 を使用可能な場合
+#ifdef __ENABLE_SSE3__
+#define BL3D_DIFF_VECTOR(dst, esrc, ssrc) {		\
+	__asm__ volatile(				\
+		"movaps (%1),   %%xmm0;"		\
+		"subps  (%0),   %%xmm0;"		\
+		"movaps %%xmm0, (%2);"			\
+		:					\
+		:"r"((ssrc)), "r"((esrc)), "r"((dst))	\
+		:"memory"				\
+	);						\
+}
+// SSE3 を使用不可能な場合
+#else
+#define BL3D_DIFF_VECTOR(dst, esrc, ssrc) {		\
+	(dst)->x = (esrc)->x - (ssrc)->x;		\
+	(dst)->y = (esrc)->y - (ssrc)->y;		\
+	(dst)->z = (esrc)->z - (ssrc)->Z;		\
+}
+#endif // __ENABLE_SSE3__
+
+
+
 /// ベクトルの各要素同士を乗算したものを合計した値を得る
 /// dst: float*		// __attribute__aligned(16)
 /// src0, src1: struct BL3D_VECTOR*

@@ -41,6 +41,23 @@ inline struct BL3D_VECTOR* bl3d_sub_vector(
 	return dst;
 }
 
+/// ベクトルの差を得る
+///
+/// dst, esrc, ssrc: struct BL3D_VECTOR*
+///
+/// esrc - ssrc = dst
+/// esrc が終点、 ssrc が始点 
+inline struct BL3D_VECTOR* bl3d_diff_vector(
+	struct BL3D_VECTOR* dst,
+	struct BL3D_VECTOR* esrc,
+	struct BL3D_VECTOR* ssrc
+)
+{
+	BL3D_DIFF_VECTOR(dst, esrc, ssrc);
+	
+	return dst;
+}
+
 /// ベクトルの各要素同士を乗算したものを合計した値を得る
 ///
 /// (Ax, Ay, Az) *= (Bx, By, Bz)
