@@ -2,6 +2,7 @@
 
 #include "blike.h"
 #include "bl3d.h"
+#include "bl3d_matrix_macro.h"
 
 void bl3d_init_triangle_g_t(
 	struct BL3D_TRIANGLE_G_T*	a,
@@ -71,19 +72,13 @@ struct BL3D_VECTOR* bl3d_get_normal_triangle(
 	struct BL3D_VECTOR* vertex2
 )
 {
-	struct BL3D_VECTOR A = {
-		.x = vertex1->x - vertex0->x,
-		.y = vertex1->y - vertex0->y,
-		.z = vertex1->z - vertex0->z
-	};
+	struct BL3D_VECTOR A;
+	BL3D_DIFF_VECTOR(&A, vertex1, vertex0);
 
-	struct BL3D_VECTOR B = {
-		.x = vertex2->x - vertex1->x,
-		.y = vertex2->y - vertex1->y,
-		.z = vertex2->z - vertex1->z
-	};
+	struct BL3D_VECTOR B;
+	BL3D_DIFF_VECTOR(&B, vertex2, vertex1);
 
-	bl3d_outer_product_vector(dst, &A, &B);
+	BL3D_OUTER_PRODUCT_VECTOR(dst, &A, &B);
 
 	return dst;
 }
