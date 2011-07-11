@@ -7,8 +7,9 @@
 #include "../common/blikedrv.h"
 
 
-struct BL_WORK			bl_work;
-struct DrvGtkPthreadData*	drvgtk_pthread_data; 
+struct BL_WORK __attribute__((aligned(16))) bl_work;
+
+struct DrvGtkPthreadData* drvgtk_pthread_data; 
 
 
 

@@ -12,8 +12,9 @@
 
 
 
-extern struct BL_WORK			bl_work;
-extern struct DrvGtkPthreadData*	drvgtk_pthread_data; 
+extern struct BL_WORK __attribute__((aligned(16))) bl_work;
+
+extern struct DrvGtkPthreadData* drvgtk_pthread_data; 
 
 
 
