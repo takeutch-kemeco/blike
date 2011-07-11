@@ -15,7 +15,7 @@
 
 
 
-/// 0ベクトルへの代入
+/// 0ベクトルを代入
 ///
 /// dst: struct BL3D_VECTOR*
 // SSE3 を使用可能な場合
@@ -33,6 +33,60 @@
 #else
 #define BL3D_SET_0_VECTOR(dst) {			\
 	*(dst) = bl3d_0_vector;				\
+}
+#endif // __ENABLE_SSE3__
+
+
+
+/// ベクトル同士の加算
+///
+/// dst, src: struct BL3D_VECTOR*
+///
+// SSE3 を使用可能な場合
+#ifdef __ENABLE_SSE3__
+#define BL3D_ADD_VECTOR(dst, src) {			\
+	__asm__ volatile(				\
+		"movaps (%1),   %%xmm0;"		\
+		"addps  (%0),   %%xmm0;"		\
+		"movaps %%xmm0, (%1);"			\
+		:					\
+		:"r"((src)), "r"((dst))			\
+		:"memory"				\
+	);						\
+}
+// SSE3 を使用不可能な場合
+#else
+#define BL3D_ADD_VECTOR(dst, src) {			\
+	(dst)->x += (src)->x;				\
+	(dst)->y += (src)->y;				\
+	(dst)->z += (src)->z;				\
+}
+#endif // __ENABLE_SSE3__
+
+
+
+/// ベクトル同士の減算
+///
+/// dst, src: struct BL3D_VECTOR*
+///
+// SSE3 を使用可能な場合
+#ifdef __ENABLE_SSE3__
+#define BL3D_SUB_VECTOR(dst, src) {			\
+	__asm__ volatile(				\
+		"movaps (%1),   %%xmm0;"		\
+		"subps  (%0),   %%xmm0;"		\
+		"movaps %%xmm0, (%1);"			\
+		:					\
+		:"r"((src)), "r"((dst))			\
+		:"memory"				\
+	);						\
+}
+// SSE3 を使用不可能な場合
+#else
+#define BL3D_SUB_VECTOR(dst, src) {			\
+	(dst)->x -= (src)->x;				\
+	(dst)->y -= (src)->y;				\
+	(dst)->z -= (src)->z;				\
 }
 #endif // __ENABLE_SSE3__
 
@@ -459,6 +513,40 @@
 	(dst)->z = (src)->z * invert_norm;			\
 }
 #endif // __ENABLE_SSE3__
+
+
+
+/// ２ベクトルから外積を得る
+///
+/// dst, src0, src1: struct BL3D_VECTOR*
+///
+// SSE3 を使用可能な場合
+#define BL3D_OUTER_PRODUCT(dst, src0, src1) {			\
+	struct BL3D_MATRIX m_src1 = {				\
+		.m[0][0]= 0,		.m[0][1]= (src1)->z,	.m[0][2]=-(src1)->y,	\
+		.m[1][0]=-(src1)->z,	.m[1][1]= 0,		.m[1][2]= (src1)->x,	\
+		.m[2][0]= (src1)->y,	.m[2][1]=-(src1)->x,	.m[2][2]= 0		\
+	};							\
+								\
+	BL3D_APPLY_MATRIX((dst), &m_src1, (src0));		\
+								\
+	BL3D_UNIT_VECTOR((dst), (dst));				\
+}
+
+
+
+/// ベクトル同士の内積を得る
+///
+/// dst: float*
+/// src0, src1: struct BL3D_VECTOR*
+///
+#define BL3D_INNER_PRODUCT_VECTOR(dst, src0, src1) {		\
+	BL3D_MULADD_VECTOR((dst), (src0), (src1));		\
+								\
+	if(*(dst) < 0) {					\
+		*(dst) = 0;					\
+	}							\
+}
 
 
 

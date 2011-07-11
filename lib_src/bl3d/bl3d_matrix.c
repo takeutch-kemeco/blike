@@ -13,6 +13,34 @@ const unsigned long __attribute__((aligned(16)))bl3d_mask_vector_xyz[4] = {
 	0x00000000
 };
 
+/// ベクトル同士の加算
+///
+/// dst, src: struct BL3D_VECTOR*
+///
+inline struct BL3D_VECTOR* bl3d_add_vector(
+	struct BL3D_VECTOR* dst,
+	struct BL3D_VECTOR* src
+)
+{
+	BL3D_ADD_VECTOR(dst, src);
+	
+	return dst;
+}
+
+/// ベクトル同士の減算
+///
+/// dst, src: struct BL3D_VECTOR*
+///
+inline struct BL3D_VECTOR* bl3d_sub_vector(
+	struct BL3D_VECTOR* dst,
+	struct BL3D_VECTOR* src
+)
+{
+	BL3D_SUB_VECTOR(dst, src);
+	
+	return dst;
+}
+
 /// ベクトルの各要素同士を乗算したものを合計した値を得る
 ///
 /// (Ax, Ay, Az) *= (Bx, By, Bz)
@@ -201,31 +229,26 @@ inline struct BL3D_VECTOR* bl3d_unit_vector(
 /// ２ベクトルから外積を得る
 inline struct BL3D_VECTOR* bl3d_outer_product_vector(
 	struct BL3D_VECTOR* dst,
-	struct BL3D_VECTOR* A,
-	struct BL3D_VECTOR* B
+	struct BL3D_VECTOR* src0,
+	struct BL3D_VECTOR* src1
 )
 {
-	struct BL3D_MATRIX M = {
-		.m[0][0]=0,	.m[0][1]=B->z,	.m[0][2]=-B->y,
-		.m[1][0]=-B->z,	.m[1][1]=0,	.m[1][2]=B->x,
-		.m[2][0]=B->y,	.m[2][1]=-B->x,	.m[2][2]=0
-	};
-
-	bl3d_apply_matrix(dst, &M, A);
+	BL3D_OUTER_PRODUCT(dst, src0, src1);
 	
-	bl3d_unit_vector(dst, dst);
-
 	return dst;
 }
 
 /// ベクトル同士の内積を得る
 inline float bl3d_inner_product_vector(
-	struct BL3D_VECTOR* A,
-	struct BL3D_VECTOR* B
+	struct BL3D_VECTOR* src0,
+	struct BL3D_VECTOR* src1
 )
 {
-	const float dst = bl3d_muladd_vector(A, B);
-	return (dst >= 0)? dst: 0;
+	float __attribute__((aligned(16)))tmp;
+
+	BL3D_INNER_PRODUCT_VECTOR(&tmp, src0, src1);
+
+	return tmp;
 }
 
 /// 逆行列を得る

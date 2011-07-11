@@ -162,6 +162,24 @@ extern inline float bl3d_atan2(const float a, const float b);
 /// これをローカル変数にすると、データの作成時間が勿体無いので。
 extern const unsigned long __attribute__((aligned(16)))bl3d_mask_vector_xyz[4];
 
+/// ベクトル同士の加算
+///
+/// dst, src: struct BL3D_VECTOR*
+///
+extern inline struct BL3D_VECTOR* bl3d_add_vector(
+	struct BL3D_VECTOR* dst,
+	struct BL3D_VECTOR* src
+);
+
+/// ベクトル同士の減算
+///
+/// dst, src: struct BL3D_VECTOR*
+///
+extern inline struct BL3D_VECTOR* bl3d_sub_vector(
+	struct BL3D_VECTOR* dst,
+	struct BL3D_VECTOR* src
+);
+
 /// ベクトルの各要素同士を乗算したものを合計した値を得る
 ///
 /// (Ax, Ay, Az) *= (Bx, By, Bz)
