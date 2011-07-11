@@ -121,7 +121,7 @@
 
 struct DrvGtkKeybordState {
 	unsigned long	value[8];
-};
+} __attribute__((aligned(16)));
 
 
 

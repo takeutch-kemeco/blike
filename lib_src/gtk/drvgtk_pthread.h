@@ -38,7 +38,7 @@ struct DrvGtkPthreadData {
 	struct DrvGtkKeybordState*	press;
 	struct DrvGtkKeybordState*	release;
 	struct DrvGtkKeybordState*	key_transform_table;
-};
+} __attribute__((aligned(16)));
 
 extern void pthread_main(struct DrvGtkPthreadData* data);
 

@@ -12,7 +12,7 @@ struct MainWindow {
 	struct DrvGtkKeybordState*	press;
 	struct DrvGtkKeybordState*	release;
 	struct DrvGtkKeybordState*	key_transform_table;
-};
+} __attribute__((aligned(16)));
 
 extern struct MainWindow* new_MainWindow(
 	struct DrvGtkKeyRingBuffer* key_ring_buffer,

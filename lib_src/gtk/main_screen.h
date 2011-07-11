@@ -11,7 +11,7 @@ struct MainScreen {
 	guchar*		frame_buffer;
 	gint		frame_buffer_width;
 	gint		frame_buffer_height;
-};
+} __attribute__((aligned(16)));
 
 extern struct MainScreen* new_MainScreen(gint width, gint height, struct MainWindow* window);
 
