@@ -10,7 +10,8 @@ SRCS =	drvgtk_main.c \
 	drvgtk_key_ring_buffer.c \
 	drvgtk_transrate_keycode.c \
 	drvgtk_keybord_state.c \
-	drvgtk_sleep.c\
+	drvgtk_sleep.c \
+	drvgtk_malloc.c \
 	main_window.c \
 	main_screen.c \
 	hankaku_font.c

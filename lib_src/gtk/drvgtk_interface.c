@@ -5,6 +5,7 @@
 #include "drvgtk_pthread.h"
 #include "drvgtk_transrate_keycode.h"
 #include "drvgtk_keybord_state.h"
+#include "drvgtk_malloc.h"
 
 #include "blikedrv.h"
 #include "blike0.h"
@@ -110,14 +111,14 @@ void* bld_malloc(unsigned int bytes)
 {
 	check_and_exit_wt_run_flag();
 	
-	return (void*)(g_malloc(bytes));
+	return (void*)(drvgtk_malloc_aligned16(bytes));
 }
 
 void bld_free(void* p, unsigned int bytes)
 {
 	check_and_exit_wt_run_flag();
 	
-	g_free((gpointer)p);
+	drvgtk_free_aligned16((gpointer)p);
 }
 
 
