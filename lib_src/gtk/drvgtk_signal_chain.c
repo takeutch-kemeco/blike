@@ -25,7 +25,7 @@ static void show_window(struct DrvGtkPthreadData* a)
 
 
 
-static void disable_sse_flash_window(guchar* dst, guint32* src, gint i)
+static inline void disable_sse_flash_window(guchar* dst, guint32* src, gint i)
 {
 	while(i-->0){
 		*dst++ = ((*src)>>16) & 0xFF;
@@ -36,7 +36,7 @@ static void disable_sse_flash_window(guchar* dst, guint32* src, gint i)
 	}
 }
 
-static void enable_sse_flash_window(guchar* dst, guint32* src, gint _i)
+static inline void enable_sse_flash_window(guchar* dst, guint32* src, gint _i)
 {
 	gint ii = (_i % 4) + 2;
 	gint i = (_i - ii) / 4;
@@ -61,7 +61,7 @@ static void enable_sse_flash_window(guchar* dst, guint32* src, gint _i)
 		__asm__ volatile(
 			"prefetchnta 1024(%0);"
 			
-			"movdqu (%0),   %%xmm1;"
+			"movdqa (%0),   %%xmm1;"
 			"movdqa %%xmm1, %%xmm0;"
 			"movdqa %%xmm1, %%xmm2;"
 
