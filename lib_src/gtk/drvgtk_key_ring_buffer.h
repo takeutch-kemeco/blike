@@ -12,7 +12,7 @@ enum DrvGtkKeyState {
 struct DrvGtkKey {
 	guint32			value;
 	enum DrvGtkKeyState	state;
-} __attribute__((aligned(16)));
+};
 
 struct DrvGtkKeyRingBuffer {
 	struct DrvGtkKey*	key;
@@ -22,7 +22,7 @@ struct DrvGtkKeyRingBuffer {
 	gint32*			read_index;
 	gint32*			write_index;
 	gint32*			key_count;
-} __attribute__((aligned(16)));
+};
 
 extern struct DrvGtkKeyRingBuffer* new_DrvGtkKeyRingBuffer(
 	gint32 key_len,

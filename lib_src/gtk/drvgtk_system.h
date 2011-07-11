@@ -17,7 +17,6 @@ extern struct DrvGtkPthreadData* new_DrvGtkPthreadData(
 	gint32*		key_count,
 	gint		language
 );
-
 extern free_DrvGtkPthreadData(struct DrvGtkPthreadData* a);
 
 extern void run_DrvGtkSystem(struct DrvGtkPthreadData* a);
