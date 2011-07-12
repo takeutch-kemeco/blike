@@ -247,48 +247,41 @@ static void bl3d_draw_line_g_t(
 	struct BL3D_CVECTOR* BASE_C
 )
 {
-	struct BL3D_VECTOR L = {
-		.x = B->x - A->x,
-		.y = B->y - A->y
-	};
+	struct BL3D_VECTOR L;
+	BL3D_DIFF_VECTOR(&L, B, A);
+	L.z = 0;
 	
-	float r = bl3d_sqrt(L.x * L.x + L.y * L.y);
-	float ir = 1.0 / r;
+	float r;
+	BL3D_NORM_VECTOR(&r, &L);
+
+	float ir;
+	BL3D_INVERT_NORM_VECTOR(&ir, &L);
 	
-	struct BL3D_VECTOR U = {
-		.x = L.x * ir,
-		.y = L.y * ir
-	};
+	struct BL3D_VECTOR ir_vec = {ir, ir, ir, 0};
+	
+	struct BL3D_VECTOR U;
+	BL3D_MUL2_VECTOR(&U, &L, &ir_vec);
 
 	struct BL3D_VECTOR P = *A;
 
 	
 	
-	struct BL3D_VECTOR LT = {
-		.x = BT->x - AT->x,
-		.y = BT->y - AT->y,
-	};
+	struct BL3D_VECTOR LT;
+	BL3D_DIFF_VECTOR(&LT, BT, AT);
+	LT.z = 0;
 	
-	struct BL3D_VECTOR UT = {
-		.x = LT.x * ir,
-		.y = LT.y * ir
-	};
+	struct BL3D_VECTOR UT;
+	BL3D_MUL2_VECTOR(&UT, &LT, &ir_vec);
 	
 	struct BL3D_VECTOR PT = *AT;
 	
 	
 	
-	struct BL3D_CVECTOR LC = {
-		.r = BC->r - AC->r,
-		.g = BC->g - AC->g,
-		.b = BC->b - AC->b,
-	};
+	struct BL3D_CVECTOR LC;
+	BL3D_DIFF_VECTOR((struct BL3D_VECTOR*)&LC, (struct BL3D_VECTOR*)BC, (struct BL3D_VECTOR*)AC);
 	
-	struct BL3D_CVECTOR UC = {
-		.r = LC.r * ir,
-		.g = LC.g * ir,
-		.b = LC.b * ir
-	};
+	struct BL3D_CVECTOR UC;
+	BL3D_MUL2_VECTOR((struct BL3D_VECTOR*)&UC, (struct BL3D_VECTOR*)&LC, &ir_vec);
 	
 	struct BL3D_CVECTOR PC = *AC;
 	
@@ -305,6 +298,7 @@ static void bl3d_draw_line_g_t(
 
 		
 		slctWin(texture_vram);
+//		int C = 0xAABBCC;
 		int C = bl_getPix(tx+0, ty+0);
 		
 		float Cr = (C >> 16) & 0xFF;
@@ -315,9 +309,9 @@ static void bl3d_draw_line_g_t(
 		int col_g = (Cg * PC.g) + BASE_C->g;
 		int col_b = (Cb * PC.b) + BASE_C->b;
 		
-		col_r = (col_r > 255)? 255: col_r;
-		col_g = (col_g > 255)? 255: col_g;
- 		col_b = (col_b > 255)? 255: col_b;
+		if(col_r > 255){col_r = 255;}
+		if(col_g > 255){col_g = 255;}
+		if(col_b > 255){col_b = 255;}
 		
 		int col = (col_r << 16) | (col_g << 8) | (col_b << 0);
 		
@@ -329,32 +323,27 @@ static void bl3d_draw_line_g_t(
 		bl_setPix(x+1, y+1, col);
 		
 		
-		P.x += U.x;
-		P.y += U.y;
-		
-		PT.x += UT.x;
-		PT.y += UT.y;
-		
-		PC.r += UC.r;
-		PC.g += UC.g;
-		PC.b += UC.b;
+		BL3D_ADD_VECTOR(&P, &U);
+		BL3D_ADD_VECTOR(&PT, &UT);
+		BL3D_ADD_VECTOR((struct BL3D_VECTOR*)&PC, (struct BL3D_VECTOR*)&UC);
 	}
 }
 
 void bl3d_draw_triangle_g_t(struct BL3D_OT_TAG* a)
 {
-	struct BL3D_VECTOR A = {
-		.x = a->vertex[1].x - a->vertex[0].x,
-		.y = a->vertex[1].y - a->vertex[0].y
-	};
-
-	struct BL3D_VECTOR B = {
-		.x = a->vertex[1].x - a->vertex[2].x,
-		.y = a->vertex[1].y - a->vertex[2].y
-	};
+	struct BL3D_VECTOR A;
+	BL3D_DIFF_VECTOR(&A, &a->vertex[1], &a->vertex[0]);
+	A.z = 0;
 	
-	float ar = bl3d_sqrt(A.x * A.x + A.y * A.y);
-	float br = bl3d_sqrt(B.x * B.x + B.y * B.y);
+	struct BL3D_VECTOR B;
+	BL3D_DIFF_VECTOR(&B, &a->vertex[1], &a->vertex[2]);
+	B.z = 0;
+	
+	float ar;
+	BL3D_NORM_VECTOR(&ar, &A);
+
+	float br;
+	BL3D_NORM_VECTOR(&br, &B);
 	
 	float lr;
 	struct BL3D_VECTOR* L;
@@ -375,18 +364,18 @@ void bl3d_draw_triangle_g_t(struct BL3D_OT_TAG* a)
 		LP = a->vertex[2];
 		SP = a->vertex[0];
 	}
+
+	float ilr;
+	BL3D_INVERT_NORM_VECTOR(&ilr, L);
+
+	struct BL3D_VECTOR ilr_vector = {ilr, ilr, ilr, 0};
+
 	
-	float ilr = 1.0 / lr;
+	struct BL3D_VECTOR LU;
+	BL3D_MUL2_VECTOR(&LU, L, &ilr_vector);
 	
-	struct BL3D_VECTOR LU = {
-		.x = L->x * ilr,
-		.y = L->y * ilr
-	};
-	
-	struct BL3D_VECTOR SU = {
-		.x = S->x * ilr,
-		.y = S->y * ilr
-	};
+	struct BL3D_VECTOR SU;
+	BL3D_MUL2_VECTOR(&SU, S, &ilr_vector);
 	
 #ifdef __DEBUG__
 	g_printf(
@@ -404,15 +393,11 @@ void bl3d_draw_triangle_g_t(struct BL3D_OT_TAG* a)
 	
 	const int texture_vram = a->texture_vram;
 	
-	struct BL3D_VECTOR AT = {
-		.x = a->texture[1].x - a->texture[0].x,
-		.y = a->texture[1].y - a->texture[0].y,
-	};
+	struct BL3D_VECTOR AT;
+	BL3D_DIFF_VECTOR(&AT, &a->texture[1], &a->texture[0]);
 	
-	struct BL3D_VECTOR BT = {
-		.x = a->texture[1].x - a->texture[2].x,
-		.y = a->texture[1].y - a->texture[2].y,
-	};
+	struct BL3D_VECTOR BT;
+	BL3D_DIFF_VECTOR(&BT, &a->texture[1], &a->texture[2]);
 	
 	struct BL3D_VECTOR* LT;
 	struct BL3D_VECTOR* ST;
@@ -431,29 +416,19 @@ void bl3d_draw_triangle_g_t(struct BL3D_OT_TAG* a)
 		STP = a->texture[0];
 	}
 	
-	struct BL3D_VECTOR LTU = {
-		.x = LT->x * ilr,
-		.y = LT->y * ilr
-	};
+	struct BL3D_VECTOR LTU;
+	BL3D_MUL2_VECTOR(&LTU, LT, &ilr_vector);
 	
-	struct BL3D_VECTOR STU = {
-		.x = ST->x * ilr,
-		.y = ST->y * ilr
-	};
+	struct BL3D_VECTOR STU;
+	BL3D_MUL2_VECTOR(&STU, ST, &ilr_vector);
 	
 	
 	
-	struct BL3D_CVECTOR AC = {
-		.r = a->color[1].r - a->color[0].r,
-		.g = a->color[1].g - a->color[0].g,
-		.b = a->color[1].b - a->color[0].b,
-	};
+	struct BL3D_CVECTOR AC;
+	BL3D_DIFF_VECTOR((struct BL3D_VECTOR*)&AC, (struct BL3D_VECTOR*)&a->color[1], (struct BL3D_VECTOR*)&a->color[0]);
 
-	struct BL3D_CVECTOR BC = {
-		.r = a->color[1].r - a->color[2].r,
-		.g = a->color[1].g - a->color[2].g,
-		.b = a->color[1].b - a->color[2].b,
-	};
+	struct BL3D_CVECTOR BC;
+	BL3D_DIFF_VECTOR((struct BL3D_VECTOR*)&BC, (struct BL3D_VECTOR*)&a->color[1], (struct BL3D_VECTOR*)&a->color[2]);
 	
 	struct BL3D_CVECTOR* LC;
 	struct BL3D_CVECTOR* SC;
@@ -472,17 +447,11 @@ void bl3d_draw_triangle_g_t(struct BL3D_OT_TAG* a)
 		SCP = a->color[0];
 	}
 	
-	struct BL3D_CVECTOR LCU = {
-		.r = LC->r * ilr,
-		.g = LC->g * ilr,
-		.b = LC->b * ilr
-	};
+	struct BL3D_CVECTOR LCU;
+	BL3D_MUL2_VECTOR((struct BL3D_VECTOR*)&LCU, (struct BL3D_VECTOR*)LC, &ilr_vector);
 
-	struct BL3D_CVECTOR SCU = {
-		.r = SC->r * ilr,
-		.g = SC->g * ilr,
-		.b = SC->b * ilr
-	};
+	struct BL3D_CVECTOR SCU;
+	BL3D_MUL2_VECTOR((struct BL3D_VECTOR*)&SCU, (struct BL3D_VECTOR*)SC, &ilr_vector);
 
 	
 	
@@ -497,27 +466,14 @@ void bl3d_draw_triangle_g_t(struct BL3D_OT_TAG* a)
 		);
 
 		
-		LP.x += LU.x;
-		LP.y += LU.y;
+		BL3D_ADD_VECTOR(&LP, &LU);
+		BL3D_ADD_VECTOR(&SP, &SU);
 		
-		SP.x += SU.x;
-		SP.y += SU.y;
+		BL3D_ADD_VECTOR(&LTP, &LTU);
+		BL3D_ADD_VECTOR(&STP, &STU);
 		
-		
-		LTP.x += LTU.x;
-		LTP.y += LTU.y;
-		
-		STP.x += STU.x;
-		STP.y += STU.y;
-		
-		
-		LCP.r += LCU.r;
-		LCP.g += LCU.g;
-		LCP.b += LCU.b;
-
-		SCP.r += SCU.r;
-		SCP.g += SCU.g;
-		SCP.b += SCU.b;
+		BL3D_ADD_VECTOR((struct BL3D_VECTOR*)&LCP, (struct BL3D_VECTOR*)&LCU);
+		BL3D_ADD_VECTOR((struct BL3D_VECTOR*)&SCP, (struct BL3D_VECTOR*)&SCU);
 
 		
 #ifdef __DEBUG__
