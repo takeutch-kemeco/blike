@@ -159,8 +159,8 @@ g_printf("%f ",a);
 		return;
 	}
 	
-	int z = min_z & (BL3D_OT_LENGTH - 1);		// 0x7FFF
-
+	const int z = (min_z >= BL3D_OT_LENGTH)? BL3D_OT_LENGTH: min_z;
+	
 	
 	
 	struct BL3D_VECTOR normal_vector;
