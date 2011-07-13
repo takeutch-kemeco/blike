@@ -307,8 +307,9 @@ static void bl3d_draw_line_g_t(
 		int ty = (int)PT.y;
 
 		
+		int C;
 //		bl3d_slctWin(texture_vram);
-		int C = bl3d_getPix(tx, ty);
+		bl3d_getPix(tx, ty, C, texture_vram);
 		
 		float Cr = (C >> 16) & 0xFF;
 		float Cg = (C >> 8 ) & 0xFF;
