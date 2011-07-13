@@ -4,7 +4,7 @@
 /// SSE3を使用する。
 /// もしSSE3を使用しないライブラリとしてコンパイルしたい場合は
 /// この宣言をコメントアウトする。
-#define __ENABLE_SSE3__
+//#define __ENABLE_SSE3__
 
 #ifndef NULL
 #define NULL  0
@@ -536,14 +536,6 @@ extern void bl3d_init_triangle_g_t(
 	struct BL3D_CVECTOR*		color0,
 	struct BL3D_CVECTOR*		color1,
 	struct BL3D_CVECTOR*		color2
-);
-
-/// 三角形の頂点ベクトルから法線ベクトルを得る。
-extern struct BL3D_VECTOR* bl3d_get_normal_triangle(
-	struct BL3D_VECTOR* dst,
-	struct BL3D_VECTOR* vertex0,
-	struct BL3D_VECTOR* vertex1,
-	struct BL3D_VECTOR* vertex2
 );
 
 /// テクスチャー・グロー三角形を、オーダリングテーブルに割り当てる。

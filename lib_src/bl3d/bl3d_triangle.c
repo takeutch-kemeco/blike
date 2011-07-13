@@ -3,6 +3,9 @@
 #include "blike.h"
 #include "bl3d.h"
 #include "bl3d_matrix_macro.h"
+#include "bl3d_io_macro.h"
+
+static struct BL3D_VECTOR bl3d_mul255_vector = {255, 255, 255, 0};
 
 void bl3d_init_triangle_g_t(
 	struct BL3D_TRIANGLE_G_T*	a,
@@ -65,22 +68,17 @@ static float bl3d_get_big(const float a, const float b, const float c)
 }
 
 /// 三角形の頂点ベクトルから法線ベクトルを得る。
-struct BL3D_VECTOR* bl3d_get_normal_triangle(
-	struct BL3D_VECTOR* dst,
-	struct BL3D_VECTOR* vertex0,
-	struct BL3D_VECTOR* vertex1,
-	struct BL3D_VECTOR* vertex2
-)
-{
-	struct BL3D_VECTOR A;
-	BL3D_DIFF_VECTOR(&A, vertex1, vertex0);
-
-	struct BL3D_VECTOR B;
-	BL3D_DIFF_VECTOR(&B, vertex2, vertex1);
-
-	BL3D_OUTER_PRODUCT_VECTOR(dst, &A, &B);
-
-	return dst;
+///
+/// dst, vertex0, vertex1, vertex2: struct BL3D_VECTOR*
+///
+#define BL3D_GET_NORMAL_TRIANGLE(dst, vertex0, vertex1, vertex2) {	\
+	struct BL3D_VECTOR ___A___;					\
+	BL3D_DIFF_VECTOR(&___A___, (vertex1), (vertex0));		\
+									\
+	struct BL3D_VECTOR ___B___;					\
+	BL3D_DIFF_VECTOR(&___B___, (vertex2), (vertex1));		\
+									\
+	BL3D_OUTER_PRODUCT_VECTOR((dst), &___A___, &___B___);		\
 }
 
 /// テクスチャー・グロー三角形を、オーダリングテーブルに割り当てる。
@@ -111,12 +109,9 @@ void bl3d_sort_triangle_g_t(
 	
 	
 	for(i = 0; i < 3; i++) {
-		bl3d_apply_matrix(&ot_tag->vertex[i], &bl3d_ls_matrix, &a->vertex[i]);
+		BL3D_APPLY_MATRIX(&ot_tag->vertex[i], &bl3d_ls_matrix, &a->vertex[i]);
 		
-		ot_tag->vertex[i].x += bl3d_ls_matrix.t[0];
-		ot_tag->vertex[i].y += bl3d_ls_matrix.t[1];
-		
-		ot_tag->vertex[i].z += bl3d_ls_matrix.t[2];
+		BL3D_ADD_VECTOR(&ot_tag->vertex[i], (struct BL3D_VECTOR*)bl3d_ls_matrix.t);
 		ot_tag->vertex[i].z *= bl3d_ot_scale;
 		
 		const float a = (1.0 / ot_tag->vertex[i].z) * bl3d_ot_projection;
@@ -124,7 +119,8 @@ void bl3d_sort_triangle_g_t(
 g_printf("%f ",a);
 #endif // __DEBUG__
 		ot_tag->vertex[i].x *= a;
-		ot_tag->vertex[i].y *= a;
+//		ot_tag->vertex[i].y *= a;
+		ot_tag->vertex[i].y *= a * 0.5;
 	}
 	
 	
@@ -134,7 +130,8 @@ g_printf("%f ",a);
 			.x = ot_tag->vertex[i].x, .y = ot_tag->vertex[i].y, .z = 0
 		};
 
-		float r = bl3d_norm_vector(&vertex);
+		float r;
+		BL3D_NORM_VECTOR(&r, &vertex);
 		if(r < bl3d_screen_radius) {
 			break;
 		}
@@ -167,7 +164,7 @@ g_printf("%f ",a);
 	
 	
 	struct BL3D_VECTOR normal_vector;
-	bl3d_get_normal_triangle(&normal_vector, &ot_tag->vertex[0], &ot_tag->vertex[1], &ot_tag->vertex[2]);
+	BL3D_GET_NORMAL_TRIANGLE(&normal_vector, &ot_tag->vertex[0], &ot_tag->vertex[1], &ot_tag->vertex[2]);
 	if(normal_vector.z < 0) {
 		return;
 	}
@@ -175,9 +172,11 @@ g_printf("%f ",a);
 	
 	
 	for(i = 0; i < 3; i++) {
-		ot_tag->color[i].r = a->color[i].r * bl3d_ambient_depth.r;
-		ot_tag->color[i].g = a->color[i].g * bl3d_ambient_depth.g;
-		ot_tag->color[i].b = a->color[i].b * bl3d_ambient_depth.b;
+		BL3D_MUL2_VECTOR(
+			(struct BL3D_VECTOR*)&ot_tag->color[i],
+			(struct BL3D_VECTOR*)&a->color[i],
+			(struct BL3D_VECTOR*)&bl3d_ambient_depth
+		)
 
 		ot_tag->texture[i] = a->texture[i];
 
@@ -191,38 +190,49 @@ g_printf("%f ",a);
 	
 	for(i = 0; i < 3; i++) {
 		if(bl3d_system_flat_light_use_flag[i] == TRUE) {
-			float power = bl3d_inner_product_vector(
+			float power;
+			BL3D_INNER_PRODUCT_VECTOR(
+				&power, 
 				&normal_vector,
 				&bl3d_system_flat_light[i].vector
 			);
+			
+			struct BL3D_VECTOR power_vector = {power, power, power, 0};
 
-			struct BL3D_CVECTOR color = {
-				.r = bl3d_system_flat_light[i].color.r * power,
-				.g = bl3d_system_flat_light[i].color.g * power,
-				.b = bl3d_system_flat_light[i].color.b * power
-			};
+			struct BL3D_CVECTOR color;
+			BL3D_MUL2_VECTOR(
+				(struct BL3D_VECTOR*)&color,
+				(struct BL3D_VECTOR*)&bl3d_system_flat_light[i].color,
+				&power_vector
+			);
 
-			ot_tag->base_color.r += bl3d_system_flat_light[i].color.r * power;
-			ot_tag->base_color.g += bl3d_system_flat_light[i].color.g * power;
-			ot_tag->base_color.b += bl3d_system_flat_light[i].color.b * power;
+			struct BL3D_VECTOR tmp;
+			BL3D_MUL2_VECTOR(
+				&tmp,
+				(struct BL3D_VECTOR*)&bl3d_system_flat_light[i].color,
+				&power_vector
+			);
+			
+			BL3D_ADD_VECTOR(
+				(struct BL3D_VECTOR*)&ot_tag->base_color,
+				&tmp
+			);
 		}
 	}
 	
-	ot_tag->base_color.r *= 255;
-	ot_tag->base_color.g *= 255;
-	ot_tag->base_color.b *= 255;
+	BL3D_MUL_VECTOR((struct BL3D_VECTOR*)&ot_tag->base_color, &bl3d_mul255_vector);
 	
 	
 	
 	ot_tag->next = NULL;
 
-	if(ot->ot_tag_top[z] == NULL) {
-		ot->ot_tag_top[z]   = ot_tag;
-		ot->ot_tag_tail[z]  = ot_tag;
-	}
-	else {
+	if(ot->ot_tag_top[z] != NULL) {
 		ot->ot_tag_tail[z]->next = ot_tag;
 		ot->ot_tag_tail[z]	 = ot_tag;
+	}
+	else {
+		ot->ot_tag_top[z]   = ot_tag;
+		ot->ot_tag_tail[z]  = ot_tag;
 	}
 }
 
@@ -297,9 +307,8 @@ static void bl3d_draw_line_g_t(
 		int ty = (int)PT.y;
 
 		
-		slctWin(texture_vram);
-//		int C = 0xAABBCC;
-		int C = bl_getPix(tx+0, ty+0);
+//		bl3d_slctWin(texture_vram);
+		int C = bl3d_getPix(tx, ty);
 		
 		float Cr = (C >> 16) & 0xFF;
 		float Cg = (C >> 8 ) & 0xFF;
@@ -316,11 +325,9 @@ static void bl3d_draw_line_g_t(
 		int col = (col_r << 16) | (col_g << 8) | (col_b << 0);
 		
 		
-		slctWin(0);
-		bl_setPix(x+0, y+0, col);
-	//	bl_setPix(x+1, y+0, col);
-	//	bl_setPix(x+0, y+1, col);
-		bl_setPix(x+1, y+1, col);
+//		bl3d_slctWin(0);
+		bl3d_setPix(x,   y,   col);
+		bl3d_setPix(x+1, y+1, col);
 		
 		
 		BL3D_ADD_VECTOR(&P, &U);
@@ -477,7 +484,7 @@ void bl3d_draw_triangle_g_t(struct BL3D_OT_TAG* a)
 
 		
 #ifdef __DEBUG__
-		wait(1000/100);
+		wait(1000/60);
 #endif // __DEBUG__
 	}
 }
