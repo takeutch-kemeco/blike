@@ -119,8 +119,8 @@ void bl3d_sort_triangle_g_t(
 g_printf("%f ",a);
 #endif // __DEBUG__
 		ot_tag->vertex[i].x *= a;
-//		ot_tag->vertex[i].y *= a;
-		ot_tag->vertex[i].y *= a * 0.5;
+		ot_tag->vertex[i].y *= a;
+//		ot_tag->vertex[i].y *= a * 0.5;
 	}
 	
 	
