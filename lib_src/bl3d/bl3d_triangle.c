@@ -159,7 +159,7 @@ g_printf("%f ",a);
 		return;
 	}
 	
-	const int z = (min_z >= BL3D_OT_LENGTH)? BL3D_OT_LENGTH: min_z;
+	const int z = (min_z >= BL3D_OT_LENGTH)? BL3D_OT_LENGTH - 1: min_z;
 	
 	
 	
