@@ -390,6 +390,10 @@ extern void bl3d_print_matrix(struct BL3D_MATRIX* a);
 
 /// bl3d_system.c
 
+/// システムで使用するメインのフレームバッファー
+/// このフレームバッファーに描かれた画像が、最終的にblikeのフレームバッファーへと変換・転送される。
+extern struct BL3D_FRAME_BUFFER* bl3d_system_frame_buffer;
+
 /// システムの初期設定
 /// bl3dで３次元表示を行う場合は、最初にこれを実行しておくのが望ましい
 /// screen_width:スクリーンの横幅（ピクセル単位）
