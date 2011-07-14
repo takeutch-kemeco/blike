@@ -5,8 +5,6 @@
 #include "bl3d_matrix_macro.h"
 #include "bl3d_io_macro.h"
 
-static struct BL3D_VECTOR bl3d_mul255_vector = {255, 255, 255, 0};
-
 void bl3d_init_triangle_g_t(
 	struct BL3D_TRIANGLE_G_T*	a,
 	struct BL3D_VECTOR*		vertex0,
