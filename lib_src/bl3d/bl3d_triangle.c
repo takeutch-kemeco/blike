@@ -99,12 +99,9 @@ void bl3d_sort_triangle_g_t(
 		ot_tag->vertex[i].z *= bl3d_ot_scale;
 		
 		const float a = (1.0 / ot_tag->vertex[i].z) * bl3d_ot_projection;
-#ifdef __DEBUG__
-g_printf("%f ",a);
-#endif // __DEBUG__
+		
 		ot_tag->vertex[i].x *= a;
 		ot_tag->vertex[i].y *= a;
-//		ot_tag->vertex[i].y *= a * 0.5;
 	}
 	
 	
@@ -182,13 +179,6 @@ g_printf("%f ",a);
 			);
 			
 			struct BL3D_VECTOR power_vector = {power, power, power, 0};
-
-			struct BL3D_CVECTOR color;
-			BL3D_MUL2_VECTOR(
-				(struct BL3D_VECTOR*)&color,
-				(struct BL3D_VECTOR*)&bl3d_system_flat_light[i].color,
-				&power_vector
-			);
 
 			struct BL3D_VECTOR tmp;
 			BL3D_MUL2_VECTOR(
