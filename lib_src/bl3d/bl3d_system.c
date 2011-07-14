@@ -374,6 +374,8 @@ void bl3d_draw_ot(struct BL3D_OT* ot)
 	case 0:
 		for(j = 1; j < height; j+=2) {
 			for(i = 0; i < width; i++) {
+				BL3D_PREFETCH((bl3d_system_frame_buffer->y_offset_table[j])+i+5);
+				
 				BL3D_CVECTOR_TO_INTCOLOR(col, (bl3d_system_frame_buffer->y_offset_table[j])+i);
 				BL3D_SET_PIX(i, j, col[0]);
 			}
@@ -385,6 +387,8 @@ void bl3d_draw_ot(struct BL3D_OT* ot)
 	default:
 		for(j = 0; j < height; j+=2) {
 			for(i = 0; i < width; i++) {
+				BL3D_PREFETCH((bl3d_system_frame_buffer->y_offset_table[j])+i+5);
+
 				BL3D_CVECTOR_TO_INTCOLOR(col, (bl3d_system_frame_buffer->y_offset_table[j])+i);
 				BL3D_SET_PIX(i, j, col[0]);
 			}

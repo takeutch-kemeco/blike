@@ -699,4 +699,25 @@
 
 
 
+/// キャッシュへデータを先読みする
+///
+/// src: 先読みするメモリーアドレス
+///
+// SSE3 を使用可能な場合
+#ifdef __ENABLE_SSE3__
+#define BL3D_PREFETCH(src) {					\
+	__asm__ volatile (					\
+		"prefetchnta (%0);"				\
+		:						\
+		:"r"((src))					\
+	);							\
+}
+// SSE3 を使用不可能な場合
+#else
+#define BL3D_PREFETCH(src) {					\
+}
+#endif // __ENABLE_SSE3__
+
+
+
 #endif // __BL3D_MATRIX_MACRO_H__
