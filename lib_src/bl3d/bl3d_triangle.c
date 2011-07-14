@@ -65,20 +65,6 @@ static float bl3d_get_big(const float a, const float b, const float c)
 	return z;
 }
 
-/// 三角形の頂点ベクトルから法線ベクトルを得る。
-///
-/// dst, vertex0, vertex1, vertex2: struct BL3D_VECTOR*
-///
-#define BL3D_GET_NORMAL_TRIANGLE(dst, vertex0, vertex1, vertex2) {	\
-	struct BL3D_VECTOR ___A___;					\
-	BL3D_DIFF_VECTOR(&___A___, (vertex1), (vertex0));		\
-									\
-	struct BL3D_VECTOR ___B___;					\
-	BL3D_DIFF_VECTOR(&___B___, (vertex2), (vertex1));		\
-									\
-	BL3D_OUTER_PRODUCT_VECTOR((dst), &___A___, &___B___);		\
-}
-
 /// テクスチャー・グロー三角形を、オーダリングテーブルに割り当てる。
 /// 手順としては、まずBL3D_TRIANGLE_G_Tからot_tagへ変換し、それをotに登録する。
 ///
