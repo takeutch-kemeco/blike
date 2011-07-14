@@ -5,11 +5,11 @@
 
 // SSE3 を使用可能な場合
 #ifdef __ENABLE_SSE3__
-#define xxx(xxx) {			\
+#define __xxx__(xxx) {			\
 }
 // SSE3 を使用不可能な場合
 #else
-#define xxx(xxx) {			\
+#define __xxx__(xxx) {			\
 }
 #endif // __ENABLE_SSE3__
 
@@ -639,6 +639,63 @@
 		*(dst) = 0;					\
 	}							\
 }
+
+
+
+/// 三角形の頂点ベクトルから法線ベクトルを得る。
+///
+/// dst, vertex0, vertex1, vertex2: struct BL3D_VECTOR*
+///
+#define BL3D_GET_NORMAL_TRIANGLE(dst, vertex0, vertex1, vertex2) {	\
+	struct BL3D_VECTOR ___A___;					\
+	BL3D_DIFF_VECTOR(&___A___, (vertex1), (vertex0));		\
+									\
+	struct BL3D_VECTOR ___B___;					\
+	BL3D_DIFF_VECTOR(&___B___, (vertex2), (vertex1));		\
+									\
+	BL3D_OUTER_PRODUCT_VECTOR((dst), &___A___, &___B___);		\
+}
+
+
+
+/// struct BL3D_CVECTOR を 0x00RRGGBB形式の 32bit color へ変換
+///
+/// dst: int[4]の先頭アドレス。結果は[0]に格納される。（16byte境界であること）
+/// src: struct BL3D_CVECTOR*
+///
+// SSE3 を使用可能な場合
+#ifdef __ENABLE_SSE3__
+#define BL3D_CVECTOR_TO_INTCOLOR(dst, src) {				\
+	__asm__ volatile(						\
+		"movaps  (%0),    %%xmm0;"				\
+		"mulps   (%2),    %%xmm0;"				\
+									\
+		"cvtps2dq %%xmm0, %%xmm1;"				\
+									\
+		"packssdw %%xmm0, %%xmm1;"				\
+		"packuswb %%xmm0, %%xmm1;"				\
+									\
+		"movd     %%xmm1, (%1);"				\
+		:							\
+		:"r"((src)), "r"((dst)), "r"(&bl3d_mul255_vector)	\
+		:"memory"						\
+	);								\
+}
+// SSE3 を使用不可能な場合
+#else
+#define BL3D_CVECTOR_TO_INTCOLOR(dst, src) {				\
+		BL3D_MUL_VECTOR((struct BL3D_VECTOR*)(src), &bl3d_mul255_vector);	\
+									\
+		if((src)->r > 255) {(src)->r = 255;}			\
+		if((src)->g > 255) {(src)->g = 255;}			\
+		if((src)->b > 255) {(src)->b = 255;}			\
+									\
+		*(dst) =						\
+			(((int)(src)->r & 0xFF) << 16) |		\
+			(((int)(src)->g & 0xFF) << 8)  |		\
+			(((int)(src)->b & 0xFF));			\
+}
+#endif // __ENABLE_SSE3__
 
 
 
