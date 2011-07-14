@@ -66,6 +66,9 @@ const struct BL3D_MATRIX bl3d_e_matrix = {
 const struct BL3D_VECTOR  bl3d_0_vector  = {.x = 0, .y = 0, .z = 0, .pad = 0};
 const struct BL3D_CVECTOR bl3d_0_cvector = {.r = 0, .g = 0, .b = 0, .pad = 0};
 
+/// 色を1.0形式から255形式へ変換する際に使用する定数
+const struct BL3D_VECTOR bl3d_mul255_vector = {255, 255, 255, 0};
+
 /// ワールドからスクリーンへの行列
 struct BL3D_MATRIX bl3d_ws_matrix;
 

@@ -426,6 +426,9 @@ extern const struct BL3D_MATRIX bl3d_e_matrix;
 extern const struct BL3D_VECTOR  bl3d_0_vector;
 extern const struct BL3D_CVECTOR bl3d_0_cvector;
 
+/// 色を1.0形式から255形式へ変換する際に使用する定数
+extern const struct BL3D_VECTOR bl3d_mul255_vector;
+
 /// ワールドからスクリーンへの行列
 extern struct BL3D_MATRIX bl3d_ws_matrix;
 
