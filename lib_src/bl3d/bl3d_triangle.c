@@ -279,14 +279,12 @@ static void bl3d_draw_line_g_t(
 		int ty = (int)PT.y;
 		
 		
-		bl3d_slctWin(texture_vram);
 		int _C;
-		bl3d_getPix(tx, ty, _C, texture_vram);
+		BL3D_GET_PIX(tx, ty, _C, texture_vram);
 		int _Cr = (_C >> 16) & 0xFF;
 		int _Cg = (_C >> 8 ) & 0xFF;
 		int _Cb = (_C      ) & 0xFF;
 		struct BL3D_CVECTOR C = {((float)_Cr) / 255.0, ((float)_Cg) / 255.0, ((float)_Cb) / 255.0};
-		bl3d_slctWin(0);
 		
 		
 		BL3D_MUL_VECTOR((struct BL3D_VECTOR*)&C, (struct BL3D_VECTOR*)&PC);
