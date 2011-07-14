@@ -1,6 +1,8 @@
 //#define __DEBUG__
 
 #include "bl3d.h"
+#include "bl3d_matrix_macro.h"
+#include "bl3d_io_macro.h"
 
 /// 画面の中心位置のXY座標
 /// これを使って、画面中心を（０、０）として考える
@@ -110,6 +112,10 @@ int bl3d_system_flat_light_use_flag[3] = {0, 0, 0};
 /// ３光源で同じ座標系を共有する。
 struct BL3D_MATRIX bl3d_flat_light_matrix;
 
+/// システムで使用するメインのフレームバッファー
+/// このフレームバッファーに描かれた画像が、最終的にblikeのフレームバッファーへと変換・転送される。
+struct BL3D_FRAME_BUFFER* bl3d_system_frame_buffer;
+
 /// システムの初期設定
 /// bl3dで３次元表示を行う場合は、最初にこれを実行しておくのが望ましい。
 /// 画像表示のオフセットや、各種変換行列の初期化などを行う。
@@ -128,6 +134,17 @@ void bl3d_init(const int screen_width, const int screen_height)
 	
 	bl3d_ws_matrix = bl3d_e_matrix;
 	bl3d_ls_matrix = bl3d_e_matrix;
+	
+	
+	
+	bl3d_system_frame_buffer = bl3d_new_frame_buffer(
+		screen_width * 3,
+		screen_height * 3,
+		screen_width,
+		screen_height,
+		screen_width,
+		screen_height
+	);
 }
 
 /// システムのワールドtoスクリーン行列を設定する。
@@ -332,9 +349,48 @@ static void bl3d_draw_ot_tag(struct BL3D_OT_TAG* a)
 /// オーダリングテーブルをblikeの描画バッファーに描画
 void bl3d_draw_ot(struct BL3D_OT* ot)
 {
-	int i;
+	int j, i;
+	const int width  = bl3d_system_frame_buffer->draw_width;
+	const int height = bl3d_system_frame_buffer->draw_height;
+
+	for(j = 0; j < height; j++) {
+		for(i = 0; i < width; i++) {
+			(bl3d_system_frame_buffer->y_offset_table[j])[i] = bl3d_0_cvector;
+		}
+	}
+	
+	
+	
 	for(i = BL3D_OT_LENGTH - 1; i >= 0; i--) {
- 		bl3d_draw_ot_tag(ot->ot_tag_top[i]);
+		bl3d_draw_ot_tag(ot->ot_tag_top[i]);
+	}
+		
+	
+	
+	int __attribute__((aligned(16)))col[4];
+	
+	static int current_buffer = 0;
+	switch(current_buffer) {
+	case 0:
+		for(j = 1; j < height; j+=2) {
+			for(i = 0; i < width; i++) {
+				BL3D_CVECTOR_TO_INTCOLOR(col, (bl3d_system_frame_buffer->y_offset_table[j])+i);
+				BL3D_SET_PIX(i, j, col[0]);
+			}
+		}
+		
+		current_buffer = 1;
+		break;
+		
+	default:
+		for(j = 0; j < height; j+=2) {
+			for(i = 0; i < width; i++) {
+				BL3D_CVECTOR_TO_INTCOLOR(col, (bl3d_system_frame_buffer->y_offset_table[j])+i);
+				BL3D_SET_PIX(i, j, col[0]);
+			}
+		}
+		
+		current_buffer = 0;
 	}
 }
 
