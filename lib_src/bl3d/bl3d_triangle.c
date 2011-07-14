@@ -194,8 +194,6 @@ void bl3d_sort_triangle_g_t(
 		}
 	}
 	
-	BL3D_MUL_VECTOR((struct BL3D_VECTOR*)&ot_tag->base_color, &bl3d_mul255_vector);
-	
 	
 	
 	ot_tag->next = NULL;
@@ -279,31 +277,31 @@ static void bl3d_draw_line_g_t(
 		
 		int tx = (int)PT.x;
 		int ty = (int)PT.y;
-
-		
-		int C;
-//		bl3d_slctWin(texture_vram);
-		bl3d_getPix(tx, ty, C, texture_vram);
-		
-		float Cr = (C >> 16) & 0xFF;
-		float Cg = (C >> 8 ) & 0xFF;
-		float Cb = (C >> 0 ) & 0xFF;
-
-		int col_r = (Cr * PC.r) + BASE_C->r;
-		int col_g = (Cg * PC.g) + BASE_C->g;
-		int col_b = (Cb * PC.b) + BASE_C->b;
-		
-		if(col_r > 255){col_r = 255;}
-		if(col_g > 255){col_g = 255;}
-		if(col_b > 255){col_b = 255;}
-		
-		int col = (col_r << 16) | (col_g << 8) | (col_b << 0);
 		
 		
-//		bl3d_slctWin(0);
-		bl3d_setPix(x,   y,   col);
-		bl3d_setPix(x+1, y+1, col);
+		bl3d_slctWin(texture_vram);
+		int _C;
+		bl3d_getPix(tx, ty, _C, texture_vram);
+		int _Cr = (_C >> 16) & 0xFF;
+		int _Cg = (_C >> 8 ) & 0xFF;
+		int _Cb = (_C      ) & 0xFF;
+		struct BL3D_CVECTOR C = {((float)_Cr) / 255.0, ((float)_Cg) / 255.0, ((float)_Cb) / 255.0};
+		bl3d_slctWin(0);
 		
+		
+		BL3D_MUL_VECTOR((struct BL3D_VECTOR*)&C, (struct BL3D_VECTOR*)&PC);
+		BL3D_ADD_VECTOR((struct BL3D_VECTOR*)&C, (struct BL3D_VECTOR*)BASE_C);		
+		
+		if(
+			x >= 0 &&
+			x < bl3d_system_frame_buffer->draw_width &&
+			y >= 0 &&
+			y < bl3d_system_frame_buffer->draw_height
+		) {
+			(bl3d_system_frame_buffer->y_offset_table[y])[x] 	= C;
+			(bl3d_system_frame_buffer->y_offset_table[y+1])[x+1]	= C;
+		}
+				
 		
 		BL3D_ADD_VECTOR(&P, &U);
 		BL3D_ADD_VECTOR(&PT, &UT);
