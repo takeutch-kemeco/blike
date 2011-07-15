@@ -14,6 +14,21 @@ int bl3d_screen_offset[2];
 /// デフォルトではbl3d_init()時に、画面の２次元座標のノルムがセットされる。
 float bl3d_screen_radius;
 
+/// 描画領域を表すキューブ
+/// ポリゴンの頂点が、このキューブよりも外側の場合は、キューブの最大値or最小値にアジャストする。
+///
+/// これにより、bl3d_screen_radiusで判定した際に、
+/// １つ以上の頂点が描画範囲内の状態で、残りの頂点が描画範囲外の場合に、
+/// その描画範囲頂点がスクリーンバッファー範囲の外に行ってしまうのを防止することができる。
+/// 本来、これは、１ピクセル描画毎にif文で範囲判定していれば不要なのだが、
+/// それだとif文の回数がピクセル回になってしまう。 一方、ポリゴンなら３回のif判定だけなので高速という考え。
+/// （このif判定も、実際はsseのmaxps, minps命令を使ってるのでif判定よりもコストが少ない）
+///
+/// zはオーダリングテーブルの範囲。通常は BL3D_OT_LENGTH - 1 から 0の範囲
+/// _min _max いずれも bl3d_init()にて初期設定がセットされる。
+struct BL3D_VECTOR bl3d_screen_cube_min;
+struct BL3D_VECTOR bl3d_screen_cube_max;
+
 /// オーダリングテーブルへの、Z割り当て時の、ｚスケーリング係数
 /// 
 /// オーダリングテーブルによるｚソートは、
@@ -145,6 +160,16 @@ void bl3d_init(const int screen_width, const int screen_height)
 		screen_width,
 		screen_height
 	);
+	
+	
+	
+	bl3d_screen_cube_min.x = -(screen_width  + (screen_width  / 2) - 32);
+	bl3d_screen_cube_min.y = -(screen_height + (screen_height / 2) - 32);
+	bl3d_screen_cube_min.z = 0;
+
+	bl3d_screen_cube_max.x = +(screen_width  + (screen_width  / 2) - 32);
+	bl3d_screen_cube_max.y = +(screen_height + (screen_height / 2) - 32);
+	bl3d_screen_cube_max.z = BL3D_OT_LENGTH - 1;
 }
 
 /// システムのワールドtoスクリーン行列を設定する。
@@ -311,6 +336,10 @@ void bl3d_clear_ot(struct BL3D_OT* a)
 /// bl3d_draw_ot()の内部処理用
 static void bl3d_draw_ot_tag(struct BL3D_OT_TAG* a)
 {
+	bl3d_ot_projection = bl3d_screen_projection * bl3d_ot_scale;
+	
+	
+	
 	if(a == NULL){
 		return;
 	}
@@ -341,9 +370,6 @@ static void bl3d_draw_ot_tag(struct BL3D_OT_TAG* a)
 			a = a->next;
 		}
 	}
-	
-	
-	bl3d_ot_projection = bl3d_screen_projection * bl3d_ot_scale;
 }
 
 /// オーダリングテーブルをblikeの描画バッファーに描画

@@ -106,6 +106,16 @@ void bl3d_sort_triangle_g_t(
 	
 	
 	
+	int big_z = (int)bl3d_get_big(
+		ot_tag->vertex[0].z, ot_tag->vertex[1].z, ot_tag->vertex[2].z
+	);
+	
+	if(big_z >= BL3D_OT_LENGTH - 1) {
+		return;
+	}
+	
+	
+	
 	for(i = 0; i < 3; i++) {
 		struct BL3D_VECTOR vertex = {
 			.x = ot_tag->vertex[i].x, .y = ot_tag->vertex[i].y, .z = 0
@@ -124,14 +134,6 @@ void bl3d_sort_triangle_g_t(
 	
 	
 	
-	int big_z = (int)bl3d_get_big(
-		ot_tag->vertex[0].z, ot_tag->vertex[1].z, ot_tag->vertex[2].z
-	);
-	
-	if(big_z >= BL3D_OT_LENGTH - 1) {
-		return;
-	}
-
 	int min_z = (int)bl3d_get_min(
 		ot_tag->vertex[0].z, ot_tag->vertex[1].z, ot_tag->vertex[2].z
 	);
@@ -149,7 +151,18 @@ void bl3d_sort_triangle_g_t(
 	if(normal_vector.z < 0) {
 		return;
 	}
-
+	
+	
+	
+	for(i = 0; i < 3; i++) {
+		BL3D_INNER_CUBE_VERTEX(
+			&ot_tag->vertex[i],
+			&ot_tag->vertex[i],
+			&bl3d_screen_cube_min,
+			&bl3d_screen_cube_max
+		);
+	}
+	
 	
 	
 	for(i = 0; i < 3; i++) {
@@ -290,16 +303,10 @@ static void bl3d_draw_line_g_t(
 		BL3D_MUL_VECTOR((struct BL3D_VECTOR*)&C, (struct BL3D_VECTOR*)&PC);
 		BL3D_ADD_VECTOR((struct BL3D_VECTOR*)&C, (struct BL3D_VECTOR*)BASE_C);		
 		
-		if(
-			x >= 0 &&
-			x < bl3d_system_frame_buffer->draw_width &&
-			y >= 0 &&
-			y < bl3d_system_frame_buffer->draw_height
-		) {
-			(bl3d_system_frame_buffer->y_offset_table[y])[x] 	= C;
-			(bl3d_system_frame_buffer->y_offset_table[y+1])[x+1]	= C;
-		}
-				
+		
+		(bl3d_system_frame_buffer->y_offset_table[y])[x] 	= C;
+		(bl3d_system_frame_buffer->y_offset_table[y+1])[x+1]	= C;
+		
 		
 		BL3D_ADD_VECTOR(&P, &U);
 		BL3D_ADD_VECTOR(&PT, &UT);
