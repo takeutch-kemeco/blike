@@ -699,6 +699,66 @@
 
 
 
+/// キューブ内に頂点が収まるように調整する
+/// たとえば verter.z が cube.z の範囲外ならば、cube.zの位置を vertex.z と置き換える。
+/// これにより、頂点がキューブ外に出ないようにすることができる。 
+/// つまり、ifによるmin/max判定と同様のことを、SSEのMAXPS,MINPS命令を用いて、if文を介さずに行う。
+///
+/// dst, src, cube_min, cube_max: struct BL3D_VERTEX*
+///
+// SSE3 を使用可能な場合
+#ifdef __ENABLE_SSE3__
+#define BL3D_INNER_CUBE_VERTEX(dst, src, min_cube, max_cube) {		\
+	__asm__ volatile(						\
+		"movaps (%1),   %%xmm0;"				\
+		"maxps  (%2),   %%xmm0;"				\
+		"minps  (%3),   %%xmm0;"				\
+		"movaps %%xmm0, (%0);"					\
+		:							\
+		:"r"((dst)), "r"((src)), "r"((min_cube)), "r"((max_cube))	\
+		:"memory"						\
+	);								\
+}
+// SSE3 を使用不可能な場合
+#else
+#define BL3D_INNER_CUBE_VERTEX(dst, src, min_cube, max_cube) {		\
+	if((src)->x < (min_cube)->x) {					\
+		(dst)->x = (min_cube)->x;				\
+	}								\
+	else {								\
+		(dst)->x = (src)->x;					\
+	}								\
+									\
+	if((src)->y < (min_cube)->y) {					\
+		(dst)->y = (min_cube)->y;				\
+	}								\
+	else {								\
+		(dst)->y = (src)->y;					\
+	}								\
+									\
+	if((src)->z < (min_cube)->z) {					\
+		(dst)->z = (min_cube)->z;				\
+	}								\
+	else {								\
+		(dst)->z = (src)->z;					\
+	}								\
+									\
+	if((dst)->x > (max_cube)->x) {					\
+		(dst)->x = (max_cube)->x;				\
+	}								\
+									\
+	if((dst)->y > (max_cube)->y) {					\
+		(dst)->y = (max_cube)->y;				\
+	}								\
+									\
+	if((dst)->z > (max_cube)->z) {					\
+		(dst)->z = (max_cube)->z;				\
+	}								\
+}
+#endif // __ENABLE_SSE3__
+
+
+
 /// キャッシュへデータを先読みする
 ///
 /// src: 先読みするメモリーアドレス
