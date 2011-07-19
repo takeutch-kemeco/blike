@@ -190,6 +190,9 @@ void bl3d_sort_triangle_g_t(
 				&normal_vector,
 				&bl3d_system_flat_light[i].vector
 			);
+			if(power < 0) {
+				power = 0;
+			}
 			
 			struct BL3D_VECTOR power_vector = {power, power, power, 0};
 
