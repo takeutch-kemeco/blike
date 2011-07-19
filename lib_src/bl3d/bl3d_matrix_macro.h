@@ -248,7 +248,7 @@
 // SSE3 を使用可能な場合
 #ifdef __ENABLE_SSE3__
 #define BL3D_MUL_MATRIX(dst, src0, src1) {		\
-	struct BL3D_VECTOR t_src1[3] = {		\
+	struct BL3D_VECTOR ___t_src1___[3] = {		\
 		{.x = (src1)->m[0][0], .y = (src1)->m[1][0], .z = (src1)->m[2][0], .pad = 0},	\
 		{.x = (src1)->m[0][1], .y = (src1)->m[1][1], .z = (src1)->m[2][1], .pad = 0},	\
 		{.x = (src1)->m[0][2], .y = (src1)->m[1][2], .z = (src1)->m[2][2], .pad = 0}	\
@@ -285,7 +285,7 @@
 			"haddps %%xmm1, %%xmm1;"	\
 			"movss  %%xmm1, 8(%2);"		\
 			:				\
-			:"r"((src0)->m[j]), "r"(t_src1), "r"((dst)->m[j]), "r"(bl3d_mask_vector_xyz)	\
+			:"r"((src0)->m[j]), "r"(___t_src1___), "r"((dst)->m[j]), "r"(bl3d_mask_vector_xyz)	\
 			:"memory"			\
 		);					\
 	}						\
@@ -293,14 +293,14 @@
 // SSE3 を使用不可能な場合
 #else
 #define BL3D_MUL_MATRIX(dst, src0, src1) {		\
-	int j, i;					\
+	int ___j___, ___i___;				\
 							\
-	for(j=0; j<3; j++) {				\
-		for(i=0; i<3; i++) {			\
-			(dst)->m[j][i] =			\
-				(src0)->m[j][0] * (src1)->m[0][i] +		\
-				(src0)->m[j][1] * (src1)->m[1][i] +		\
-				(src0)->m[j][2] * (src1)->m[2][i];		\
+	for(___j___ = 0; ___j___ < 3; ___j___++) {	\
+		for(___i___ = 0; ___i___ < 3; ___i___++) {				\
+			(dst)->m[___j___][___i___] =					\
+				(src0)->m[___j___][0] * (src1)->m[0][___i___] +		\
+				(src0)->m[___j___][1] * (src1)->m[1][___i___] +		\
+				(src0)->m[___j___][2] * (src1)->m[2][___i___];		\
 		}					\
 	}						\
 }
@@ -358,17 +358,17 @@
 // SSE3 を使用不可能な場合
 #else
 #define BL3D_APPLY_MATRIX(dst, msrc, vsrc) {		\
-	struct BL3D_VECTOR tmp_vsrc = *(vsrc);		\
-	float* ptr_dst = &((dst)->x);			\
+	struct BL3D_VECTOR ___tmp_vsrc___ = *(vsrc);	\
+	float* ___ptr_dst___ = &((dst)->x);		\
 							\
-	int j;						\
+	int ___j___;					\
 							\
-	for(j=0; j<3; j++) {				\
-		ptr_dst[j] =				\
-			(msrc)->m[j][0] * tmp_vsrc.x + 	\
-			(msrc)->m[j][1] * tmp_vsrc.y + 	\
-			(msrc)->m[j][2] * tmp_vsrc.z;	\
-	}						\
+	for(___j___ = 0; ___j___ < 3; ___j___++) {			\
+		___ptr_dst___[___j___] =				\
+			(msrc)->m[___j___][0] * ___tmp_vsrc___.x + 	\
+			(msrc)->m[___j___][1] * ___tmp_vsrc___.y + 	\
+			(msrc)->m[___j___][2] * ___tmp_vsrc___.z;	\
+	}								\
 }
 #endif // __ENABLE_SSE3__
 
@@ -380,12 +380,12 @@
 ///
 /// （注意：計算するのは回転行列m[][]のみで、平行移動t[]は計算しません）
 #define BL3D_ROT_MATRIX_X(dst, src) {			\
-	const float s = BL3D_SIN((src));		\
-	const float c = BL3D_COS((src));		\
+	const float ___s___ = BL3D_SIN((src));		\
+	const float ___c___ = BL3D_COS((src));		\
 							\
-	(dst)->m[0][0] = 1;	(dst)->m[0][1] = 0;	(dst)->m[0][2] = 0;	\
-	(dst)->m[1][0] = 0;	(dst)->m[1][1] = c;	(dst)->m[1][2] = -s;	\
-	(dst)->m[2][0] = 0;	(dst)->m[2][1] = s;	(dst)->m[2][2] = c;	\
+	(dst)->m[0][0] = 1;	(dst)->m[0][1] = 0;		(dst)->m[0][2] = 0;		\
+	(dst)->m[1][0] = 0;	(dst)->m[1][1] = ___c___;	(dst)->m[1][2] = -___s___;	\
+	(dst)->m[2][0] = 0;	(dst)->m[2][1] = ___s___;	(dst)->m[2][2] =  ___c___;	\
 }
 
 
@@ -396,12 +396,12 @@
 ///
 /// （注意：計算するのは回転行列m[][]のみで、平行移動t[]は計算しません）
 #define BL3D_ROT_MATRIX_Y(dst, src) {			\
-	const float s = BL3D_SIN((src));		\
-	const float c = BL3D_COS((src));		\
+	const float ___s___ = BL3D_SIN((src));		\
+	const float ___c___ = BL3D_COS((src));		\
 							\
-	(dst)->m[0][0] = c;	(dst)->m[0][1] = 0;	(dst)->m[0][2] = s;	\
-	(dst)->m[1][0] = 0;	(dst)->m[1][1] = 1;	(dst)->m[1][2] = 0;	\
-	(dst)->m[2][0] = -s;	(dst)->m[2][1] = 0;	(dst)->m[2][2] = c;	\
+	(dst)->m[0][0] =  ___c___;	(dst)->m[0][1] = 0;	(dst)->m[0][2] = ___s___;	\
+	(dst)->m[1][0] =  0;		(dst)->m[1][1] = 1;	(dst)->m[1][2] = 0;		\
+	(dst)->m[2][0] = -___s___;	(dst)->m[2][1] = 0;	(dst)->m[2][2] = ___c___;	\
 }
 
 
@@ -412,12 +412,12 @@
 ///
 /// （注意：計算するのは回転行列m[][]のみで、平行移動t[]は計算しません）
 #define BL3D_ROT_MATRIX_Z(dst, src) {			\
-	const float s = BL3D_SIN((src));		\
-	const float c = BL3D_COS((src));		\
+	const float ___s___ = BL3D_SIN((src));		\
+	const float ___c___ = BL3D_COS((src));		\
 							\
-	(dst)->m[0][0] = c;	(dst)->m[0][1] = -s;	(dst)->m[0][2] = 0;	\
-	(dst)->m[1][0] = s;	(dst)->m[1][1] = c;	(dst)->m[1][2] = 0;	\
-	(dst)->m[2][0] = 0;	(dst)->m[2][1] = 0;	(dst)->m[2][2] = 1;	\
+	(dst)->m[0][0] = ___c___;	(dst)->m[0][1] = -___s___;	(dst)->m[0][2] = 0;	\
+	(dst)->m[1][0] = ___s___;	(dst)->m[1][1] =  ___c___;	(dst)->m[1][2] = 0;	\
+	(dst)->m[2][0] = 0;		(dst)->m[2][1] =  0;		(dst)->m[2][2] = 1;	\
 }
 
 
@@ -431,14 +431,14 @@
 ///
 /// （注意：計算するのは回転行列m[][]のみで、平行移動t[]は計算しません）
 #define BL3D_ROT_MATRIX(dst, src) {			\
-	struct BL3D_MATRIX mx, my, mz, tmp;		\
+	struct BL3D_MATRIX ___mx___, ___my___, ___mz___, ___tmp___;	\
 							\
-	BL3D_ROT_MATRIX_X(&mx, (src)->x);		\
-	BL3D_ROT_MATRIX_Y(&my, (src)->y);		\
-	BL3D_ROT_MATRIX_Z(&mz, (src)->z);		\
+	BL3D_ROT_MATRIX_X(&___mx___, (src)->x);		\
+	BL3D_ROT_MATRIX_Y(&___my___, (src)->y);		\
+	BL3D_ROT_MATRIX_Z(&___mz___, (src)->z);		\
 							\
-	BL3D_MUL_MATRIX(&tmp, &mz,  &my);		\
-	BL3D_MUL_MATRIX((dst),  &tmp, &mx);		\
+	BL3D_MUL_MATRIX(&___tmp___, &___mz___,  &___my___);	\
+	BL3D_MUL_MATRIX((dst),      &___tmp___, &___mx___);	\
 }
 
 
@@ -463,11 +463,11 @@
 // SSE3 を使用不可能な場合
 #else
 #define BL3D_TRANS_MATRIX(dst, src) {			\
-	float* p = &((src)->x);				\
+	float* ___p___ = &((src)->x);			\
 							\
-	(dst)->t[0] = p[0];				\
-	(dst)->t[1] = p[1];				\
-	(dst)->t[2] = p[2];				\
+	(dst)->t[0] = ___p___[0];			\
+	(dst)->t[1] = ___p___[1];			\
+	(dst)->t[2] = ___p___[2];			\
 }
 #endif // __ENABLE_SSE3__
 
@@ -484,21 +484,21 @@
 /// 平行移動の計算順序は (src0.m * src1.t) + src0.t = dst.t です。
 /// つまり src0 が親側で、src1が子側です。
 #define BL3D_COMP_MATRIX(dst, src0, src1) {			\
-	struct BL3D_MATRIX tmp;					\
+	struct BL3D_MATRIX ___tmp___;				\
 								\
-	BL3D_MUL_MATRIX(&tmp, (src0), (src1));			\
+	BL3D_MUL_MATRIX(&___tmp___, (src0), (src1));		\
 								\
 	BL3D_APPLY_MATRIX(					\
-		(struct BL3D_VECTOR*)(tmp.t),			\
+		(struct BL3D_VECTOR*)(___tmp___.t),		\
 		src0,						\
 		(struct BL3D_VECTOR*)(src1->t)			\
 	);							\
 								\
-	tmp.t[0] += (src0)->t[0];				\
-	tmp.t[1] += (src0)->t[1];				\
-	tmp.t[2] += (src0)->t[2];				\
+	___tmp___.t[0] += (src0)->t[0];				\
+	___tmp___.t[1] += (src0)->t[1];				\
+	___tmp___.t[2] += (src0)->t[2];				\
 								\
-	*(dst) = tmp;						\
+	*(dst) = ___tmp___;					\
 }
 
 
@@ -578,31 +578,31 @@
 // SSE3 を使用可能な場合
 #ifdef __ENABLE_SSE3__
 #define BL3D_UNIT_VECTOR(dst, src) {				\
-	const float __attribute__((aligned(16)))tmp;		\
+	const float __attribute__((aligned(16)))___tmp___;	\
 								\
-	BL3D_INVERT_NORM_VECTOR(&tmp, (src));			\
+	BL3D_INVERT_NORM_VECTOR(&___tmp___, (src));		\
 								\
-	float __attribute__((aligned(16)))invert_norm[4] = {tmp, tmp, tmp, 0};	\
+	float __attribute__((aligned(16)))___invert_norm___[4] = {___tmp___, ___tmp___, ___tmp___, 0};	\
 								\
 	__asm__ volatile(					\
 		"movaps  (%0),   %%xmm0;"			\
 		"mulps   (%2),   %%xmm0;"			\
 		"movaps  %%xmm0, (%1);"				\
 		:						\
-		:"r"((src)), "r"((dst)), "r"(invert_norm)	\
+		:"r"((src)), "r"((dst)), "r"(___invert_norm___)	\
 		:"memory"					\
 	);							\
 }
 // SSE3 を使用不可能な場合
 #else
 #define BL3D_UNIT_VECTOR(dst, src) {				\
-	float __attribute__((aligned(16)))invert_norm;		\
+	float __attribute__((aligned(16)))___invert_norm___;	\
 								\
-	BL3D_INVERT_NORM_VECTOR(&invert_norm, (src));		\
+	BL3D_INVERT_NORM_VECTOR(&___invert_norm___, (src));	\
 								\
-	(dst)->x = (src)->x * invert_norm;			\
-	(dst)->y = (src)->y * invert_norm;			\
-	(dst)->z = (src)->z * invert_norm;			\
+	(dst)->x = (src)->x * ___invert_norm___;		\
+	(dst)->y = (src)->y * ___invert_norm___;		\
+	(dst)->z = (src)->z * ___invert_norm___;		\
 }
 #endif // __ENABLE_SSE3__
 
@@ -614,13 +614,13 @@
 ///
 // SSE3 を使用可能な場合
 #define BL3D_OUTER_PRODUCT_VECTOR(dst, src0, src1) {		\
-	struct BL3D_MATRIX m_src1 = {				\
+	struct BL3D_MATRIX ___m_src1___ = {			\
 		.m[0][0]= 0,		.m[0][1]= (src1)->z,	.m[0][2]=-(src1)->y,	\
 		.m[1][0]=-(src1)->z,	.m[1][1]= 0,		.m[1][2]= (src1)->x,	\
 		.m[2][0]= (src1)->y,	.m[2][1]=-(src1)->x,	.m[2][2]= 0		\
 	};							\
 								\
-	BL3D_APPLY_MATRIX((dst), &m_src1, (src0));		\
+	BL3D_APPLY_MATRIX((dst), &___m_src1___, (src0));	\
 								\
 	BL3D_UNIT_VECTOR((dst), (dst));				\
 }
@@ -752,8 +752,6 @@
 	}								\
 }
 #endif // __ENABLE_SSE3__
-
-
 
 /// キャッシュへデータを先読みする
 ///
