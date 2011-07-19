@@ -20,7 +20,7 @@
 
 /// 色用ベクトル
 struct BL3D_CVECTOR {
-	float r, g, b, pad;
+	float b, g, r, pad;
 } __attribute__((aligned(16)));
 
 /// 3次元ベクトル

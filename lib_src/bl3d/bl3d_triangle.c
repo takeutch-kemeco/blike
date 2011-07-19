@@ -300,7 +300,12 @@ static void bl3d_draw_line_g_t(
 		int _Cr = (_C >> 16) & 0xFF;
 		int _Cg = (_C >> 8 ) & 0xFF;
 		int _Cb = (_C      ) & 0xFF;
-		struct BL3D_CVECTOR C = {((float)_Cr) / 255.0, ((float)_Cg) / 255.0, ((float)_Cb) / 255.0};
+		const float i255 = 1.0 / 255;
+		struct BL3D_CVECTOR C = {
+			.r = ((float)_Cr) * i255,
+			.g = ((float)_Cg) * i255,
+			.b = ((float)_Cb) * i255
+		};
 		
 		
 		BL3D_MUL_VECTOR((struct BL3D_VECTOR*)&C, (struct BL3D_VECTOR*)&PC);
