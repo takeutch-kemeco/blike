@@ -381,6 +381,13 @@ extern struct BL3D_MATRIX* bl3d_invert_matrix(
 	struct BL3D_MATRIX* src
 );
 
+/// 法線ベクトルによる面に対して、視線ベクトルの反射ベクトルを得る
+extern inline struct BL3D_VECTOR* bl3d_reflection_vector(
+        struct BL3D_VECTOR* dst,
+        struct BL3D_VECTOR* view,
+        struct BL3D_VECTOR* normal
+);
+
 extern void bl3d_print_matrix(struct BL3D_MATRIX* a);
 
 
