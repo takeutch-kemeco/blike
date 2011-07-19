@@ -634,10 +634,6 @@
 ///
 #define BL3D_INNER_PRODUCT_VECTOR(dst, src0, src1) {		\
 	BL3D_MULADD_VECTOR((dst), (src0), (src1));		\
-								\
-	if(*(dst) < 0) {					\
-		*(dst) = 0;					\
-	}							\
 }
 
 
