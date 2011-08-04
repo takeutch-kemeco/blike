@@ -41,7 +41,7 @@ struct MainScreen* new_MainScreen(gint width, gint height, struct MainWindow* wi
 	a->frame_buffer_width  = width;
 	a->frame_buffer_height = height;
 	
-	a->pixbuf = gdk_pixbuf_new(GDK_PIXBUF_ALPHA_BILEVEL, FALSE, 8, width, height);
+	a->pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, FALSE, 8, width, height);
 	a->wgt = gtk_image_new_from_pixbuf(a->pixbuf);
 
 	a->frame_buffer = gdk_pixbuf_get_pixels(a->pixbuf);
@@ -71,7 +71,7 @@ void resize_MainScreen(struct MainScreen* a, gint width, gint height, struct Mai
 	a->frame_buffer_width  = width;
 	a->frame_buffer_height = height;
 	
-	a->pixbuf = gdk_pixbuf_new(GDK_PIXBUF_ALPHA_BILEVEL, FALSE, 8, width, height);
+	a->pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, FALSE, 8, width, height);
 	a->wgt = gtk_image_new_from_pixbuf(a->pixbuf);
 
 	gtk_widget_set_size_request(a->wgt, a->frame_buffer_width, a->frame_buffer_height);
