@@ -5,38 +5,42 @@ make clean
 make -j 2
 
 cd ../../samples
-rm *.o
-rm test000a
-rm test001a
-rm test002a
-rm test003a
-rm test004a
-rm test005a
-rm test006a
-rm test008a
-rm test010a
-rm test011a
-rm test012a
-rm test013a
-rm test014a
-rm test015a
-rm test016a
-rm test017a
-rm test018a
-rm test019a
-rm test020a
-rm test021a
+rm -f *.o
+rm -f test000a
+rm -f test001a
+rm -f test002a
+rm -f test003a
+rm -f test004a
+rm -f test005a
+rm -f test006a
+rm -f test008a
+rm -f test010a
+rm -f test011a
+rm -f test012a
+rm -f test013a
+rm -f test014a
+rm -f test015a
+rm -f test016a
+rm -f test017a
+rm -f test018a
+rm -f test019a
+rm -f test020a
+rm -f test021a
 
-rm bball00a
-rm boxes00a
-rm kcube00a
-rm mt_xor0a
+rm -f bball00a
+rm -f boxes00a
+rm -f kcube00a
+rm -f mt_xor0a
 
-rm msgk00a
-rm msgk01a
+rm -f msgk00a
+rm -f msgk01a
 
-rm test_keybord_state
-rm test_bl3d_triangle 
+rm -f test_keybord_state
+rm -f test_bl3d_triangle 
+rm -f bl3d_cube
+rm -f bl3d_cube2
+
+rm -f test_bl_plot
 
 A=test000a;	make SRCS="$A".c PROG=$A -j 2
 A=test001a;	make SRCS="$A".c PROG=$A -j 2
