@@ -300,7 +300,7 @@ static void bl3d_draw_line_g_t(
 		int _Cr = (_C >> 16) & 0xFF;
 		int _Cg = (_C >> 8 ) & 0xFF;
 		int _Cb = (_C      ) & 0xFF;
-		const float i255 = 1.0 / 255;
+		static const float i255 = 1.0 / 255;
 		struct BL3D_CVECTOR C = {
 			.r = ((float)_Cr) * i255,
 			.g = ((float)_Cg) * i255,
@@ -313,7 +313,6 @@ static void bl3d_draw_line_g_t(
 		
 		
 		(bl3d_system_frame_buffer->y_offset_table[y])[x] 	= C;
-		(bl3d_system_frame_buffer->y_offset_table[y+1])[x+1]	= C;
 		
 		
 		BL3D_ADD_VECTOR(&P, &U);
@@ -322,7 +321,226 @@ static void bl3d_draw_line_g_t(
 	}
 }
 
-void bl3d_draw_triangle_g_t(struct BL3D_OT_TAG* a)
+static int bl3d_get_index_min(const float a, const float b, const float c)
+{
+	float z = a;
+	int i = 0;
+	
+	if(z > b) {
+		z = b;
+		i = 1;
+	}
+	
+	if(z > c) {
+		z = c;
+		i = 2;
+	}
+	
+	return i;
+}
+
+static int bl3d_get_index_max(const float a, const float b, const float c)
+{
+	float z = a;
+	int i = 0;
+	
+	if(z < b) {
+		z = b;
+		i = 1;
+	}
+	
+	if(z < c) {
+		z = c;
+		i = 2;
+	}
+	
+	return i;
+}
+
+static void bl3d_get_index(
+	int* min,
+	int* mid,
+	int* max,
+	const float a,
+	const float b,
+	const float c
+)
+{
+	*min = bl3d_get_index_min(a, b, c);
+	*max = bl3d_get_index_max(a, b, c);
+	
+	switch(*min) {
+	case 0:
+		switch(*max) {
+		case 1: *mid = 2; break;
+		case 2: *mid = 1; break;
+
+		case 0: *mid = 0; break;
+		}
+		break;
+		
+	case 1:
+		switch(*max) {
+		case 0: *mid = 2; break;
+		case 2: *mid = 0; break;
+
+		case 1: *mid = 1; break;
+		}
+		break;
+		
+	case 2:
+		switch(*max) {
+		case 0: *mid = 1; break;
+		case 1: *mid = 0; break;
+
+		case 2: *mid = 2; break;
+		}
+		break;
+	}
+}
+
+// x軸に平行な線で、三角形を２つに分割する。
+// 結果は２つの BL3D_OT_TAG 型として返される
+//
+// 再構築される三角形は、それぞれ、元の時計回りに準じた形で、
+// 分割線にの両端がA,Cで、分割線の向かいの点がBとなるように再構築される。
+static void bl3d_xline_divide_triangle_g_t(
+	struct BL3D_OT_TAG* dstA,
+	struct BL3D_OT_TAG* dstB,
+	struct BL3D_OT_TAG* src
+)
+{
+	int min, mid, max;
+	bl3d_get_index(
+		&min, &mid, &max,
+		src->vertex[0].y, src->vertex[1].y, src->vertex[2].y
+	);
+	
+	
+	
+	float vumid = src->vertex[mid].y - src->vertex[min].y;
+ 	float vumax = src->vertex[max].y - src->vertex[min].y;
+	float vuy = (vumax != 0)? vumid / vumax: 0;
+	struct BL3D_VECTOR VUY = {vuy, vuy, vuy, 0};
+	
+	
+	 
+	struct BL3D_VECTOR VL;
+	BL3D_DIFF_VECTOR(&VL, &src->vertex[max], &src->vertex[min]);
+	
+	struct BL3D_VECTOR VP;
+	BL3D_MUL2_VECTOR(&VP, &VL, &VUY);
+	BL3D_ADD_VECTOR(&VP, &src->vertex[min]);
+	
+	
+	
+	struct BL3D_VECTOR TL;
+	BL3D_DIFF_VECTOR(&TL, &src->texture[max], &src->texture[min]);
+
+	struct BL3D_VECTOR TP;
+	BL3D_MUL2_VECTOR(&TP, &TL, &VUY);
+	BL3D_ADD_VECTOR(&TP, &src->texture[min]);
+	
+	
+	
+	struct BL3D_CVECTOR CL;
+	BL3D_DIFF_VECTOR(
+		(struct BL3D_VECTOR*)&CL,
+		(struct BL3D_VECTOR*)&src->color[max],
+		(struct BL3D_VECTOR*)&src->color[min]
+	);
+	
+	struct BL3D_CVECTOR CP;
+	BL3D_MUL2_VECTOR(
+		(struct BL3D_VECTOR*)&CP,
+		(struct BL3D_VECTOR*)&CL,
+		&VUY
+	);
+	BL3D_ADD_VECTOR(
+		(struct BL3D_VECTOR*)&CP,
+		(struct BL3D_VECTOR*)&src->color[min]
+	);
+	
+	
+	
+	dstA->type = dstB->type = BL3D_TRIANGLE_TYPE_G_T;
+	dstA->texture_vram = dstB->texture_vram = src->texture_vram;
+	dstA->base_color = dstB->base_color = src->base_color;
+
+	dstA->vertex[0]  = dstB->vertex[0]  = VP;
+	dstA->texture[0] = dstB->texture[0] = TP;
+	dstA->color[0]   = dstB->color[0]   = CP;
+
+	switch(mid) {
+	case 0:
+		dstA->vertex[1] = src->vertex[2];
+		dstA->vertex[2] = src->vertex[0];
+
+		dstA->texture[1] = src->texture[2];
+		dstA->texture[2] = src->texture[0];
+	
+		dstA->color[1] = src->color[2];
+		dstA->color[2] = src->color[0];
+		
+		
+		dstB->vertex[1] = src->vertex[0];
+		dstB->vertex[2] = src->vertex[1];
+
+		dstB->texture[1] = src->texture[0];
+		dstB->texture[2] = src->texture[1];
+	
+		dstB->color[1] = src->color[0];
+		dstB->color[2] = src->color[1];
+
+		break;
+	
+	case 1:
+		dstA->vertex[1] = src->vertex[0];
+		dstA->vertex[2] = src->vertex[1];
+
+		dstA->texture[1] = src->texture[0];
+		dstA->texture[2] = src->texture[1];
+			
+		dstA->color[1] = src->color[0];
+		dstA->color[2] = src->color[1];
+		
+		
+		dstB->vertex[1] = src->vertex[1];
+		dstB->vertex[2] = src->vertex[2];
+
+		dstB->texture[1] = src->texture[1];
+		dstB->texture[2] = src->texture[2];
+			
+		dstB->color[1] = src->color[1];
+		dstB->color[2] = src->color[2];
+
+		break;
+	
+	case 2:
+		dstA->vertex[1] = src->vertex[1];
+		dstA->vertex[2] = src->vertex[2];
+		
+		dstA->texture[1] = src->texture[1];
+		dstA->texture[2] = src->texture[2];
+		
+		dstA->color[1] = src->color[1];
+		dstA->color[2] = src->color[2];
+		
+		
+		dstB->vertex[1] = src->vertex[2];
+		dstB->vertex[2] = src->vertex[0];
+		
+		dstB->texture[1] = src->texture[2];
+		dstB->texture[2] = src->texture[0];
+		
+		dstB->color[1] = src->color[2];
+		dstB->color[2] = src->color[0];
+
+		break;
+	}
+}
+
+static void __bl3d_draw_triangle_g_t(struct BL3D_OT_TAG* a)
 {
 	struct BL3D_VECTOR A;
 	BL3D_DIFF_VECTOR(&A, &a->vertex[1], &a->vertex[0]);
@@ -473,4 +691,13 @@ void bl3d_draw_triangle_g_t(struct BL3D_OT_TAG* a)
 		wait(1000/60);
 #endif // __DEBUG__
 	}
+}
+
+void bl3d_draw_triangle_g_t(struct BL3D_OT_TAG* a)
+{
+	struct BL3D_OT_TAG A, B;
+	bl3d_xline_divide_triangle_g_t(&A, &B, a);
+	
+	__bl3d_draw_triangle_g_t(&A);
+	__bl3d_draw_triangle_g_t(&B);
 }
