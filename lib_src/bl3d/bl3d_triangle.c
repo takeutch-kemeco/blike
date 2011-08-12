@@ -707,8 +707,21 @@ static void __bl3d_draw_triangle_g_t(struct BL3D_OT_TAG* a)
 	}
 }
 
+static void bl3d_scale_aspect_triangle_g_t(
+	struct BL3D_OT_TAG* a,
+	struct BL3D_VECTOR* scale
+)
+{
+	BL3D_MUL_VECTOR(&a->vertex[0], scale);
+	BL3D_MUL_VECTOR(&a->vertex[1], scale);
+	BL3D_MUL_VECTOR(&a->vertex[2], scale);
+}
+
 void bl3d_draw_triangle_g_t(struct BL3D_OT_TAG* a)
 {
+	static const struct BL3D_VECTOR aspect = {1.0, 0.5, 1.0, 0};
+	bl3d_scale_aspect_triangle_g_t(a, &aspect);
+	
 	struct BL3D_OT_TAG A, B;
 	bl3d_xline_divide_triangle_g_t(&A, &B, a);
 	

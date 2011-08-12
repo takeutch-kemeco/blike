@@ -390,19 +390,27 @@ void bl3d_draw_ot(struct BL3D_OT* ot)
 	for(i = BL3D_OT_LENGTH - 1; i >= 0; i--) {
 		bl3d_draw_ot_tag(ot->ot_tag_top[i]);
 	}
-		
 	
 	
 	int __attribute__((aligned(16)))col[4];
+	int pic_j;
 	
 	static int current_buffer = 0;
 	switch(current_buffer) {
 	case 0:
-		for(j = 1; j < height; j+=2) {
+		for(pic_j = 0, j = 1; j < height; pic_j++, j+=2) {
 			for(i = 0; i < width; i++) {
-				BL3D_PREFETCH((bl3d_system_frame_buffer->y_offset_table[j])+i+5);
+				BL3D_PREFETCH(
+					(bl3d_system_frame_buffer->y_offset_table[pic_j]) +
+					i +
+					5
+				);
 				
-				BL3D_CVECTOR_TO_INTCOLOR(col, (bl3d_system_frame_buffer->y_offset_table[j])+i);
+				BL3D_CVECTOR_TO_INTCOLOR(
+					col,
+					(bl3d_system_frame_buffer->y_offset_table[pic_j]) +
+					i
+				);
 				BL3D_SET_PIX(i, j, col[0]);
 			}
 		}
@@ -411,11 +419,19 @@ void bl3d_draw_ot(struct BL3D_OT* ot)
 		break;
 		
 	default:
-		for(j = 0; j < height; j+=2) {
+		for(pic_j = 0, j = 0; j < height; pic_j++, j+=2) {
 			for(i = 0; i < width; i++) {
-				BL3D_PREFETCH((bl3d_system_frame_buffer->y_offset_table[j])+i+5);
+				BL3D_PREFETCH(
+					(bl3d_system_frame_buffer->y_offset_table[pic_j]) +
+					i +
+					5
+				);
 
-				BL3D_CVECTOR_TO_INTCOLOR(col, (bl3d_system_frame_buffer->y_offset_table[j])+i);
+				BL3D_CVECTOR_TO_INTCOLOR(
+					col,
+					(bl3d_system_frame_buffer->y_offset_table[pic_j]) +
+					i
+				);
 				BL3D_SET_PIX(i, j, col[0]);
 			}
 		}
