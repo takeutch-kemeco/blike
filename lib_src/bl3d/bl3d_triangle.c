@@ -467,74 +467,88 @@ static void bl3d_xline_divide_triangle_g_t(
 	dstA->texture_vram = dstB->texture_vram = src->texture_vram;
 	dstA->base_color = dstB->base_color = src->base_color;
 
-	dstA->vertex[0]  = dstB->vertex[0]  = VP;
-	dstA->texture[0] = dstB->texture[0] = TP;
-	dstA->color[0]   = dstB->color[0]   = CP;
-
 	switch(mid) {
 	case 0:
+		dstA->vertex[0] = VP;
 		dstA->vertex[1] = src->vertex[2];
 		dstA->vertex[2] = src->vertex[0];
 
+		dstA->texture[0] = TP;
 		dstA->texture[1] = src->texture[2];
 		dstA->texture[2] = src->texture[0];
 	
+		dstA->color[0] = CP;
 		dstA->color[1] = src->color[2];
 		dstA->color[2] = src->color[0];
 		
 		
-		dstB->vertex[1] = src->vertex[0];
-		dstB->vertex[2] = src->vertex[1];
+		dstB->vertex[0] = src->vertex[0];
+		dstB->vertex[1] = src->vertex[1];
+		dstB->vertex[2] = VP;
 
-		dstB->texture[1] = src->texture[0];
-		dstB->texture[2] = src->texture[1];
+		dstB->texture[0] = src->texture[0];
+		dstB->texture[1] = src->texture[1];
+		dstB->texture[2] = TP;
 	
-		dstB->color[1] = src->color[0];
-		dstB->color[2] = src->color[1];
+		dstB->color[0] = src->color[0];
+		dstB->color[1] = src->color[1];
+		dstB->color[2] = CP;
 
 		break;
 	
 	case 1:
+		dstA->vertex[0] = VP;
 		dstA->vertex[1] = src->vertex[0];
 		dstA->vertex[2] = src->vertex[1];
 
+		dstA->texture[0] = TP;
 		dstA->texture[1] = src->texture[0];
 		dstA->texture[2] = src->texture[1];
-			
+	
+		dstA->color[0] = CP;
 		dstA->color[1] = src->color[0];
 		dstA->color[2] = src->color[1];
 		
 		
-		dstB->vertex[1] = src->vertex[1];
-		dstB->vertex[2] = src->vertex[2];
+		dstB->vertex[0] = src->vertex[1];
+		dstB->vertex[1] = src->vertex[2];
+		dstB->vertex[2] = VP;
 
-		dstB->texture[1] = src->texture[1];
-		dstB->texture[2] = src->texture[2];
-			
-		dstB->color[1] = src->color[1];
-		dstB->color[2] = src->color[2];
+		dstB->texture[0] = src->texture[1];
+		dstB->texture[1] = src->texture[2];
+		dstB->texture[2] = TP;
+	
+		dstB->color[0] = src->color[1];
+		dstB->color[1] = src->color[2];
+		dstB->color[2] = CP;
 
 		break;
 	
 	case 2:
+		dstA->vertex[0] = VP;
 		dstA->vertex[1] = src->vertex[1];
 		dstA->vertex[2] = src->vertex[2];
-		
+
+		dstA->texture[0] = TP;
 		dstA->texture[1] = src->texture[1];
 		dstA->texture[2] = src->texture[2];
-		
+	
+		dstA->color[0] = CP;
 		dstA->color[1] = src->color[1];
 		dstA->color[2] = src->color[2];
 		
 		
-		dstB->vertex[1] = src->vertex[2];
-		dstB->vertex[2] = src->vertex[0];
-		
-		dstB->texture[1] = src->texture[2];
-		dstB->texture[2] = src->texture[0];
-		
-		dstB->color[1] = src->color[2];
-		dstB->color[2] = src->color[0];
+		dstB->vertex[0] = src->vertex[2];
+		dstB->vertex[1] = src->vertex[0];
+		dstB->vertex[2] = VP;
+
+		dstB->texture[0] = src->texture[2];
+		dstB->texture[1] = src->texture[0];
+		dstB->texture[2] = TP;
+	
+		dstB->color[0] = src->color[2];
+		dstB->color[1] = src->color[0];
+		dstB->color[2] = CP;
 
 		break;
 	}
