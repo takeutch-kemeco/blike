@@ -203,9 +203,9 @@ static void x_init_model(void)
 	model_data[11].texture[2]=texture[3];
 };
 
-static struct BL3D_DOBJ dobj[1000];
-static struct BL3D_VECTOR tt[1000];
-static struct BL3D_VECTOR tr[1000];
+static struct BL3D_DOBJ dobj[5000];
+static struct BL3D_VECTOR tt[5000];
+static struct BL3D_VECTOR tr[5000];
 static const float G=3;
 
 
@@ -273,7 +273,7 @@ blMain()
 
 	x_init_model();
 	
-	int dobj_len = 500;
+	int dobj_len = 5000;
 	int i;
 	for(i=0; i<dobj_len; i++) {
 		bl3d_link_object(&dobj[i], model_data, 12);
@@ -338,11 +338,11 @@ blMain()
 	
 	
 	while(1) {
-		copyRct0(
-			480, 270,
-			4, 0, 0,
-			0, 0, 0
-		);
+//		copyRct0(
+//			480, 270,
+//			4, 0, 0,
+//			0, 0, 0
+//		);
 
 		bl_locate(0,0);
 		bl_printf("jk: view down, up\n");
@@ -385,8 +385,8 @@ blMain()
 		case '1': view_mode=0;	break;
 		case '2': view_mode=1;	break;
 
-		case 'i': dobj_len = (dobj_len<300)? dobj_len+1: 300;	break;
-		case 'd': dobj_len = (dobj_len>0  )? dobj_len-1: 0;	break;
+		case 'i': dobj_len = (dobj_len<5000-10)? dobj_len+10: 5000; break;
+		case 'd': dobj_len = (dobj_len>10  )? dobj_len-10: 0;	break;
 		}
 		
 		
