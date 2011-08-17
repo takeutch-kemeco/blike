@@ -245,28 +245,20 @@ static void bl3d_draw_line_g_t(
 	struct BL3D_CVECTOR* BASE_C
 )
 {
-	struct BL3D_VECTOR L;
-	BL3D_DIFF_VECTOR(&L, B, A);
-	L.z = 0;
-	
-	float r;
-	BL3D_NORM_VECTOR(&r, &L);
+	const float d = B->x - A->x;
+	const float r = (d > 0)? d: -d;		// abs(d);
 
-	float ir;
-	BL3D_INVERT_NORM_VECTOR(&ir, &L);
-	
+	const float ir = (r != 0)? 1.0 / r: 0;
 	struct BL3D_VECTOR ir_vec = {ir, ir, ir, 0};
 	
-	struct BL3D_VECTOR U;
-	BL3D_MUL2_VECTOR(&U, &L, &ir_vec);
-
-	struct BL3D_VECTOR P = *A;
-
+	const float Ux = (d > 0)? +1.0: -1.0;
+	int Px = (int)A->x;
+	int Py = (int)A->y;
+	
 	
 	
 	struct BL3D_VECTOR LT;
 	BL3D_DIFF_VECTOR(&LT, BT, AT);
-	LT.z = 0;
 	
 	struct BL3D_VECTOR UT;
 	BL3D_MUL2_VECTOR(&UT, &LT, &ir_vec);
@@ -285,12 +277,9 @@ static void bl3d_draw_line_g_t(
 	
 	
 	
+	const int _r = (int)r;
 	int i;
-	for(i = 0; i < r; i++) {
-		int x = (int)P.x;
-		int y = (int)P.y;
-		
-		
+	for(i = 0; i < _r; i++) {
 		int tx = (int)PT.x;
 		int ty = (int)PT.y;
 		
@@ -312,10 +301,10 @@ static void bl3d_draw_line_g_t(
 		BL3D_ADD_VECTOR((struct BL3D_VECTOR*)&C, (struct BL3D_VECTOR*)BASE_C);		
 		
 		
-		(bl3d_system_frame_buffer->y_offset_table[y])[x] 	= C;
+		(bl3d_system_frame_buffer->y_offset_table[Py])[Px] = C;
 		
 		
-		BL3D_ADD_VECTOR(&P, &U);
+		Px += Ux;
 		BL3D_ADD_VECTOR(&PT, &UT);
 		BL3D_ADD_VECTOR((struct BL3D_VECTOR*)&PC, (struct BL3D_VECTOR*)&UC);
 	}
