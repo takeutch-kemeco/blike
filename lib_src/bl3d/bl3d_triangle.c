@@ -634,11 +634,11 @@ static void __bl3d_draw_triangle_g_t(struct BL3D_OT_TAG* a)
 		BL3D_ADD_VECTOR(&A, &AU);
 		BL3D_ADD_VECTOR(&B, &BU);
 		
-//		BL3D_ADD_VECTOR(&AT, &ATU);
-//		BL3D_ADD_VECTOR(&BT, &BTU);
+		BL3D_ADD_VECTOR(&AT, &ATU);
+		BL3D_ADD_VECTOR(&BT, &BTU);
 		
-//		BL3D_ADD_VECTOR((struct BL3D_VECTOR*)&AC, (struct BL3D_VECTOR*)&ACU);
-//		BL3D_ADD_VECTOR((struct BL3D_VECTOR*)&BC, (struct BL3D_VECTOR*)&BCU);
+		BL3D_ADD_VECTOR((struct BL3D_VECTOR*)&AC, (struct BL3D_VECTOR*)&ACU);
+		BL3D_ADD_VECTOR((struct BL3D_VECTOR*)&BC, (struct BL3D_VECTOR*)&BCU);
 	}
 }
 
