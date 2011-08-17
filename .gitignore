@@ -1,6 +1,3 @@
-*
-!*.c
-!*.h
-!build.sh
-!Makefile
-!.gitignore
+*.o
+*.bak
+
