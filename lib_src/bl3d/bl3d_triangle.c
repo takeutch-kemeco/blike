@@ -234,6 +234,13 @@ static float bl3d_get_max(const float a, const float b)
 	}
 }
 
+union BL3D_COLOR32 {
+	int bgra;
+	struct {
+		unsigned char b, g, r, a;
+	};
+};
+
 static void bl3d_draw_line_g_t(
 	struct BL3D_VECTOR* A,
 	struct BL3D_VECTOR* B,
@@ -284,16 +291,13 @@ static void bl3d_draw_line_g_t(
 		int ty = (int)PT.y;
 		
 		
-		int _C;
-		BL3D_GET_PIX(tx, ty, _C, texture_vram);
-		int _Cr = (_C >> 16) & 0xFF;
-		int _Cg = (_C >> 8 ) & 0xFF;
-		int _Cb = (_C      ) & 0xFF;
+		union BL3D_COLOR32 _C;
+		BL3D_GET_PIX(tx, ty, _C.bgra, texture_vram);
 		static const float i255 = 1.0 / 255;
 		struct BL3D_CVECTOR C = {
-			.r = ((float)_Cr) * i255,
-			.g = ((float)_Cg) * i255,
-			.b = ((float)_Cb) * i255
+			.r = ((float)_C.r) * i255,
+			.g = ((float)_C.g) * i255,
+			.b = ((float)_C.b) * i255
 		};
 		
 		
