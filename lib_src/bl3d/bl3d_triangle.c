@@ -564,55 +564,21 @@ static void __bl3d_draw_triangle_g_t(struct BL3D_OT_TAG* a)
 	BL3D_DIFF_VECTOR(&B, &a->vertex[1], &a->vertex[2]);
 	B.z = 0;
 	
-	float ar;
-	BL3D_NORM_VECTOR(&ar, &A);
-
-	float br;
-	BL3D_NORM_VECTOR(&br, &B);
+	const float lr = (A.y > 0)? A.y: -A.y;
+	const float ilr = (lr != 0.0)? 1.0 / ((float)lr): 0.0;
+	struct BL3D_VECTOR ilr_vector = {ilr, ilr, ilr, 0.0};
 	
-	float lr;
-	struct BL3D_VECTOR* L;
-	struct BL3D_VECTOR* S;
-	struct BL3D_VECTOR LP;
-	struct BL3D_VECTOR SP;
-	if(ar >= br) {
-		lr = ar;
-		L = &A;
-		S = &B;
-		LP = a->vertex[0];
-		SP = a->vertex[2];
-	}
-	else {
-		lr = br;
-		L = &B;
-		S = &A;
-		LP = a->vertex[2];
-		SP = a->vertex[0];
-	}
-
-	float ilr;
-	BL3D_INVERT_NORM_VECTOR(&ilr, L);
-
-	struct BL3D_VECTOR ilr_vector = {ilr, ilr, ilr, 0};
-
+	struct BL3D_VECTOR AU;
+	BL3D_MUL2_VECTOR(&AU, &A, &ilr_vector);
 	
-	struct BL3D_VECTOR LU;
-	BL3D_MUL2_VECTOR(&LU, L, &ilr_vector);
+	struct BL3D_VECTOR BU;
+	BL3D_MUL2_VECTOR(&BU, &B, &ilr_vector);
 	
-	struct BL3D_VECTOR SU;
-	BL3D_MUL2_VECTOR(&SU, S, &ilr_vector);
+	A = a->vertex[0];
+	B = a->vertex[2];
 	
-#ifdef __DEBUG__
-	g_printf(
-		"LU[%f, %f] SU[%f, %f] L[%f, %f] S[%f, %f] LP[%f, %f] SP[%f, %f]\n",
-		LU.x, LU.y,
-		SU.x, SU.y,
-		L->x, L->y,
-		S->x, S->y,
-		LP.x, LP.y,
-		SP.x, SP.y
-	);
-#endif // __DEBUG__
+	AU.y = BU.y = (AU.y > 0)? +1.0: -1.0;
+	A.y = B.y = (int)A.y;
 	
 	
 	
@@ -624,28 +590,14 @@ static void __bl3d_draw_triangle_g_t(struct BL3D_OT_TAG* a)
 	struct BL3D_VECTOR BT;
 	BL3D_DIFF_VECTOR(&BT, &a->texture[1], &a->texture[2]);
 	
-	struct BL3D_VECTOR* LT;
-	struct BL3D_VECTOR* ST;
-	struct BL3D_VECTOR LTP;
-	struct BL3D_VECTOR STP;
-	if(ar >= br) {
-		LT = &AT;
-		ST = &BT;
-		LTP = a->texture[0];
-		STP = a->texture[2];
-	}
-	else {
-		LT = &BT;
-		ST = &AT;
-		LTP = a->texture[2];
-		STP = a->texture[0];
-	}
+	struct BL3D_VECTOR ATU;
+	BL3D_MUL2_VECTOR(&ATU, &AT, &ilr_vector);
 	
-	struct BL3D_VECTOR LTU;
-	BL3D_MUL2_VECTOR(&LTU, LT, &ilr_vector);
+	struct BL3D_VECTOR BTU;
+	BL3D_MUL2_VECTOR(&BTU, &BT, &ilr_vector);
 	
-	struct BL3D_VECTOR STU;
-	BL3D_MUL2_VECTOR(&STU, ST, &ilr_vector);
+	AT = a->texture[0];
+	BT = a->texture[2];
 	
 	
 	
@@ -655,55 +607,38 @@ static void __bl3d_draw_triangle_g_t(struct BL3D_OT_TAG* a)
 	struct BL3D_CVECTOR BC;
 	BL3D_DIFF_VECTOR((struct BL3D_VECTOR*)&BC, (struct BL3D_VECTOR*)&a->color[1], (struct BL3D_VECTOR*)&a->color[2]);
 	
-	struct BL3D_CVECTOR* LC;
-	struct BL3D_CVECTOR* SC;
-	struct BL3D_CVECTOR LCP;
-	struct BL3D_CVECTOR SCP;
-	if(ar >= br) {
-		LC = &AC;
-		SC = &BC;
-		LCP = a->color[0];
-		SCP = a->color[2];
-	}
-	else {
-		LC = &BC;
-		SC = &AC;
-		LCP = a->color[2];
-		SCP = a->color[0];
-	}
-	
-	struct BL3D_CVECTOR LCU;
-	BL3D_MUL2_VECTOR((struct BL3D_VECTOR*)&LCU, (struct BL3D_VECTOR*)LC, &ilr_vector);
+	struct BL3D_CVECTOR ACU;
+	BL3D_MUL2_VECTOR((struct BL3D_VECTOR*)&ACU, (struct BL3D_VECTOR*)&AC, &ilr_vector);
 
-	struct BL3D_CVECTOR SCU;
-	BL3D_MUL2_VECTOR((struct BL3D_VECTOR*)&SCU, (struct BL3D_VECTOR*)SC, &ilr_vector);
-
+	struct BL3D_CVECTOR BCU;
+	BL3D_MUL2_VECTOR((struct BL3D_VECTOR*)&BCU, (struct BL3D_VECTOR*)&BC, &ilr_vector);
+	
+	AC = a->color[0];
+	BC = a->color[2];
 	
 	
+	
+	const int _lr = lr;
 	int i;
-	const int _lr = (int)lr;
 	for(i = 0; i < _lr; i++) {
+		A.y = B.y = (int)A.y;
+		
 		bl3d_draw_line_g_t(
-			&LP, &SP,
-			&LTP, &STP, texture_vram,
-			&LCP, &SCP,
+			&A, &B,
+			&AT, &BT, texture_vram,
+			&AC, &BC,
 			&a->base_color
 		);
-
 		
-		BL3D_ADD_VECTOR(&LP, &LU);
-		BL3D_ADD_VECTOR(&SP, &SU);
 		
-		BL3D_ADD_VECTOR(&LTP, &LTU);
-		BL3D_ADD_VECTOR(&STP, &STU);
+		BL3D_ADD_VECTOR(&A, &AU);
+		BL3D_ADD_VECTOR(&B, &BU);
 		
-		BL3D_ADD_VECTOR((struct BL3D_VECTOR*)&LCP, (struct BL3D_VECTOR*)&LCU);
-		BL3D_ADD_VECTOR((struct BL3D_VECTOR*)&SCP, (struct BL3D_VECTOR*)&SCU);
-
+//		BL3D_ADD_VECTOR(&AT, &ATU);
+//		BL3D_ADD_VECTOR(&BT, &BTU);
 		
-#ifdef __DEBUG__
-		wait(1000/60);
-#endif // __DEBUG__
+//		BL3D_ADD_VECTOR((struct BL3D_VECTOR*)&AC, (struct BL3D_VECTOR*)&ACU);
+//		BL3D_ADD_VECTOR((struct BL3D_VECTOR*)&BC, (struct BL3D_VECTOR*)&BCU);
 	}
 }
 
