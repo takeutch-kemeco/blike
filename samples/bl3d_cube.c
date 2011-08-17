@@ -6,15 +6,15 @@
 static struct BL3D_OT ot;
 
 struct BL3D_VECTOR vertex[8] = {
-	{.x = -100,	.y = -100,	.z = -100},
-	{.x = +100,	.y = -100,	.z = -100},
-	{.x = +100,	.y = +100,	.z = -100},
-	{.x = -100,	.y = +100,	.z = -100},
+	{.x = -500,	.y = -500,	.z = -500},
+	{.x = +500,	.y = -500,	.z = -500},
+	{.x = +500,	.y = +500,	.z = -500},
+	{.x = -500,	.y = +500,	.z = -500},
 
-	{.x = -100,	.y = -100,	.z = +100},
-	{.x = +100,	.y = -100,	.z = +100},
-	{.x = +100,	.y = +100,	.z = +100},
-	{.x = -100,	.y = +100,	.z = +100}
+	{.x = -500,	.y = -500,	.z = +500},
+	{.x = +500,	.y = -500,	.z = +500},
+	{.x = +500,	.y = +500,	.z = +500},
+	{.x = -500,	.y = +500,	.z = +500}
 };
 
 struct BL3D_VECTOR texture[4] = {
@@ -239,8 +239,8 @@ void x_fill_gradation(int width, int height, int vram, struct BL3D_CVECTOR* colo
 
 blMain()
 {
-	openWin(480, 270);
-	bl3d_init(480, 270);
+	openWin(480*2, 270*2);
+	bl3d_init(480*2, 270*2);
 	
 	
 	
@@ -259,7 +259,7 @@ blMain()
 
 	dobj.local_coord.transfer.x = 0;
 	dobj.local_coord.transfer.y = 0;
-	dobj.local_coord.transfer.z = 1200;
+	dobj.local_coord.transfer.z = 1200*2;
 	dobj.local_coord.compleate_flg = 0;
 	
 
@@ -317,6 +317,9 @@ blMain()
 		case 'l': dobj.local_coord.rotate.x+=0.5;	break;
 		case 'm': dobj.local_coord.rotate.z-=0.5;	break;
 		case 'u': dobj.local_coord.rotate.z+=0.5;	break;
+
+		case 'U': dobj.local_coord.transfer.z-=100;	break;
+		case 'M': dobj.local_coord.transfer.z+=100;	break;
 		}
 
 		dobj.local_coord.rotate.x += 0.01;
