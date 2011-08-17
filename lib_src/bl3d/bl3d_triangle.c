@@ -558,13 +558,11 @@ static void __bl3d_draw_triangle_g_t(struct BL3D_OT_TAG* a)
 {
 	struct BL3D_VECTOR A;
 	BL3D_DIFF_VECTOR(&A, &a->vertex[1], &a->vertex[0]);
-	A.z = 0;
 	
 	struct BL3D_VECTOR B;
 	BL3D_DIFF_VECTOR(&B, &a->vertex[1], &a->vertex[2]);
-	B.z = 0;
 	
-	const float lr = (A.y > 0)? A.y: -A.y;
+	const float lr = (A.y > 0)? A.y: -A.y;		// abs(A.y)
 	const float ilr = (lr != 0.0)? 1.0 / ((float)lr): 0.0;
 	struct BL3D_VECTOR ilr_vector = {ilr, ilr, ilr, 0.0};
 	
@@ -642,7 +640,7 @@ static void __bl3d_draw_triangle_g_t(struct BL3D_OT_TAG* a)
 
 static void bl3d_scale_aspect_triangle_g_t(
 	struct BL3D_OT_TAG* a,
-	struct BL3D_VECTOR* scale
+	const struct BL3D_VECTOR* scale
 )
 {
 	BL3D_MUL_VECTOR(&a->vertex[0], scale);
