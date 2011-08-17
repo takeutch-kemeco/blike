@@ -621,8 +621,6 @@ static void __bl3d_draw_triangle_g_t(struct BL3D_OT_TAG* a)
 	const int _lr = lr;
 	int i;
 	for(i = 0; i < _lr; i++) {
-		A.y = B.y = (int)A.y;
-		
 		bl3d_draw_line_g_t(
 			&A, &B,
 			&AT, &BT, texture_vram,
