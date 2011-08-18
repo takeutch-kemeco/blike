@@ -15,10 +15,10 @@ static gpointer __drvgtk_malloc_aligned16(guint8* org)
 	guint32 a_address = (guint32)a;
 	
 	if((a_address % 16) !=0) {
-		g_printf("org[%p], org_address[0x%x], diff_address[[%d]\n", org, org_address, diff_address);
+		g_printf("org[%p], org_address[0x%x], diff_address[[%ld]\n", org, org_address, diff_address);
 
 		g_printf(
-			"header[%p], *header[0x%x], ret_address[%p], *ret_address[%d], ret_address%16[%d]\n\n", 
+			"header[%p], *header[0x%x], ret_address[%p], *ret_address[%ld], ret_address mod 16[%ld]\n\n", 
 			header, *header, a, *a, (*a) % 16
 		);
 		
