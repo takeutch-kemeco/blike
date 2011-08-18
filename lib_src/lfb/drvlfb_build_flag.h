@@ -1,0 +1,11 @@
+#ifndef __DRVLFB_BUILD_FLAG_H__
+#define __DRVLFB_BUILD_FLAG_H__
+
+#define __ENABLE_SSE2__
+
+#define DRVLFB_FB0_DEVICE_NAME		"/dev/fb0"
+
+#define DRVLFB_SYSTEM_FB0_WIDTH		1920
+#define DRVLFB_SYSTEM_FB0_HEIGHT	1080
+
+#endif // __DRVLFB_BUILD_FLAG_H__

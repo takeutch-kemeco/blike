@@ -1,0 +1,41 @@
+CC = gcc
+DEFS =
+
+
+
+SRCS =
+OBJS = $(SRCS:.c=.o)
+PROG =
+
+
+
+LIBBLIKE = ../lib_src/lfb/libblike-lfb.a.0.1.5
+
+LIBS = -lpthread -lm
+INCS = -I../ -I../lib_src/bl_load_xpm -I../lib_src/bl3d -I../lib_src/bl_plot
+
+#OPT = -O0 -g
+OPTS = -O2 -g -march=core2 -msse3
+
+BIN = /usr/local/bin
+
+
+
+all: $(PROG)
+
+$(PROG): $(OBJS)
+	$(CC) $(OPTS) -o $@ $(OBJS) $(LIBBLIKE) $(LIBS) $(INCS)
+
+.c.o:
+	$(CC) $(OPTS) $(INCS) $(DEFS) -c -o $@ $<
+
+clean:
+	rm -f $(OBJS)
+	rm -f $(PROG)
+
+#install:
+#	cp $(PROG) $(BIN)
+
+#uninstall:
+#	rm $(BIN)/$(PROG)
+
