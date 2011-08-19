@@ -1,7 +1,7 @@
 #include <glib.h>
 #include "drvgtk_build_flag.h"
 
-unsigned char hankaku[] = {
+guchar hankaku[] = {
 0, 0, 0, 0, 0, 0, 0, 0, 0, 
 0, 0, 0, 0, 0, 0, 0, 0, 0, 
 56, 68, 130, 170, 170, 130, 130, 170, 146, 
