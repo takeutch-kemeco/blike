@@ -68,6 +68,8 @@ struct MainWindow* new_MainWindow(
 
 	a->wgt = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 	gtk_window_set_title(GTK_WINDOW(a->wgt), " ");
+	gtk_container_set_border_width(GTK_CONTAINER(a->wgt), 10);
+
 
 	a->key_ring_buffer = key_ring_buffer;
 	
@@ -99,7 +101,7 @@ void hide_MainWindow(struct MainWindow* a)
 
 void resize_MainWindow(struct MainWindow* a, gint width, gint height)
 {
-	gtk_window_resize((GtkWindow*)(a->wgt), width + 6, height + 6);
+	gtk_window_resize((GtkWindow*)(a->wgt), width, height);
 }
 
 
