@@ -21,10 +21,8 @@ int main(int argc, char** argv)
 	g_thread_init (NULL);
 	
 	gdk_threads_init();
-	gdk_rgb_init();
 	
 	gtk_init(NULL, NULL);
-	gtk_set_locale();
 	
 	
 	drvgtk_pthread_data = new_DrvGtkPthreadData(

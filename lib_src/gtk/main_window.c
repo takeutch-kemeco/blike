@@ -94,7 +94,7 @@ void show_MainWindow(struct MainWindow* a)
 
 void hide_MainWindow(struct MainWindow* a)
 {
-	gtk_widget_hide_all(a->wgt);
+	gtk_widget_hide(a->wgt);
 }
 
 

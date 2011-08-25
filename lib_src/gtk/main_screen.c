@@ -3,36 +3,6 @@
 
 #include "main_screen.h"
 
-static gboolean update_frame_buffer(struct MainScreen* a)
-{
-	gdk_pixbuf_render_to_drawable(
-		a->pixbuf,
-		a->wgt->window,
-		a->wgt->style->fg_gc[GTK_STATE_NORMAL],
-		0, 0, 0, 0,
-		a->frame_buffer_width,
-		a->frame_buffer_height,
-		GDK_RGB_DITHER_NONE, 0, 0);
-}
-
-
-
-static gboolean expose_event(GtkWidget *wgt, GdkEventExpose *event, gpointer data)
-{
-	struct MainScreen* a = (struct MainScreen*)data;
-	
-	update_frame_buffer(a);
-	
-	return TRUE;
-}
-
-static void init_signal_MainScreen(struct MainScreen* a)
-{
-	gtk_signal_connect(GTK_OBJECT(a->wgt), "expose_event", GTK_SIGNAL_FUNC(expose_event), (gpointer)a);
-}
-
-
-
 struct MainScreen* new_MainScreen(gint width, gint height, struct MainWindow* window)
 {
 	struct MainScreen* a = g_malloc(sizeof(*a));
@@ -50,10 +20,7 @@ struct MainScreen* new_MainScreen(gint width, gint height, struct MainWindow* wi
 	gtk_widget_set_double_buffered(a->wgt, TRUE);
 	gtk_container_add(GTK_CONTAINER(window->wgt), a->wgt);
 
-	
-	init_signal_MainScreen(a);
-	
-	
+
 	return a;
 }
 
@@ -83,5 +50,4 @@ void resize_MainScreen(struct MainScreen* a, gint width, gint height, struct Mai
 
 	gtk_widget_show(a->wgt);
 }
-
 

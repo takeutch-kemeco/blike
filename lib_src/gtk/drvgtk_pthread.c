@@ -11,7 +11,11 @@ static gpointer __pthread_main_window(gpointer data)
 	volatile struct DrvGtkPthreadData* a = (struct DrvGtkPthreadData*)data;
 	
 	if(a->wt_run_flag == FALSE) {
-		gtk_timeout_add(DRVGTK_SYGNAL_CHECK_INTERVAL, a->window_update_program, (gpointer)a);
+		g_timeout_add(
+			DRVGTK_SYGNAL_CHECK_INTERVAL,
+			a->window_update_program,
+			(gpointer)a
+		);
 		a->wt_run_flag = TRUE;
 		gtk_main();
 		
