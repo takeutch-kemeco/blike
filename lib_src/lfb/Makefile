@@ -55,6 +55,7 @@ COMMON_SRCS = $(COMMON_PATH)/char8b.c \
 	$(COMMON_PATH)/drwptn_e.c \
 	$(COMMON_PATH)/drwptn_r.c \
 	$(COMMON_PATH)/drwptn_d.c \
+	$(COMMON_PATH)/bl_malloc_aligned.c \
 	$(COMMON_PATH)/test.c
 
 BL3D_PATH = ../bl3d
