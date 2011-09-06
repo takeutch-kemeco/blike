@@ -78,3 +78,6 @@ A=bl3d_cube;		make SRCS="$A".c PROG=$A -j 2
 A=bl3d_cube2;		make SRCS="$A".c PROG=$A -j 2
 
 A=test_bl_plot;		make SRCS="$A".c PROG=$A -j 2
+
+A=test_spline;		make SRCS="$A".c PROG=$A -j 2
+

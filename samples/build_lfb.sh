@@ -78,3 +78,6 @@ A=bl3d_cube;		make -f Makefile.lfb SRCS="$A".c PROG=$A -j 2
 A=bl3d_cube2;		make -f Makefile.lfb SRCS="$A".c PROG=$A -j 2
 
 A=test_bl_plot;		make -f Makefile.lfb SRCS="$A".c PROG=$A -j 2
+
+A=test_spline;		make -f Makefile.lfb SRCS="$A".c PROG=$A -j 2
+
