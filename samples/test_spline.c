@@ -6,7 +6,7 @@ blMain()
 	
 	while(1) {
 		setCol(0xffff00);
-		bl_draw2DBSpline(
+		bl_draw_2db_spline(
 			0,   100,
 			100,   0,
 			255, 100
