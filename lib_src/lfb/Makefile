@@ -60,7 +60,8 @@ COMMON_SRCS = $(COMMON_PATH)/char8b.c \
 	$(COMMON_PATH)/test.c
 
 BL_MATH_PATH = ../bl_math
-BL_MATH_SRCS = $(BL_MATH_PATH)/bl_complex.c
+BL_MATH_SRCS = $(BL_MATH_PATH)/bl_complex.c \
+	$(BL_MATH_PATH)/bl_dft.c
 
 BL3D_PATH = ../bl3d
 BL3D_SRCS = $(BL3D_PATH)/bl3d_system.c \
