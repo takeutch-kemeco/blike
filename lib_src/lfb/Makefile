@@ -59,6 +59,9 @@ COMMON_SRCS = $(COMMON_PATH)/char8b.c \
 	$(COMMON_PATH)/bl_draw_2db_spline.c \
 	$(COMMON_PATH)/test.c
 
+BL_MATH_PATH = ../bl_math
+BL_MATH_SRCS = $(BL_MATH_PATH)/bl_complex.c
+
 BL3D_PATH = ../bl3d
 BL3D_SRCS = $(BL3D_PATH)/bl3d_system.c \
 	$(BL3D_PATH)/bl3d_matrix.c \
@@ -74,7 +77,7 @@ BL_LOAD_XPM_SRCS = $(BL_LOAD_XPM_PATH)/bl_load_xpm.c
 BL_PLOT_PATH = ../bl_plot
 BL_PLOT_SRCS = $(BL_PLOT_PATH)/bl_plot.c
 
-OBJS	= $(COMMON_SRCS:.c=.o) $(SRCS:.c=.o) $(BL_LOAD_XPM_SRCS:.c=.o) $(BL3D_SRCS:.c=.o) $(BL_PLOT_SRCS:.c=.o)
+OBJS	= $(COMMON_SRCS:.c=.o) $(SRCS:.c=.o) $(BL_LOAD_XPM_SRCS:.c=.o) $(BL3D_SRCS:.c=.o) $(BL_PLOT_SRCS:.c=.o) $(BL_MATH_SRCS:.c=.o)
 SONAME	= libblike-lfb.a.0.1
 PROG	= $(SONAME).5
 

@@ -12,7 +12,7 @@ PROG =
 LIBBLIKE = ../lib_src/lfb/libblike-lfb.a.0.1.5
 
 LIBS = -lpthread -lm
-INCS = -I../ -I../lib_src/bl_load_xpm -I../lib_src/bl3d -I../lib_src/bl_plot
+INCS = -I../ -I../lib_src/bl_load_xpm -I../lib_src/bl3d -I../lib_src/bl_plot -I../lib_src/bl_math
 
 #OPT = -O0 -g
 OPTS = -O2 -g -march=core2 -msse3
