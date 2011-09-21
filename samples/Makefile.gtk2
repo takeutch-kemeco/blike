@@ -12,7 +12,7 @@ PROG =
 LIBBLIKE = ../lib_src/gtk/libblike-gtk.a.0.1.5
 
 LIBS = `pkg-config gtk+-2.0 --libs`
-INCS = `pkg-config gtk+-2.0 --cflags` -I../ -I../lib_src/bl_load_xpm -I../lib_src/bl3d -I../lib_src/bl_plot
+INCS = `pkg-config gtk+-2.0 --cflags` -I../ -I../lib_src/bl_load_xpm -I../lib_src/bl3d -I../lib_src/bl_plot -I../lib_src/bl_math
 
 OPTS = -O2 -g -march=core2 -msse3
 

@@ -81,3 +81,6 @@ A=test_bl_plot;		make -f Makefile.gtk2 SRCS="$A".c PROG=$A -j 2
 
 A=test_spline;		make -f Makefile.gtk2 SRCS="$A".c PROG=$A -j 2
 
+A=test_complex;		make -f Makefile.gtk2 SRCS="$A".c PROG=$A -j 2
+A=test_dft;		make -f Makefile.gtk2 SRCS="$A".c PROG=$A -j 2
+

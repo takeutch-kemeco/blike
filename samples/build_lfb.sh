@@ -82,4 +82,5 @@ A=test_bl_plot;		make -f Makefile.lfb SRCS="$A".c PROG=$A -j 2
 A=test_spline;		make -f Makefile.lfb SRCS="$A".c PROG=$A -j 2
 
 A=test_complex;		make -f Makefile.lfb SRCS="$A".c PROG=$A -j 2
+A=test_dft;		make -f Makefile.lfb SRCS="$A".c PROG=$A -j 2
 

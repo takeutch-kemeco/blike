@@ -82,4 +82,5 @@ A=test_bl_plot;		make SRCS="$A".c PROG=$A -j 2
 A=test_spline;		make SRCS="$A".c PROG=$A -j 2
 
 A=test_complex;		make SRCS="$A".c PROG=$A -j 2
+A=test_dft;		make SRCS="$A".c PROG=$A -j 2
 
