@@ -48,32 +48,17 @@ static double bl_get_rot_complex(struct BL_COMPLEX* a)
 
 void bl_mul_complex(struct BL_COMPLEX* dst, struct BL_COMPLEX* src)
 {
-	double ar = sqrt(dst->real * dst->real + dst->image * dst->image);
-	double br = sqrt(src->real * src->real + src->image * src->image);
-	
-	double arot = bl_get_rot_complex(dst);
-	double brot = bl_get_rot_complex(src);
-
-	double cr = ar * br;
-	double crot = arot + brot;
-
-	dst->real  = cr * cos(crot);
-	dst->image = cr * sin(crot);
+	struct BL_COMPLEX tmp = *dst;
+	dst->real  = (tmp.real * src->real) - (tmp.image * src->image);
+	dst->image = (tmp.real * src->image) - (tmp.image * src->real);
 }
 
 void bl_div_complex(struct BL_COMPLEX* dst, struct BL_COMPLEX* src)
 {
-	double ar = sqrt(dst->real * dst->real + dst->image * dst->image);
-	double br = sqrt(src->real * src->real + src->image * src->image);
-	
-	double arot = bl_get_rot_complex(dst);
-	double brot = bl_get_rot_complex(src);
-
-	double cr = ar / br;
-	double crot = arot - brot;
-
-	dst->real  = cr * cos(crot);
-	dst->image = cr * sin(crot);
+	struct BL_COMPLEX tmp = *dst;
+	const double base = (src->real * src->real) + (src->image * src->image);
+	dst->real  = ((tmp.real  * src->real) + (tmp.image * src->image)) / base;
+	dst->image = ((tmp.image * src->real) - (tmp.real  * src->image)) / base;
 }
 
 void bl_pow_complex(struct BL_COMPLEX* x, struct BL_COMPLEX* y)
