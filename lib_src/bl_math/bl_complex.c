@@ -50,7 +50,7 @@ void bl_mul_complex(struct BL_COMPLEX* dst, struct BL_COMPLEX* src)
 {
 	struct BL_COMPLEX tmp = *dst;
 	dst->real  = (tmp.real * src->real) - (tmp.image * src->image);
-	dst->image = (tmp.real * src->image) - (tmp.image * src->real);
+	dst->image = (tmp.real * src->image) + (tmp.image * src->real);
 }
 
 void bl_div_complex(struct BL_COMPLEX* dst, struct BL_COMPLEX* src)
