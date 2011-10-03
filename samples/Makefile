@@ -12,7 +12,8 @@ PROG =
 LIBBLIKE = ../lib_src/gtk/libblike-gtk.a.0.1.5
 
 LIBS = `pkg-config gtk+-3.0 --libs` \
-	`pkg-config lua5.1 --libs`
+	`pkg-config lua5.1 --libs` \
+	-lm
 
 INCS = `pkg-config gtk+-3.0 --cflags` \
 	`pkg-config lua5.1 --cflags` \
