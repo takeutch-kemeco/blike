@@ -11,7 +11,7 @@
 extern "C" {
 #endif
 
-//#define putc		bl_putc
+#define putc		bl_putc
 #define	puts		bl_puts1
 #define	printf		bl_printf
 #define	scanf		bl_scanf
@@ -32,7 +32,7 @@ extern "C" {
 #define drawLine	bl_drawLine
 #define rnd		bl_rnd
 #define wait		bl_wait
-//#define color		bl_color
+#define color		bl_color
 #define locate		bl_locate
 #define getPix		bl_getPix
 #define waitNF		bl_waitNF
