@@ -11,10 +11,17 @@ PROG =
 
 LIBBLIKE = ../lib_src/lfb/libblike-lfb.a.0.1.5
 
-LIBS = -lpthread -lm
-INCS = -I../ -I../lib_src/bl_load_xpm -I../lib_src/bl3d -I../lib_src/bl_plot -I../lib_src/bl_math
+LIBS = -lpthread \
+	`pkg-config lua5.1 --libs`
 
-#OPT = -O0 -g
+INCS =  \
+	`pkg-config lua5.1 --cflags` \
+	-I../ -I../lib_src/bl_load_xpm \
+	-I../lib_src/bl3d \
+	-I../lib_src/bl_plot \
+	-I../lib_src/bl_math \
+	-I../lib_src/bl_lua 
+
 OPTS = -O2 -g -march=core2 -msse3
 
 BIN = /usr/local/bin

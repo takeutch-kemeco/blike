@@ -1,12 +1,12 @@
 CC = gcc
 AR = ar
 
-SRCS =	drvlfb_main.c \
-	drvlfb_interface.c \
-	drvlfb_system.c \
-	drvlfb_sleep.c \
-	drvlfb_malloc.c \
-	hankaku_font.c
+SRCS =  drvlfb_main.c \
+        drvlfb_interface.c \
+        drvlfb_system.c \
+        drvlfb_sleep.c \
+        drvlfb_malloc.c \
+        hankaku_font.c
 
 COMMON_PATH = ../common
 COMMON_SRCS = $(COMMON_PATH)/char8b.c \
@@ -78,14 +78,35 @@ BL_LOAD_XPM_SRCS = $(BL_LOAD_XPM_PATH)/bl_load_xpm.c
 BL_PLOT_PATH = ../bl_plot
 BL_PLOT_SRCS = $(BL_PLOT_PATH)/bl_plot.c
 
-OBJS	= $(COMMON_SRCS:.c=.o) $(SRCS:.c=.o) $(BL_LOAD_XPM_SRCS:.c=.o) $(BL3D_SRCS:.c=.o) $(BL_PLOT_SRCS:.c=.o) $(BL_MATH_SRCS:.c=.o)
+BL_LUA_PATH = ../bllua
+BL_LUA_SRCS = $(BL_LUA_PATH)/bllua_system.c \
+	$(BL_LUA_PATH)/bllua_regist_bld_func.c \
+	$(BL_LUA_PATH)/bllua_regist_bl_func.c
+
+OBJS	= $(COMMON_SRCS:.c=.o) \
+	$(SRCS:.c=.o) \
+	$(BL_LOAD_XPM_SRCS:.c=.o) \
+	$(BL3D_SRCS:.c=.o) \
+	$(BL_PLOT_SRCS:.c=.o) \
+	$(BL_MATH_SRCS:.c=.o) \
+	$(BL_LUA_SRCS:.c=.o)
+
 SONAME	= libblike-lfb.a.0.1
 PROG	= $(SONAME).5
 
-LIBS	= -lpthread -lm
-INCS	= -I../../ -I../common -I../bl_load_xpm -I../bl_plot -I../bl3d
+LIBS	= -lpthread \
+	`pkg-config lua5.1 --libs` \
+	-lm
 
-#OPTS	= -O0 -g
+INCS	= -I../../ \
+	-I $(COMMON_PATH) \
+	-I $(BL_LOAD_XPM_PATH) \
+	-I $(BL_PLOT_PATH) \
+	-I $(BL3D_PATH) \
+	-I $(BL_MATH_PATH) \
+	-I $(BL_LUA_PATH) \
+	`pkg-config lua5.1 --cflags`
+
 OPTS	= -O2 -g -march=core2 -msse3
 
 PREFIX		= /usr/local

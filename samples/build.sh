@@ -42,6 +42,13 @@ rm -f bl3d_cube2
 
 rm -f test_bl_plot
 
+rm -f test_spline
+
+rm -f test_complex
+rm -f test_dft
+
+rm -f test_lua
+
 A=test000a;	make SRCS="$A".c PROG=$A -j 2
 A=test001a;	make SRCS="$A".c PROG=$A -j 2
 A=test002a;	make SRCS="$A".c PROG=$A -j 2
@@ -83,4 +90,6 @@ A=test_spline;		make SRCS="$A".c PROG=$A -j 2
 
 A=test_complex;		make SRCS="$A".c PROG=$A -j 2
 A=test_dft;		make SRCS="$A".c PROG=$A -j 2
+
+A=test_lua;		make SRCS="$A".c PROG=$A -j 2
 
