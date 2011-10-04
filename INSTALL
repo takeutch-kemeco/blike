@@ -1,0 +1,13 @@
+＜インストール方法＞
+make
+sudo make install
+
+必要なライブラリーは gtk+-3.0 libasound2 liblua5.1
+予め apt-get などでインストールしておくこと。
+
+
+
+＜サンプルのコンパイル方法＞
+cd samples
+./build.sh
+
