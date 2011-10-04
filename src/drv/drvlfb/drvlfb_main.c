@@ -1,7 +1,7 @@
 #include "drvlfb_build_flag.h"
 #include "drvlfb_system.h"
 
-#include "../common/blikedrv.h"
+#include "blikedrv.h"
 
 struct BL_WORK __attribute__((aligned(16))) bl_work;
 

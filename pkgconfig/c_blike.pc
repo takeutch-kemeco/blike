@@ -1,0 +1,15 @@
+prefix=/usr
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+targets=x11
+
+gtk_binary_version=3.0.0
+gtk_host=i686-pc-linux-gnu
+
+Name: c_blike
+Description: blike UI library
+Version: 0.1.5
+Requires: gtk+-3.0 alsa lua5.1
+Libs: ${libdir}/c_blike/libblike-gtk.a.0.1.5
+Cflags: -I${includedir}/c_blike -I${includedir}/c_blike/lib/bl3d -I${includedir}/c_blike/lib/bl_load_xpm -I${includedir}/c_blike/lib/bl_lua -I${includedir}/c_blike/lib/bl_math -I${includedir}/c_blike/lib/bl_plot

@@ -1,48 +1,17 @@
 CC = gcc
-DEFS =
-
-
+RM = rm
 
 SRCS =
 OBJS = $(SRCS:.c=.o)
 PROG =
+DEFS =
+LIBS = `pkg-config c_blike --libs`
+INCS = `pkg-config c_blike --cflags`
+OPTS = -O2
 
-
-
-LIBBLIKE = ../lib_src/gtk/libblike-gtk.a.0.1.5
-
-LIBS = `pkg-config gtk+-3.0 --libs` \
-	`pkg-config lua5.1 --libs`
-
-INCS = `pkg-config gtk+-3.0 --cflags` \
-	`pkg-config lua5.1 --cflags` \
-	-I../ -I../lib_src/bl_load_xpm \
-	-I../lib_src/bl3d \
-	-I../lib_src/bl_plot \
-	-I../lib_src/bl_math \
-	-I../lib_src/bl_lua 
-
-OPTS = -O2 -g -march=core2 -msse3
-
-BIN = /usr/local/bin
-
-
-
-all: $(PROG)
-
-$(PROG): $(OBJS)
-	$(CC) $(OPTS) -o $@ $(OBJS) $(LIBBLIKE) $(LIBS) $(INCS)
-
-.c.o:
-	$(CC) $(OPTS) $(INCS) $(DEFS) -c -o $@ $<
+all:
+	$(CC) $(OPTS) $(DEFS) $(INCS) -o $(PROG) $(SRCS) $(LIBS)
 
 clean:
-	rm -f $(OBJS)
-	rm -f $(PROG)
-
-#install:
-#	cp $(PROG) $(BIN)
-
-#uninstall:
-#	rm $(BIN)/$(PROG)
+	$(RM) -f $(OBJS) $(PROG)
 
