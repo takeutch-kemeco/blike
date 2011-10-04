@@ -12,9 +12,6 @@ OPTS = -O2
 all:
 	$(CC) $(OPTS) $(DEFS) $(INCS) -o $(PROG) $(SRCS) $(LIBS)
 
-.c.o:
-	$(CC) $(OPTS) $(INCS) $(DEFS) -c -o $@ $<
-
 clean:
 	$(RM) -f $(OBJS) $(PROG)
 
