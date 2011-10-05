@@ -1,14 +1,15 @@
 CC = gcc
-AR = ar
 
-INCLUDE_BASE_PATH = ../../../include
+BASE_PATH = ../../..
+INCLUDE_BASE_PATH = $(BASE_PATH)/include
 
 SRCS	= bllua_system.c \
 	bllua_regist_bld_func.c \
 	bllua_regist_bl_func.c
 
 OBJS	= $(SRCS:.c=.o)
-PROG	= ../../../libblike.a
+SONAME	= libbl_lua.so
+PROG	= $(SONAME)
 DEFS	=
 LIBS	= `pkg-config lua5.1 --libs`
 INCS	= `pkg-config lua5.1 --cflags` \
@@ -18,13 +19,12 @@ INCS	= `pkg-config lua5.1 --cflags` \
 OPTS	= -O2
 
 all: $(PROG)
-	ranlib $(PROG)
 
 $(PROG): $(OBJS)
-	$(AR) -rv $@ $(OBJS)
+	$(CC) -shared -Wl,-soname,$(SONAME) -o $@ $(OBJS) $(LIBS)
 
 .c.o:
-	$(CC) $(OPTS) $(DEFS) $(INCS) $(LIBS) -c -o $@ $<
+	$(CC) -fPIC $(OPTS) $(DEFS) $(INCS) -c -o $@ $<
 
 clean:
 	rm -f $(OBJS)

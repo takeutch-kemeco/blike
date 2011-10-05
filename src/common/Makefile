@@ -1,7 +1,7 @@
 CC = gcc
-AR = ar
 
-INCLUDE_BASE_PATH = ../../include
+BASE_PATH = ../..
+INCLUDE_BASE_PATH = $(BASE_PATH)/include
 
 COMMON_SRCS = char8b.c \
 	clock.c \
@@ -54,7 +54,8 @@ COMMON_SRCS = char8b.c \
 	test.c
 
 OBJS	= $(COMMON_SRCS:.c=.o)
-PROG	= ../../libblike.a
+SONAME	= libbl_common.so
+PROG	= $(SONAME)
 DEFS	=
 LIBS	=
 INCS	= -I $(INCLUDE_BASE_PATH) \
@@ -63,20 +64,13 @@ INCS	= -I $(INCLUDE_BASE_PATH) \
 OPTS	= -O2
 
 all: $(PROG)
-	ranlib $(PROG)
 
 $(PROG): $(OBJS)
-	$(AR) -rv $@ $(OBJS)
+	$(CC) -shared -Wl,-soname,$(SONAME) -o $@ $(OBJS) $(LIBS)
 
 .c.o:
-	$(CC) $(OPTS) $(INCS) -c -o $@ $< $(LIBS)
+	$(CC) -fPIC $(OPTS) $(DEFS) $(INCS) -c -o $@ $<
 
 clean:
 	rm -f $(OBJS)
 	rm -f $(PROG)
-
-echo:
-	pwd
-	ls
-	echo $(INCLUDE_BASE_PATH)
-

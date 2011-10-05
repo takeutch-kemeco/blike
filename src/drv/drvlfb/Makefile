@@ -1,7 +1,7 @@
 CC = gcc
-AR = ar
 
-INCLUDE_BASE_PATH = ../../../include
+BASE_PATH = ../../..
+INCLUDE_BASE_PATH = $(BASE_PATH)/include
 
 SRCS =  drvlfb_main.c \
         drvlfb_interface.c \
@@ -11,7 +11,8 @@ SRCS =  drvlfb_main.c \
         hankaku_font.c
 
 OBJS	= $(SRCS:.c=.o)
-PROG	= ../../../libblike.a
+SONAME	= libbl_drvlfb.so
+PROG	= $(SONAME)
 DEFS	=
 LIBS	= -lpthread \
 	-lm
@@ -22,13 +23,12 @@ INCS	= -I $(INCLUDE_BASE_PATH) \
 OPTS	= -O2
 
 all: $(PROG)
-	ranlib $(PROG)
 
 $(PROG): $(OBJS)
-	$(AR) -rv $@ $(OBJS)
+	$(CC) -shared -Wl,-soname,$(SONAME) -o $@ $(OBJS) $(LIBS)
 
 .c.o:
-	$(CC) $(OPTS) $(DEFS) $(INCS) $(LIBS) -c -o $@ $<
+	$(CC) -fPIC $(OPTS) $(DEFS) $(INCS) -c -o $@ $<
 
 clean:
 	rm -f $(OBJS)

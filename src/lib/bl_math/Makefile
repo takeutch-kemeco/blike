@@ -1,26 +1,26 @@
 CC = gcc
-AR = ar
 
-INCLUDE_BASE_PATH = ../../../include
+BASE_PATH = ../../..
+INCLUDE_BASE_PATH = $(BASE_PATH)/include
 
 SRCS =	bl_complex.c \
 	bl_dft.c
 
 OBJS	= $(SRCS:.c=.o)
-PROG	= ../../../libblike.a
+SONAME	= libbl_math.so
+PROG	= $(SONAME)
 DEFS	=
-LIBS	=	
+LIBS	= -lm
 INCS	= -I $(INCLUDE_BASE_PATH)/lib/bl_math
 OPTS	= -O2
 
 all: $(PROG)
-	ranlib $(PROG)
 
 $(PROG): $(OBJS)
-	$(AR) -rv $@ $(OBJS)
+	$(CC) -shared -Wl,-soname,$(SONAME) -o $@ $(OBJS) $(LIBS)
 
 .c.o:
-	$(CC) $(OPTS) $(DEFS) $(INCS) $(LIBS) -c -o $@ $<
+	$(CC) -fPIC $(OPTS) $(DEFS) $(INCS) -c -o $@ $<
 
 clean:
 	rm -f $(OBJS)

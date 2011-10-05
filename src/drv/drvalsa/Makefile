@@ -1,13 +1,14 @@
 CC = gcc
-AR = ar
 
-INCLUDE_BASE_PATH = ../../../include
+BASE_PATH = ../../..
+INCLUDE_BASE_PATH = $(BASE_PATH)/include
 
 SRCS =	drvalsa_player.c \
 	drvalsa_player_thread.c
 
 OBJS	= $(SRCS:.c=.o)
-PROG	= ../../../libblike.a
+SONAME	= libbl_drvalsa.so
+PROG	= $(SONAME)
 DEFS	=
 LIBS	= `pkg-config alsa --libs` \
 	`pkg-config glib-2.0 --libs` \
@@ -20,15 +21,13 @@ INCS	= -I $(INCLUDE_BASE_PATH) \
 OPTS	= -O2
 
 all: $(PROG)
-	ranlib $(PROG)
 
 $(PROG): $(OBJS)
-	$(AR) -rv $@ $(OBJS)
+	$(CC) -shared -Wl,-soname,$(SONAME) -o $@ $(OBJS) $(LIBS)
 
 .c.o:
-	$(CC) $(OPTS) $(INCS) $(LIBS) -c -o $@ $<
+	$(CC) -fPIC $(OPTS) $(DEFS) $(INCS) -c -o $@ $<
 
 clean:
 	rm -f $(OBJS)
 	rm -f $(PROG)
-
