@@ -11,3 +11,8 @@ sudo make install
 cd samples
 ./build.sh
 
+
+
+＜たとえば自作のhello.cのコンパイル方法＞
+gcc -o hello hello.c `pkg-config c_blike --libs --cflags`
+
