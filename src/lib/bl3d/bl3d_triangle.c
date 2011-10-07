@@ -1,9 +1,9 @@
 //#define __DEBUG__
 
-#include "blike.h"
-#include "bl3d.h"
-#include "bl3d_matrix_macro.h"
-#include "bl3d_io_macro.h"
+#include <blike.h>
+#include <bl3d.h>
+#include <bl3d_matrix_macro.h>
+#include <bl3d_io_macro.h>
 
 void bl3d_init_triangle_g_t(
 	struct BL3D_TRIANGLE_G_T*	a,
@@ -242,8 +242,8 @@ union BL3D_COLOR32 {
 };
 
 static void bl3d_draw_line_g_t(
-	struct BL3D_VECTOR* A,
-	struct BL3D_VECTOR* B,
+	struct BL3D_VECTOR* _A,
+	struct BL3D_VECTOR* _B,
 	struct BL3D_VECTOR* AT,
 	struct BL3D_VECTOR* BT,
 	const int texture_vram,
@@ -252,15 +252,22 @@ static void bl3d_draw_line_g_t(
 	struct BL3D_CVECTOR* BASE_C
 )
 {
-	const float d = B->x - A->x;
+	struct BL3D_VECTOR A = *_A;
+	struct BL3D_VECTOR B = *_B;
+	A.x += (A.x > 0)? 0.5: -0.5;
+	B.x += (B.x > 0)? 0.5: -0.5;
+	A.y += (A.y > 0)? 0.5: -0.5;
+	B.y += (B.y > 0)? 0.5: -0.5;
+	
+	const float d = B.x - A.x;
 	const float r = (d > 0)? d: -d;		// abs(d);
 
 	const float ir = (r != 0)? 1.0 / r: 0;
 	struct BL3D_VECTOR ir_vec = {ir, ir, ir, 0};
 	
 	const float Ux = (d > 0)? +1.0: -1.0;
-	int Px = (int)A->x;
-	int Py = (int)A->y;
+	int Px = (int)A.x;
+	int Py = (int)A.y;
 	
 	
 	
@@ -284,6 +291,9 @@ static void bl3d_draw_line_g_t(
 	
 	
 	
+	struct BL3D_CVECTOR C;
+	union BL3D_COLOR32 _C;
+	static const float i255 = 1.0 / 255;
 	const int _r = (int)r;
 	int i;
 	for(i = 0; i < _r; i++) {
@@ -291,18 +301,14 @@ static void bl3d_draw_line_g_t(
 		int ty = (int)PT.y;
 		
 		
-		union BL3D_COLOR32 _C;
 		BL3D_GET_PIX(tx, ty, _C.bgra, texture_vram);
-		static const float i255 = 1.0 / 255;
-		struct BL3D_CVECTOR C = {
-			.r = ((float)_C.r) * i255,
-			.g = ((float)_C.g) * i255,
-			.b = ((float)_C.b) * i255
-		};
+		C.r = ((float)_C.r) * i255;
+		C.g = ((float)_C.g) * i255;
+		C.b = ((float)_C.b) * i255;
 		
 		
 		BL3D_MUL_VECTOR((struct BL3D_VECTOR*)&C, (struct BL3D_VECTOR*)&PC);
-		BL3D_ADD_VECTOR((struct BL3D_VECTOR*)&C, (struct BL3D_VECTOR*)BASE_C);		
+		BL3D_ADD_VECTOR((struct BL3D_VECTOR*)&C, (struct BL3D_VECTOR*)BASE_C);
 		
 		
 		(bl3d_system_frame_buffer->y_offset_table[Py])[Px] = C;
@@ -312,6 +318,9 @@ static void bl3d_draw_line_g_t(
 		BL3D_ADD_VECTOR(&PT, &UT);
 		BL3D_ADD_VECTOR((struct BL3D_VECTOR*)&PC, (struct BL3D_VECTOR*)&UC);
 	}
+
+	(bl3d_system_frame_buffer->y_offset_table[Py])[Px] = C;
+	(bl3d_system_frame_buffer->y_offset_table[(int)B.y])[(int)B.x] = C;
 }
 
 static int bl3d_get_index_min(const float a, const float b, const float c)
@@ -402,7 +411,7 @@ static void bl3d_xline_divide_triangle_g_t(
 	struct BL3D_OT_TAG* dstB,
 	struct BL3D_OT_TAG* src
 )
-{
+{	
 	int min, mid, max;
 	bl3d_get_index(
 		&min, &mid, &max,
@@ -424,6 +433,10 @@ static void bl3d_xline_divide_triangle_g_t(
 	struct BL3D_VECTOR VP;
 	BL3D_MUL2_VECTOR(&VP, &VL, &VUY);
 	BL3D_ADD_VECTOR(&VP, &src->vertex[min]);
+	VP.x += (VP.x > 0)? 0.5: -0.5;
+	VP.y += (VP.y > 0)? 0.5: -0.5;
+	VP.x = (int)(VP.x);
+	VP.y = (int)(VP.y);
 	
 	
 	
@@ -554,6 +567,11 @@ static void __bl3d_draw_triangle_g_t(struct BL3D_OT_TAG* a)
 	
 	struct BL3D_VECTOR B;
 	BL3D_DIFF_VECTOR(&B, &a->vertex[1], &a->vertex[2]);
+
+	A.x += (A.x > 0)? 0.5: -0.5;
+	A.y += (A.y > 0)? 0.5: -0.5;
+	B.x += (B.x > 0)? 0.5: -0.5;
+	B.y += (B.y > 0)? 0.5: -0.5;
 	
 	const float lr = (A.y > 0)? A.y: -A.y;		// abs(A.y)
 	const float ilr = (lr != 0.0)? 1.0 / ((float)lr): 0.0;
@@ -631,21 +649,8 @@ static void __bl3d_draw_triangle_g_t(struct BL3D_OT_TAG* a)
 	}
 }
 
-static void bl3d_scale_aspect_triangle_g_t(
-	struct BL3D_OT_TAG* a,
-	const struct BL3D_VECTOR* scale
-)
-{
-	BL3D_MUL_VECTOR(&a->vertex[0], scale);
-	BL3D_MUL_VECTOR(&a->vertex[1], scale);
-	BL3D_MUL_VECTOR(&a->vertex[2], scale);
-}
-
 void bl3d_draw_triangle_g_t(struct BL3D_OT_TAG* a)
 {
-	static const struct BL3D_VECTOR aspect = {1.0, 0.5, 1.0, 0};
-	bl3d_scale_aspect_triangle_g_t(a, &aspect);
-	
 	struct BL3D_OT_TAG A, B;
 	bl3d_xline_divide_triangle_g_t(&A, &B, a);
 	
