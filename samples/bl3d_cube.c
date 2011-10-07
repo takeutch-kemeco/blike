@@ -320,6 +320,12 @@ blMain()
 
 		case 'U': dobj.local_coord.transfer.z-=100;	break;
 		case 'M': dobj.local_coord.transfer.z+=100;	break;
+		case 's':
+			wait(1000/10);
+			while(inkey() != 's') {
+				wait(1000/60);
+			}
+			break;
 		}
 
 		dobj.local_coord.rotate.x += 0.01;
@@ -335,7 +341,7 @@ blMain()
 		bl3d_draw_ot(&ot);
 	
 
-
+		E:
 		wait(1000/60);
 	}
 }
