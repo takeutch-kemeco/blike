@@ -44,3 +44,5 @@ A=test_dft;		make SRCS="$A".c PROG=$A
 
 A=test_lua;		make SRCS="$A".c PROG=$A
 
+A=test_malloc;		make SRCS="$A".c PROG=$A
+
