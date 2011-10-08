@@ -1,18 +1,11 @@
-#include "blikedrv.h"
+#include <math.h>
 
-#define	w	bl_work
-
+extern void bl_printf(const char *s, ...);
 extern void bl_drawLine(int x0, int y0, int x1, int y1);
 
 struct VEC {
 	float x, y;
 };
-
-static
-float bl_sqrt(float a)
-{
-	return (float)sqrt((double)a);
-}
 
 static
 void add_vec(struct VEC* dst, struct VEC* src)
@@ -31,7 +24,7 @@ void scale_vec(struct VEC* dst, float s)
 static
 float norm_vec(struct VEC* a)
 {
-	return bl_sqrt(a->x * a->x + a->y * a->y);
+	return sqrt(a->x * a->x + a->y * a->y);
 }
 
 static
@@ -39,6 +32,20 @@ void unit_vec(struct VEC* dst, struct VEC* src, float ir)
 {
 	dst->x = src->x * ir;
 	dst->y = src->y * ir;
+}
+
+static
+float round_float(float a)
+{
+	int tmp = (a > 0)? a + 0.5: a - 0.5;
+	return (float)tmp;
+}
+
+static
+void round_vec(struct VEC* dst, struct VEC* src)
+{
+	dst->x = round_float(src->x);
+	dst->y = round_float(src->y);
 }
 
 /*
@@ -55,7 +62,11 @@ void diff_vec(
 	dst->y = A->y - B->y;
 }
 
-void bl_draw_2db_spline(float x0, float y0, float x1, float y1, float x2, float y2)
+void bl_draw_2db_spline(
+	int x0, int y0,
+	int x1, int y1,
+	int x2, int y2
+)
 {
 	struct VEC p0 = {x0, y0};
 	struct VEC p1 = {x1, y1};
@@ -98,6 +109,7 @@ void bl_draw_2db_spline(float x0, float y0, float x1, float y1, float x2, float 
 		scale_vec(&cu, (float)i);
 		add_vec(&p, &cu);
 
+		round_vec(&p, &p);
 		bl_drawLine(op.x, op.y, p.x, p.y);
 
 		op = p;
@@ -105,4 +117,3 @@ void bl_draw_2db_spline(float x0, float y0, float x1, float y1, float x2, float 
 		add_vec(&bp, &bu);
 	}
 }
-

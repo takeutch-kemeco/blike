@@ -39,6 +39,7 @@ BL_LOAD_XPM_PATH = ./src/lib/bl_load_xpm
 BL_LUA_PATH	 = ./src/lib/bl_lua
 BL_MATH_PATH	 = ./src/lib/bl_math
 BL_PLOT_PATH	 = ./src/lib/bl_plot
+BL_SPLINE_PATH	 = ./src/lib/bl_spline
 
 OBJS =	$(COMMON_PATH)/*.o	\
 	$(DRVGTK_PATH)/*.o	\
@@ -47,7 +48,8 @@ OBJS =	$(COMMON_PATH)/*.o	\
 	$(BL_LOAD_XPM_PATH)/*.o	\
 	$(BL_LUA_PATH)/*.o	\
 	$(BL_MATH_PATH)/*.o	\
-	$(BL_PLOT_PATH)/*.o
+	$(BL_PLOT_PATH)/*.o	\
+	$(BL_SPLINE_PATH)/*.o
 
 all:
 	$(MK) -C $(WRAPPER_PATH)	DEFS=$(DEFS)
@@ -60,6 +62,7 @@ all:
 	$(MK) -C $(BL_LUA_PATH)		DEFS=$(DEFS)
 	$(MK) -C $(BL_MATH_PATH)	DEFS=$(DEFS)
 	$(MK) -C $(BL_PLOT_PATH)	DEFS=$(DEFS)
+	$(MK) -C $(BL_SPLINE_PATH)	DEFS=$(DEFS)
 	$(CC) -shared -Wl,-soname,$(SONAME) -o $(PROG) $(OBJS) $(LIBS)
 	
 clean:
@@ -73,6 +76,7 @@ clean:
 	$(MK) -C $(BL_LUA_PATH)		clean
 	$(MK) -C $(BL_MATH_PATH)	clean
 	$(MK) -C $(BL_PLOT_PATH)	clean
+	$(MK) -C $(BL_SPLINE_PATH)	clean
 	$(RM) -f $(PROG)
 
 install:

@@ -12,5 +12,5 @@ Description: blike UI library
 Version: 0.1.5.1
 Requires: gtk+-3.0 alsa lua5.1
 Libs: ${libdir}/libc_blike.so ${libdir}/bl_main_wrapper.a
-Cflags: -I${includedir}/c_blike -I${includedir}/c_blike/lib/bl3d -I${includedir}/c_blike/lib/bl_load_xpm -I${includedir}/c_blike/lib/bl_lua -I${includedir}/c_blike/lib/bl_math -I${includedir}/c_blike/lib/bl_plot
+Cflags: -I${includedir}/c_blike -I${includedir}/c_blike/lib/bl3d -I${includedir}/c_blike/lib/bl_load_xpm -I${includedir}/c_blike/lib/bl_lua -I${includedir}/c_blike/lib/bl_math -I${includedir}/c_blike/lib/bl_plot -I${includedir}/c_blike/lib/bl_spline
 

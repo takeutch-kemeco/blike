@@ -57,7 +57,6 @@ void bl_drawPtrn_err_d(const char *msg, unsigned char *nam);
 
 void* bl_malloc_aligned(unsigned int bytes, unsigned int align);
 void bl_free_aligned(void* a);
-void bl_draw_2db_spline(float x0, float y0, float x1, float y1, float x2, float y2);
 
 //void bl_setFlsW(int w0, int ppw);
 
