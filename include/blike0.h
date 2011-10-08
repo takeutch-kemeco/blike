@@ -55,9 +55,6 @@ void bl_setPtrn0(int sx, int sy, int sl, int ic, int *b, const unsigned char *c,
 void bl_drawPtrn_err_r(const char *msg, unsigned char *nam);
 void bl_drawPtrn_err_d(const char *msg, unsigned char *nam);
 
-void* bl_malloc_aligned(unsigned int bytes, unsigned int align);
-void bl_free_aligned(void* a);
-
 //void bl_setFlsW(int w0, int ppw);
 
 //	intは32bit, shortが16bit, charが8bit

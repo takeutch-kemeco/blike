@@ -1,5 +1,3 @@
-#include "blike.h"
-
 typedef unsigned char uint8;
 typedef unsigned long uint32;
 

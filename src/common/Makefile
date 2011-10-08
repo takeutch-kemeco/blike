@@ -49,7 +49,6 @@ COMMON_SRCS = char8b.c \
 	drwptn_e.c \
 	drwptn_r.c \
 	drwptn_d.c \
-	bl_malloc_aligned.c \
 	test.c
 
 OBJS	= $(COMMON_SRCS:.c=.o)
