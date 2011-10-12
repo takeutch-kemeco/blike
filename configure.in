@@ -2,22 +2,22 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.68])
-AC_INIT([FULL-PACKAGE-NAME], [VERSION], [BUG-REPORT-ADDRESS])
-AC_CONFIG_SRCDIR([src/drv/wrapper/bl_main_wrapper.c])
-AC_CONFIG_HEADERS([config.h])
+AC_INIT([c_blike], [0.1.5.2], [takeutchkemeco@gmail.com])
+AC_CONFIG_SRCDIR([src])
+AC_CONFIG_HEADERS([include/config.h])
 
 # Checks for programs.
 AC_PROG_CC
 AC_PROG_MAKE_SET
 
 # Checks for libraries.
-# FIXME: Replace `main' with a function in `-lm':
 AC_CHECK_LIB([m], [main])
-# FIXME: Replace `main' with a function in `-lpthread':
 AC_CHECK_LIB([pthread], [main])
+AC_CHECK_LIB([gtk-3], [main], has_gtk3=1, has_gtk=0)
+AC_CHECK_LIB([glib-2.0], [main], has_glib=1, has_glib=0)
+AC_CHECK_LIB([asound], [main], has_asound=1, has_asound=0)
 
 # Checks for header files.
-AC_CHECK_HEADERS([stdlib.h string.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_HEADER_STDBOOL
@@ -35,11 +35,12 @@ AC_CONFIG_FILES([Makefile
                  src/drv/drvgtk/Makefile
                  src/drv/drvlfb/Makefile
                  src/drv/wrapper/Makefile
-                 src/lib/bl3d/Makefile
-                 src/lib/bl_load_xpm/Makefile
-                 src/lib/bl_lua/Makefile
-                 src/lib/bl_malloc/Makefile
-                 src/lib/bl_math/Makefile
-                 src/lib/bl_plot/Makefile
-                 src/lib/bl_spline/Makefile])
+                 src/omake/bl3d/Makefile
+                 src/omake/bl_load_xpm/Makefile
+                 src/omake/bl_lua/Makefile
+                 src/omake/bl_malloc/Makefile
+                 src/omake/bl_math/Makefile
+                 src/omake/bl_plot/Makefile
+                 src/omake/bl_spline/Makefile])
 AC_OUTPUT
+

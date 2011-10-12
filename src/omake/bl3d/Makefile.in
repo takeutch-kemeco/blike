@@ -1,13 +1,22 @@
 INC_DIR = @top_srcdir@/include
 
-SUBNAME = drvalsa
+SUBNAME = bl3d
 SONAME = lib@PACKAGE_NAME@_$(SUBNAME).so
 PROG = $(SONAME).@PACKAGE_VERSION@
-CFLAGS = @CFLAGS@ -I$(INC_DIR) -I$(INC_DIR)/common `pkg-config glib-2.0 alsa --cflags`
-LIBS = @LIBS@ `pkg-config glib-2.0 alsa --libs`
+CFLAGS = @CFLAGS@			\
+	-I$(INC_DIR)			\
+	-I$(INC_DIR)/common		\
+	-I$(INC_DIR)/omake/$(SUBNAME)
+	
+LIBS = @LIBS@ -lm
 
-SRCS =	drvalsa_player.c	\
-	drvalsa_player_thread.c
+SRCS =	bl3d_system.c \
+	bl3d_matrix.c \
+	bl3d_math.c \
+	bl3d_dobj.c \
+	bl3d_packet_pool.c \
+	bl3d_frame_buffer.c \
+	bl3d_triangle.c
 
 OBJS = $(SRCS:.c=.o)
 

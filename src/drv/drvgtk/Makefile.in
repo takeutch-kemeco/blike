@@ -1,7 +1,10 @@
-CC = gcc
+INC_DIR = @top_srcdir@/include
 
-BASE_PATH = ../../..
-INCLUDE_BASE_PATH = $(BASE_PATH)/include
+SUBNAME = drvgtk
+SONAME = lib@PACKAGE_NAME@_$(SUBNAME).so
+PROG = $(SONAME).@PACKAGE_VERSION@
+CFLAGS = @CFLAGS@ -I$(INC_DIR) -I$(INC_DIR)/common `pkg-config gtk+-3.0 --cflags`
+LIBS = @LIBS@ `pkg-config gtk+-3.0 --libs`
 
 SRCS =	drvgtk_main.c \
 	drvgtk_interface.c \
@@ -18,28 +21,16 @@ SRCS =	drvgtk_main.c \
 	main_screen.c \
 	hankaku_font.c
 
-OBJS	= $(SRCS:.c=.o)
-SONAME	= libbl_drvgtk.so
-PROG	= $(SONAME)
-DEFS	=
-LIBS	= `pkg-config gtk+-3.0 --libs` \
-	-lm
-	
-INCS	= -I $(INCLUDE_BASE_PATH) \
-	-I $(INCLUDE_BASE_PATH)/common \
-	`pkg-config gtk+-3.0 --cflags`
-
-OPTS	= -O2
+OBJS = $(SRCS:.c=.o)
 
 all: $(PROG)
 
 $(PROG): $(OBJS)
-	$(CC) -shared -Wl,-soname,$(SONAME) -o $@ $(OBJS) $(LIBS)
+	@CC@ -shared -Wl,-soname,$(SONAME) -o $@ $(OBJS) $(LIBS)
 
 .c.o:
-	$(CC) -fPIC $(OPTS) $(DEFS) $(INCS) -c -o $@ $<
+	@CC@ -fPIC $(DEFS) $(CFLAGS) -c -o $@ $<
 
 clean:
 	rm -f $(OBJS)
 	rm -f $(PROG)
-

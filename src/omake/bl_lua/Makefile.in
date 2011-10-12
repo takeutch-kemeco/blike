@@ -1,13 +1,20 @@
 INC_DIR = @top_srcdir@/include
 
-SUBNAME = drvalsa
+SUBNAME = bl_lua
 SONAME = lib@PACKAGE_NAME@_$(SUBNAME).so
 PROG = $(SONAME).@PACKAGE_VERSION@
-CFLAGS = @CFLAGS@ -I$(INC_DIR) -I$(INC_DIR)/common `pkg-config glib-2.0 alsa --cflags`
-LIBS = @LIBS@ `pkg-config glib-2.0 alsa --libs`
+CFLAGS = @CFLAGS@			\
+	-I$(INC_DIR)			\
+	-I$(INC_DIR)/common		\
+	-I$(INC_DIR)/omake/$(SUBNAME)	\
+	`pkg-config lua5.1 --cflags`
 
-SRCS =	drvalsa_player.c	\
-	drvalsa_player_thread.c
+LIBS =	@LIBS@				\
+	`pkg-config lua5.1 --libs`
+
+SRCS =	bllua_system.c			\
+	bllua_regist_bld_func.c		\
+	bllua_regist_bl_func.c
 
 OBJS = $(SRCS:.c=.o)
 

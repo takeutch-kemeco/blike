@@ -1,106 +1,151 @@
-CC = gcc
-CP = cp
-RM = rm
-MK = make
-MD = mkdir
-LN = ln
+SRC_DIR = @top_srcdir@/src
+INC_DIR = @top_srcdir@/include
 
-INSTALL_PREFIX_PATH = /usr
-INSTALL_PREFIX_LIB_PATH = $(INSTALL_PREFIX_PATH)/lib
-INSTALL_PREFIX_INCLUDE_PATH = $(INSTALL_PREFIX_PATH)/include
-INSTALL_PREFIX_PKGCONFIG_PATH = /usr/lib/pkgconfig
-INSTALL_PC_NAME = c_blike.pc
-INSTALL_DIR_NAME = c_blike
+WRAPPER_NAME	 = c_blike_wrapper.a
+WRAPPER_PATH	 = $(SRC_DIR)/drv/wrapper
 
-BASE_PATH = $(shell pwd)
-PKGCONFIG_BASE_PATH = $(BASE_PATH)/pkgconfig
-INCLUDE_BASE_PATH = $(BASE_PATH)/include
+COMMON_PATH	 = $(SRC_DIR)/common
+DRVGTK_PATH	 = $(SRC_DIR)/drv/drvgtk
+DRVALSA_PATH	 = $(SRC_DIR)/drv/drvalsa
+DRVLFB_PATH	 = $(SRC_DIR)/drv/drvlfb
+BL3D_PATH	 = $(SRC_DIR)/omake/bl3d
+BL_LOAD_XPM_PATH = $(SRC_DIR)/omake/bl_load_xpm
+BL_LUA_PATH	 = $(SRC_DIR)/omake/bl_lua
+BL_MATH_PATH	 = $(SRC_DIR)/omake/bl_math
+BL_MALLOC_PATH	 = $(SRC_DIR)/omake/bl_malloc
+BL_PLOT_PATH	 = $(SRC_DIR)/omake/bl_plot
+BL_SPLINE_PATH	 = $(SRC_DIR)/omake/bl_spline
 
-PRE_SONAME = libc_blike.so
-SONAME = $(PRE_SONAME).0.1
-PROG = $(SONAME).5.1
-DEFS =
-LIBS = `pkg-config gtk+-3.0 glib-2.0 lua5.1 alsa --libs` \
-	-lm \
-	-lpthread
+# install
+INSTALL_BIN_DIR = @prefix@@bindir@/@PACKAGE_NAME@
+INSTALL_LIB_DIR = @prefix@@libdir@/@PACKAGE_NAME@
+INSTALL_INCLUDE_DIR = @prefix@@includedir@/@PACKAGE_NAME@
 
-INCS = `pkg-config gtk+-3.0 glib-2.0 lua5.1 alsa --cflags`
-OPTS = -O2
+INSTALL_CONF_DIR = /etc/ld.so.conf.d
+CONF = @PACKAGE_NAME@.conf
 
-WRAPPER_NAME	 = bl_main_wrapper.a
-WRAPPER_PATH	 = ./src/drv/wrapper
+INSTALL_PC_DIR = /usr/lib/pkgconfig
+PC = @PACKAGE_NAME@.pc
+PC_NAME="Name: "@PACKAGE_NAME@"\n"
+PC_VERSION="Version: "@PACKAGE_VERSION@"\n"
+PC_DESCRIPTION="Description: "@PACKAGE_NAME@" library\n"
+PC_REQUIRES="Requires:\n"
+PC_LIBS="Libs: "				\
+	"-L$(INSTALL_LIB_DIR) "			\
+	"-lc_blike_common "			\
+	"-lc_blike_drvgtk "			\
+	"-lc_blike_drvalsa "			\
+	"-lc_blike_bl3d "			\
+	"-lc_blike_bl_load_xpm "		\
+	"-lc_blike_bl_lua "			\
+	"-lc_blike_bl_math "			\
+	"-lc_blike_bl_malloc "			\
+	"-lc_blike_bl_plot "			\
+	"-lc_blike_bl_spline "			\
+	"$(INSTALL_LIB_DIR)/$(WRAPPER_NAME) "	\
+	"\n"
 
-COMMON_PATH	 = ./src/common
-DRVGTK_PATH	 = ./src/drv/drvgtk
-DRVALSA_PATH	 = ./src/drv/drvalsa
-DRVLFB_PATH	 = ./src/drv/drvlfb
-BL3D_PATH	 = ./src/lib/bl3d
-BL_LOAD_XPM_PATH = ./src/lib/bl_load_xpm
-BL_LUA_PATH	 = ./src/lib/bl_lua
-BL_MATH_PATH	 = ./src/lib/bl_math
-BL_PLOT_PATH	 = ./src/lib/bl_plot
-BL_SPLINE_PATH	 = ./src/lib/bl_spline
-BL_MALLOC_PATH	 = ./src/lib/bl_malloc
-
-OBJS =	$(COMMON_PATH)/*.o	\
-	$(DRVGTK_PATH)/*.o	\
-	$(DRVALSA_PATH)/*.o	\
-	$(BL3D_PATH)/*.o	\
-	$(BL_LOAD_XPM_PATH)/*.o	\
-	$(BL_LUA_PATH)/*.o	\
-	$(BL_MATH_PATH)/*.o	\
-	$(BL_PLOT_PATH)/*.o	\
-	$(BL_SPLINE_PATH)/*.o	\
-	$(BL_MALLOC_PATH)/*.o
+PC_CFLAGS="Cflags: "					\
+	"-I$(INSTALL_INCLUDE_DIR) "			\
+	"-I$(INSTALL_INCLUDE_DIR)/common "		\
+	"-I$(INSTALL_INCLUDE_DIR)/omake/bl3d "		\
+	"-I$(INSTALL_INCLUDE_DIR)/omake/bl_load_xpm "	\
+	"-I$(INSTALL_INCLUDE_DIR)/omake/bl_lua "	\
+	"-I$(INSTALL_INCLUDE_DIR)/omake/bl_math "	\
+	"-I$(INSTALL_INCLUDE_DIR)/omake/bl_malloc "	\
+	"-I$(INSTALL_INCLUDE_DIR)/omake/bl_plot "	\
+	"-I$(INSTALL_INCLUDE_DIR)/omake/bl_spline "	\
+	"\n"
 
 all:
-	$(MK) -C $(WRAPPER_PATH)	DEFS=$(DEFS)
-	$(MK) -C $(COMMON_PATH)		DEFS=$(DEFS)
-	$(MK) -C $(DRVGTK_PATH)		DEFS=$(DEFS)
-	$(MK) -C $(DRVALSA_PATH)	DEFS=$(DEFS)
-	$(MK) -C $(DRVLFB_PATH)		DEFS=$(DEFS)
-	$(MK) -C $(BL3D_PATH)		DEFS=$(DEFS)
-	$(MK) -C $(BL_LOAD_XPM_PATH)	DEFS=$(DEFS)
-	$(MK) -C $(BL_LUA_PATH)		DEFS=$(DEFS)
-	$(MK) -C $(BL_MATH_PATH)	DEFS=$(DEFS)
-	$(MK) -C $(BL_PLOT_PATH)	DEFS=$(DEFS)
-	$(MK) -C $(BL_SPLINE_PATH)	DEFS=$(DEFS)
-	$(MK) -C $(BL_MALLOC_PATH)	DEFS=$(DEFS)
-	$(CC) -shared -Wl,-soname,$(SONAME) -o $(PROG) $(OBJS) $(LIBS)
+	make -C $(WRAPPER_PATH)
+	make -C $(COMMON_PATH)
+	make -C $(DRVGTK_PATH)
+	make -C $(DRVALSA_PATH)
+	make -C $(DRVLFB_PATH)
+	make -C $(BL3D_PATH)
+	make -C $(BL_LOAD_XPM_PATH)
+	make -C $(BL_LUA_PATH)
+	make -C $(BL_MATH_PATH)
+	make -C $(BL_PLOT_PATH)
+	make -C $(BL_SPLINE_PATH)
+	make -C $(BL_MALLOC_PATH)
 	
 clean:
-	$(MK) -C $(WRAPPER_PATH)	clean
-	$(MK) -C $(COMMON_PATH)		clean
-	$(MK) -C $(DRVGTK_PATH)		clean
-	$(MK) -C $(DRVALSA_PATH)	clean
-	$(MK) -C $(DRVLFB_PATH)		clean
-	$(MK) -C $(BL3D_PATH)		clean
-	$(MK) -C $(BL_LOAD_XPM_PATH)	clean
-	$(MK) -C $(BL_LUA_PATH)		clean
-	$(MK) -C $(BL_MATH_PATH)	clean
-	$(MK) -C $(BL_PLOT_PATH)	clean
-	$(MK) -C $(BL_SPLINE_PATH)	clean
-	$(MK) -C $(BL_MALLOC_PATH)	clean
-	$(RM) -f $(PROG)
+	make -C $(WRAPPER_PATH)		clean
+	make -C $(COMMON_PATH)		clean
+	make -C $(DRVGTK_PATH)		clean
+	make -C $(DRVALSA_PATH)		clean
+	make -C $(DRVLFB_PATH)		clean
+	make -C $(BL3D_PATH)		clean
+	make -C $(BL_LOAD_XPM_PATH)	clean
+	make -C $(BL_LUA_PATH)		clean
+	make -C $(BL_MATH_PATH)		clean
+	make -C $(BL_PLOT_PATH)		clean
+	make -C $(BL_SPLINE_PATH)	clean
+	make -C $(BL_MALLOC_PATH)	clean
+
+
+
+install-lib:
+	mkdir -p $(INSTALL_LIB_DIR)
+	cp -f $(WRAPPER_PATH)/$(WRAPPER_NAME)						$(INSTALL_LIB_DIR)
+	cp -f $(COMMON_PATH)/lib@PACKAGE_NAME@_common.so.@PACKAGE_VERSION@		$(INSTALL_LIB_DIR)
+	cp -f $(DRVGTK_PATH)/lib@PACKAGE_NAME@_drvgtk.so.@PACKAGE_VERSION@		$(INSTALL_LIB_DIR)
+	cp -f $(DRVALSA_PATH)/lib@PACKAGE_NAME@_drvalsa.so.@PACKAGE_VERSION@		$(INSTALL_LIB_DIR)
+	cp -f $(DRVLFB_PATH)/lib@PACKAGE_NAME@_drvlfb.so.@PACKAGE_VERSION@		$(INSTALL_LIB_DIR)
+	cp -f $(BL3D_PATH)/lib@PACKAGE_NAME@_bl3d.so.@PACKAGE_VERSION@			$(INSTALL_LIB_DIR)
+	cp -f $(BL_LOAD_XPM_PATH)/lib@PACKAGE_NAME@_bl_load_xpm.so.@PACKAGE_VERSION@	$(INSTALL_LIB_DIR)
+	cp -f $(BL_LUA_PATH)/lib@PACKAGE_NAME@_bl_lua.so.@PACKAGE_VERSION@		$(INSTALL_LIB_DIR)
+	cp -f $(BL_MATH_PATH)/lib@PACKAGE_NAME@_bl_math.so.@PACKAGE_VERSION@		$(INSTALL_LIB_DIR)
+	cp -f $(BL_PLOT_PATH)/lib@PACKAGE_NAME@_bl_plot.so.@PACKAGE_VERSION@		$(INSTALL_LIB_DIR)
+	cp -f $(BL_SPLINE_PATH)/lib@PACKAGE_NAME@_bl_spline.so.@PACKAGE_VERSION@	$(INSTALL_LIB_DIR)
+	cp -f $(BL_MALLOC_PATH)/lib@PACKAGE_NAME@_bl_malloc.so.@PACKAGE_VERSION@	$(INSTALL_LIB_DIR)
+
+install-include:
+	mkdir -p $(INSTALL_INCLUDE_DIR)
+	cp -rf $(INC_DIR)/* $(INSTALL_INCLUDE_DIR)
+
+install-pc:
+	make create-pc
+	cp -f $(PC) $(INSTALL_PC_DIR)
+
+install-conf:
+	make create-conf
+	cp -f $(CONF) $(INSTALL_CONF_DIR)
+	ldconfig
 
 install:
-	$(MD) -p $(INSTALL_PREFIX_LIB_PATH)
-	$(CP) -f $(WRAPPER_PATH)/$(WRAPPER_NAME) \
-		$(INSTALL_PREFIX_LIB_PATH)
-	$(CP) -f $(PROG) \
-		$(INSTALL_PREFIX_LIB_PATH)
-	/sbin/ldconfig
-	$(LN) -nf $(INSTALL_PREFIX_LIB_PATH)/$(PROG) \
-		$(INSTALL_PREFIX_LIB_PATH)/$(PRE_SONAME)
-	$(MD) -p $(INSTALL_PREFIX_INCLUDE_PATH)/$(INSTALL_DIR_NAME)
-	$(CP) -r $(INCLUDE_BASE_PATH)/* \
-		$(INSTALL_PREFIX_INCLUDE_PATH)/$(INSTALL_DIR_NAME)
-	$(CP) -f $(PKGCONFIG_BASE_PATH)/$(INSTALL_PC_NAME) \
-		$(INSTALL_PREFIX_PKGCONFIG_PATH)
+	make install-lib
+	make install-include
+	make install-pc
+	make install-conf
+
+
+
+uninstall-lib:
+	rm -rf $(INSTALL_LIB_DIR)
+
+uninstall-include:
+	rm -rf $(INSTALL_INCLUDE_DIR)
+
+uninstall-pc:
+	rm -f $(INSTALL_PC_DIR)/$(PC)
+
+uninstall-conf:
+	rm -f $(INSTALL_CONF_DIR)/$(CONF)
+	ldconfig
 
 uninstall:
-	$(RM) -f $(INSTALL_PREFIX_LIB_PATH)/$(PROG)
-	$(RM) -f $(INSTALL_PREFIX_LIB_PATH)/$(PRE_SONAME)
-	$(RM) -f $(INSTALL_PREFIX_LIB_PATH)/$(WRAPPER_NAME)
-	$(RM) -r $(INSTALL_PREFIX_INCLUDE_PATH)/$(INSTALL_DIR_NAME)
-	$(RM) $(INSTALL_PREFIX_PKGCONFIG_PATH)/$(INSTALL_PC_NAME)
+	make uninstall-lib
+	make uninstall-include
+	make uninstall-pc
+	make uninstall-conf
+
+
+
+create-conf:
+	echo $(INSTALL_LIB_DIR) > $(CONF)
+
+create-pc:
+	echo $(PC_NAME)$(PC_DESCRIPTION)$(PC_VERSION)$(PC_REQUIRES)$(PC_LIBS)$(PC_CFLAGS) > $(PC)

@@ -1,13 +1,16 @@
 INC_DIR = @top_srcdir@/include
 
-SUBNAME = drvalsa
+SUBNAME = bl_spline
 SONAME = lib@PACKAGE_NAME@_$(SUBNAME).so
 PROG = $(SONAME).@PACKAGE_VERSION@
-CFLAGS = @CFLAGS@ -I$(INC_DIR) -I$(INC_DIR)/common `pkg-config glib-2.0 alsa --cflags`
-LIBS = @LIBS@ `pkg-config glib-2.0 alsa --libs`
+CFLAGS = @CFLAGS@			\
+	-I$(INC_DIR)			\
+	-I$(INC_DIR)/common		\
+	-I$(INC_DIR)/omake/$(SUBNAME)
 
-SRCS =	drvalsa_player.c	\
-	drvalsa_player_thread.c
+LIBS = @LIBS@ -lm
+
+SRCS	= bl_draw_2db_spline.c
 
 OBJS = $(SRCS:.c=.o)
 
