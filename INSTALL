@@ -1,5 +1,6 @@
 ＜インストール方法＞
 autoconf
+autoheader
 ./configure
 make
 sudo make install
