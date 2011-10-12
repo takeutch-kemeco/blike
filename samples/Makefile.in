@@ -1,17 +1,14 @@
-CC = gcc
-RM = rm
-
 SRCS =
 OBJS = $(SRCS:.c=.o)
 PROG =
-DEFS =
-LIBS = `pkg-config c_blike --libs`
-INCS = `pkg-config c_blike --cflags`
-OPTS = -O2
+
+CFLAGS = @CFLAGS@ `pkg-config c_blike --cflags`
+LIBS = @LIBS@ `pkg-config c_blike --libs`
 
 all:
-	$(CC) $(OPTS) $(DEFS) $(INCS) -o $(PROG) $(SRCS) $(LIBS)
+	@CC@ @DEFS@ $(CFLAGS) -o $(PROG) $(SRCS) $(LIBS)
 
 clean:
-	$(RM) -f $(OBJS) $(PROG)
+	rm -f $(OBJS)
+	rm -f $(PROG)
 
