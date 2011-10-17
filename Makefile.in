@@ -26,10 +26,10 @@ CONF = @PACKAGE_NAME@.conf
 
 INSTALL_PC_DIR = /usr/lib/pkgconfig
 PC = @PACKAGE_NAME@.pc
-PC_NAME="Name: "@PACKAGE_NAME@"\n"
-PC_VERSION="Version: "@PACKAGE_VERSION@"\n"
-PC_DESCRIPTION="Description: "@PACKAGE_NAME@" library\n"
-PC_REQUIRES="Requires:\n"
+PC_NAME="Name: @PACKAGE_NAME@"
+PC_VERSION="Version: @PACKAGE_VERSION@"
+PC_DESCRIPTION="Description: @PACKAGE_NAME@ library"
+PC_REQUIRES="Requires:"
 PC_LIBS="Libs: "				\
 	"-L$(INSTALL_LIB_DIR) "			\
 	"-lc_blike_common "			\
@@ -42,8 +42,7 @@ PC_LIBS="Libs: "				\
 	"-lc_blike_bl_malloc "			\
 	"-lc_blike_bl_plot "			\
 	"-lc_blike_bl_spline "			\
-	"$(INSTALL_LIB_DIR)/$(WRAPPER_NAME) "	\
-	"\n"
+	"$(INSTALL_LIB_DIR)/$(WRAPPER_NAME) "
 
 PC_CFLAGS="Cflags: "					\
 	"-I$(INSTALL_INCLUDE_DIR) "			\
@@ -54,8 +53,7 @@ PC_CFLAGS="Cflags: "					\
 	"-I$(INSTALL_INCLUDE_DIR)/omake/bl_math "	\
 	"-I$(INSTALL_INCLUDE_DIR)/omake/bl_malloc "	\
 	"-I$(INSTALL_INCLUDE_DIR)/omake/bl_plot "	\
-	"-I$(INSTALL_INCLUDE_DIR)/omake/bl_spline "	\
-	"\n"
+	"-I$(INSTALL_INCLUDE_DIR)/omake/bl_spline "
 
 all:
 	make -C $(WRAPPER_PATH)
@@ -148,4 +146,13 @@ create-conf:
 	echo $(INSTALL_LIB_DIR) > $(CONF)
 
 create-pc:
-	echo $(PC_NAME)$(PC_DESCRIPTION)$(PC_VERSION)$(PC_REQUIRES)$(PC_LIBS)$(PC_CFLAGS) > $(PC)
+create-pc:
+	echo $(PC_NAME)         > tmp_1
+	echo $(PC_DESCRIPTION)  > tmp_2
+	echo $(PC_VERSION)      > tmp_3
+	echo $(PC_REQUIRES)     > tmp_4
+	echo $(PC_LIBS)         > tmp_5
+	echo $(PC_CFLAGS)       > tmp_6
+	cat tmp_1 tmp_2 tmp_3 tmp_4 tmp_5 tmp_6 > $(PC)
+	rm -f tmp_1 tmp_2 tmp_3 tmp_4 tmp_5 tmp_6
+
