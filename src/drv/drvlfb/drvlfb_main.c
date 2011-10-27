@@ -10,7 +10,7 @@ struct DRVLFB_SYSTEM* drvlfb_system;
 extern void bl_init();
 extern void bl_exit();
 
-int main(int argc, char** argv)
+int __bl_main__(int argc, char** argv)
 {
 	drvlfb_system = drvlfb_new_system(DRVLFB_FB0_DEVICE_NAME, 640, 480);
 	
