@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.68])
-AC_INIT([c_blike], [0.1.5.2], [takeutchkemeco@gmail.com])
+AC_INIT([c_blike], [0.1.5.2.1], [takeutchkemeco@gmail.com])
 AC_CONFIG_SRCDIR([src])
 AC_CONFIG_HEADERS([include/config.h])
 
@@ -37,7 +37,6 @@ AC_CONFIG_FILES([Makefile
                  src/drv/wrapper/Makefile
                  src/omake/bl3d/Makefile
                  src/omake/bl_load_xpm/Makefile
-                 src/omake/bl_lua/Makefile
                  src/omake/bl_malloc/Makefile
                  src/omake/bl_math/Makefile
                  src/omake/bl_plot/Makefile

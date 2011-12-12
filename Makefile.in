@@ -10,7 +10,6 @@ DRVALSA_PATH	 = $(SRC_DIR)/drv/drvalsa
 DRVLFB_PATH	 = $(SRC_DIR)/drv/drvlfb
 BL3D_PATH	 = $(SRC_DIR)/omake/bl3d
 BL_LOAD_XPM_PATH = $(SRC_DIR)/omake/bl_load_xpm
-BL_LUA_PATH	 = $(SRC_DIR)/omake/bl_lua
 BL_MATH_PATH	 = $(SRC_DIR)/omake/bl_math
 BL_MALLOC_PATH	 = $(SRC_DIR)/omake/bl_malloc
 BL_PLOT_PATH	 = $(SRC_DIR)/omake/bl_plot
@@ -37,7 +36,6 @@ PC_LIBS="Libs: "				\
 	"-lc_blike_drvalsa "			\
 	"-lc_blike_bl3d "			\
 	"-lc_blike_bl_load_xpm "		\
-	"-lc_blike_bl_lua "			\
 	"-lc_blike_bl_math "			\
 	"-lc_blike_bl_malloc "			\
 	"-lc_blike_bl_plot "			\
@@ -49,7 +47,6 @@ PC_CFLAGS="Cflags: "					\
 	"-I$(INSTALL_INCLUDE_DIR)/common "		\
 	"-I$(INSTALL_INCLUDE_DIR)/omake/bl3d "		\
 	"-I$(INSTALL_INCLUDE_DIR)/omake/bl_load_xpm "	\
-	"-I$(INSTALL_INCLUDE_DIR)/omake/bl_lua "	\
 	"-I$(INSTALL_INCLUDE_DIR)/omake/bl_math "	\
 	"-I$(INSTALL_INCLUDE_DIR)/omake/bl_malloc "	\
 	"-I$(INSTALL_INCLUDE_DIR)/omake/bl_plot "	\
@@ -63,7 +60,6 @@ all:
 	make -C $(DRVLFB_PATH)
 	make -C $(BL3D_PATH)
 	make -C $(BL_LOAD_XPM_PATH)
-	make -C $(BL_LUA_PATH)
 	make -C $(BL_MATH_PATH)
 	make -C $(BL_PLOT_PATH)
 	make -C $(BL_SPLINE_PATH)
@@ -77,7 +73,6 @@ clean:
 	make -C $(DRVLFB_PATH)		clean
 	make -C $(BL3D_PATH)		clean
 	make -C $(BL_LOAD_XPM_PATH)	clean
-	make -C $(BL_LUA_PATH)		clean
 	make -C $(BL_MATH_PATH)		clean
 	make -C $(BL_PLOT_PATH)		clean
 	make -C $(BL_SPLINE_PATH)	clean
@@ -94,7 +89,6 @@ install-lib:
 	cp -f $(DRVLFB_PATH)/lib@PACKAGE_NAME@_drvlfb.so.@PACKAGE_VERSION@		$(INSTALL_LIB_DIR)
 	cp -f $(BL3D_PATH)/lib@PACKAGE_NAME@_bl3d.so.@PACKAGE_VERSION@			$(INSTALL_LIB_DIR)
 	cp -f $(BL_LOAD_XPM_PATH)/lib@PACKAGE_NAME@_bl_load_xpm.so.@PACKAGE_VERSION@	$(INSTALL_LIB_DIR)
-	cp -f $(BL_LUA_PATH)/lib@PACKAGE_NAME@_bl_lua.so.@PACKAGE_VERSION@		$(INSTALL_LIB_DIR)
 	cp -f $(BL_MATH_PATH)/lib@PACKAGE_NAME@_bl_math.so.@PACKAGE_VERSION@		$(INSTALL_LIB_DIR)
 	cp -f $(BL_PLOT_PATH)/lib@PACKAGE_NAME@_bl_plot.so.@PACKAGE_VERSION@		$(INSTALL_LIB_DIR)
 	cp -f $(BL_SPLINE_PATH)/lib@PACKAGE_NAME@_bl_spline.so.@PACKAGE_VERSION@	$(INSTALL_LIB_DIR)
