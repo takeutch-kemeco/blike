@@ -68,7 +68,7 @@ struct MainWindow* new_MainWindow(
 
 	a->wgt = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 	gtk_window_set_title(GTK_WINDOW(a->wgt), " ");
-	gtk_container_set_border_width(GTK_CONTAINER(a->wgt), 10);
+//	gtk_container_set_border_width(GTK_CONTAINER(a->wgt), 0);
 
 
 	a->key_ring_buffer = key_ring_buffer;
