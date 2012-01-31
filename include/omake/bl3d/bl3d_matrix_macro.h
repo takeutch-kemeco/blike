@@ -521,7 +521,8 @@
 		"mulps  %%xmm0, %%xmm0;"			\
 		"haddps %%xmm0, %%xmm0;"			\
 		"haddps %%xmm0, %%xmm0;"			\
-		"sqrtss %%xmm0, %%xmm0;"			\
+		"rsqrtss %%xmm0, %%xmm1;"			\
+		"mulss   %%xmm1, %%xmm0;"			\
 								\
 		"movss  %%xmm0, (%1);"				\
 		:						\
