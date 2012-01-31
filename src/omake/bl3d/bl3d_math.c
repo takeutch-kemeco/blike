@@ -3,9 +3,18 @@
 #include "bl3d_matrix_macro.h"
 #include "bl3d_math_macro.h"
 
+inline float bl3d_rcp(const float a)
+{
+	float ret;
+	BL3D_RCP(&ret, &a);
+	return ret;
+}
+
 inline float bl3d_sqrt(const float a)
 {
-	return BL3D_SQRT(a);
+	float ret;
+	BL3D_SQRT(&ret, &a);
+	return ret;
 }
 
 inline float bl3d_atan2(const float a, const float b)
