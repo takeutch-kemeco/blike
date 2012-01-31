@@ -98,7 +98,9 @@ void bl3d_sort_triangle_g_t(
 		BL3D_ADD_VECTOR(&ot_tag->vertex[i], (struct BL3D_VECTOR*)bl3d_ls_matrix.t);
 		ot_tag->vertex[i].z *= bl3d_ot_scale;
 		
-		const float a = (1.0 / ot_tag->vertex[i].z) * bl3d_ot_projection;
+		float iz;
+		BL3D_RCP(&iz, &(ot_tag->vertex[i].z));
+		const float a = iz * bl3d_ot_projection;
 		
 		ot_tag->vertex[i].x *= a;
 		ot_tag->vertex[i].y *= a;
@@ -262,7 +264,12 @@ static void bl3d_draw_line_g_t(
 	const float d = B.x - A.x;
 	const float r = (d > 0)? d: -d;		// abs(d);
 
-	const float ir = (r != 0)? 1.0 / r: 0;
+	float ir;
+	if (r != 0) {
+		BL3D_RCP(&ir, &r);
+	} else {
+		ir = 0;
+	}
 	struct BL3D_VECTOR ir_vec = {ir, ir, ir, 0};
 	
 	const float Ux = (d > 0)? +1.0: -1.0;
@@ -293,7 +300,7 @@ static void bl3d_draw_line_g_t(
 	
 	struct BL3D_CVECTOR C;
 	union BL3D_COLOR32 _C;
-	static const float i255 = 1.0 / 255;
+	static const float i255 = 0.00392156862745098;	// 1.0 / 255;
 	const int _r = (int)r;
 	int i;
 	for(i = 0; i < _r; i++) {
@@ -422,7 +429,14 @@ static void bl3d_xline_divide_triangle_g_t(
 	
 	float vumid = src->vertex[mid].y - src->vertex[min].y;
  	float vumax = src->vertex[max].y - src->vertex[min].y;
-	float vuy = (vumax != 0)? vumid / vumax: 0;
+	float vuy;
+	if(vumax != 0) {
+		float ivumax;
+		BL3D_RCP(&ivumax, &vumax);
+		vuy = vumid * ivumax;
+	} else {
+		vuy = 0;
+	}
 	struct BL3D_VECTOR VUY = {vuy, vuy, vuy, 0};
 	
 	
@@ -574,7 +588,12 @@ static void __bl3d_draw_triangle_g_t(struct BL3D_OT_TAG* a)
 	B.y += (B.y > 0)? 0.5: -0.5;
 	
 	const float lr = (A.y > 0)? A.y: -A.y;		// abs(A.y)
-	const float ilr = (lr != 0.0)? 1.0 / ((float)lr): 0.0;
+	float ilr;
+	if(lr != 0.0) {
+		BL3D_RCP(&ilr, &lr);
+	} else {
+		ilr = 0.0;
+	}
 	struct BL3D_VECTOR ilr_vector = {ilr, ilr, ilr, 0.0};
 	
 	struct BL3D_VECTOR AU;
