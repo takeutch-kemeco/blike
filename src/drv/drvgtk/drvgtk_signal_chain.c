@@ -45,9 +45,7 @@ static inline void enable_sse_flash_window(guchar* dst, guint32* src, gint _i)
 	const guint32 __attribute__((aligned(16)))mskG[4] = {0xFF00,   0xFF00,   0xFF00,   0xFF00}; 
 	const guint32 __attribute__((aligned(16)))mskB[4] = {0xFF0000, 0xFF0000, 0xFF0000, 0xFF0000};
 
-	guint8 __attribute__((aligned(16)))tmp[16];
-	
-	
+
 	__asm__ volatile(
 		"movdqa (%0), %%xmm5;"
 		"movdqa (%1), %%xmm6;"
@@ -61,9 +59,9 @@ static inline void enable_sse_flash_window(guchar* dst, guint32* src, gint _i)
 		__asm__ volatile(
 			"prefetchnta 1024(%0);"
 			
-			"movdqa (%0),   %%xmm1;"
-			"movdqa %%xmm1, %%xmm0;"
-			"movdqa %%xmm1, %%xmm2;"
+			"movdqa (%0),   %%xmm0;"
+			"movdqa %%xmm0, %%xmm1;"
+			"movdqa %%xmm0, %%xmm2;"
 
 			"psrld $16, %%xmm0;"
 			"pslld $16, %%xmm2;"
@@ -75,17 +73,19 @@ static inline void enable_sse_flash_window(guchar* dst, guint32* src, gint _i)
 			"orpd   %%xmm2, %%xmm1;"
 			"orpd   %%xmm1, %%xmm0;"
 
-			"movdqa %%xmm0, (%2);"
-			"movl (%2), %%eax;"
-			"movl %%eax, (%1);"
-			"movl 4(%2), %%eax;"
-			"movl %%eax, 3(%1);"
-			"movl 8(%2), %%eax;"
-			"movl %%eax, 6(%1);"
-			"movl 12(%2), %%eax;"
-			"movl %%eax, 9(%1);"
+
+			"movq %%xmm0, 0(%1);"
+
+			"pshufd $0xE5, %%xmm0, %%xmm3;"
+			"movq %%xmm3, 3(%1);"
+
+			"pshufd $0xE6, %%xmm0, %%xmm4;"
+			"movq %%xmm4, 6(%1);"
+
+			"pshufd $0xE7, %%xmm0, %%xmm3;"
+			"movq %%xmm3, 9(%1);"
 			:
-			:"r"(src), "r"(dst), "r"(tmp)
+			:"r"(src), "r"(dst)
 			:"%eax", "memory"
 		);
 		
