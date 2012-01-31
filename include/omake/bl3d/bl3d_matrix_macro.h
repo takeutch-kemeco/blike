@@ -380,8 +380,9 @@
 ///
 /// （注意：計算するのは回転行列m[][]のみで、平行移動t[]は計算しません）
 #define BL3D_ROT_MATRIX_X(dst, src) {			\
-	const float ___s___ = BL3D_SIN((src));		\
-	const float ___c___ = BL3D_COS((src));		\
+	float ___s___;					\
+	float ___c___;					\
+	bl_fast_sincos(&___s___, &___c___, src);	\
 							\
 	(dst)->m[0][0] = 1;	(dst)->m[0][1] = 0;		(dst)->m[0][2] = 0;		\
 	(dst)->m[1][0] = 0;	(dst)->m[1][1] = ___c___;	(dst)->m[1][2] = -___s___;	\
@@ -396,8 +397,9 @@
 ///
 /// （注意：計算するのは回転行列m[][]のみで、平行移動t[]は計算しません）
 #define BL3D_ROT_MATRIX_Y(dst, src) {			\
-	const float ___s___ = BL3D_SIN((src));		\
-	const float ___c___ = BL3D_COS((src));		\
+	float ___s___;					\
+	float ___c___;					\
+	bl_fast_sincos(&___s___, &___c___, src);	\
 							\
 	(dst)->m[0][0] =  ___c___;	(dst)->m[0][1] = 0;	(dst)->m[0][2] = ___s___;	\
 	(dst)->m[1][0] =  0;		(dst)->m[1][1] = 1;	(dst)->m[1][2] = 0;		\
@@ -412,8 +414,9 @@
 ///
 /// （注意：計算するのは回転行列m[][]のみで、平行移動t[]は計算しません）
 #define BL3D_ROT_MATRIX_Z(dst, src) {			\
-	const float ___s___ = BL3D_SIN((src));		\
-	const float ___c___ = BL3D_COS((src));		\
+	float ___s___;					\
+	float ___c___;					\
+	bl_fast_sincos(&___s___, &___c___, src);	\
 							\
 	(dst)->m[0][0] = ___c___;	(dst)->m[0][1] = -___s___;	(dst)->m[0][2] = 0;	\
 	(dst)->m[1][0] = ___s___;	(dst)->m[1][1] =  ___c___;	(dst)->m[1][2] = 0;	\

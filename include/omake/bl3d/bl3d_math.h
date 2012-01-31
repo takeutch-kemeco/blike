@@ -8,8 +8,6 @@ struct BL3D_SURFACE_EQUATION{
 	float a, b, c, d;
 } __attribute((aligned(16)));
 
-extern inline float bl3d_sin(const float a);
-extern inline float bl3d_cos(const float a);
 extern inline float bl3d_sqrt(const float a);
 extern inline float bl3d_atan2(const float a, const float b);
 

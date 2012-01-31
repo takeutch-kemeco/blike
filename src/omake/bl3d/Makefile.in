@@ -6,6 +6,7 @@ PROG = $(SONAME).@PACKAGE_VERSION@
 CFLAGS = @CFLAGS@			\
 	-I$(INC_DIR)			\
 	-I$(INC_DIR)/common		\
+	-I$(INC_DIR)/omake/bl_math	\
 	-I$(INC_DIR)/omake/$(SUBNAME)
 	
 LIBS = @LIBS@ -lm

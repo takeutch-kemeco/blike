@@ -1,11 +1,8 @@
 #include <math.h>
+#include <bl_fast_sincos.h>
 
 #ifndef __BL3D_MATH_MACRO_H__
 #define __BL3D_MATH_MACRO_H__
-
-#define BL3D_SIN(radian) (sinf((radian)))
-
-#define BL3D_COS(radian) (cosf((radian)))
 
 #define BL3D_SQRT(src) (sqrtf((src)))
 
