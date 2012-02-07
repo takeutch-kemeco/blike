@@ -1,5 +1,5 @@
 #include <gtk/gtk.h>
-#include "drvgtk_build_flag.h"
+#include "config.h"
 
 #include "main_screen.h"
 

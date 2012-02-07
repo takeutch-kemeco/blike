@@ -1,7 +1,6 @@
 #include <glib.h>
-#include "drvgtk_build_flag.h"
+#include "config.h"
 
-#include "drvgtk_build_flag.h"
 #include "drvgtk_pthread.h"
 #include "drvgtk_signal_chain.h"
 
@@ -104,11 +103,11 @@ static void flash_window(struct DrvGtkPthreadData* a, gpointer src_frame_buffer)
 
 	gint i = a->main_screen->frame_buffer_width * a->main_screen->frame_buffer_height;
 	if(src != NULL) {
-#ifdef __ENABLE_SSE2__
+#ifdef HAVE_SSE2
 		enable_sse_flash_window(dst, src, i);
 #else
 		disable_sse_flash_window(dst, src, i);
-#endif // __ENABLE_SSE2__
+#endif // HAVE_SSE2
 	}
 
 

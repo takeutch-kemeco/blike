@@ -1,10 +1,10 @@
 #include <gtk/gtk.h>
-#include "drvgtk_build_flag.h"
+#include "config.h"
 
 #include "drvgtk_system.h"
 #include "drvgtk_language.h"
 
-#include "../common/blikedrv.h"
+#include "blikedrv.h"
 
 
 struct BL_WORK __attribute__((aligned(16))) bl_work;

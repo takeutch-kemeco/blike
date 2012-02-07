@@ -6,14 +6,6 @@ WRAPPER_PATH	 = $(SRC_DIR)/drv/wrapper
 
 COMMON_PATH	 = $(SRC_DIR)/common
 DRVGTK_PATH	 = $(SRC_DIR)/drv/drvgtk
-DRVALSA_PATH	 = $(SRC_DIR)/drv/drvalsa
-DRVLFB_PATH	 = $(SRC_DIR)/drv/drvlfb
-BL3D_PATH	 = $(SRC_DIR)/omake/bl3d
-BL_LOAD_XPM_PATH = $(SRC_DIR)/omake/bl_load_xpm
-BL_MATH_PATH	 = $(SRC_DIR)/omake/bl_math
-BL_MALLOC_PATH	 = $(SRC_DIR)/omake/bl_malloc
-BL_PLOT_PATH	 = $(SRC_DIR)/omake/bl_plot
-BL_SPLINE_PATH	 = $(SRC_DIR)/omake/bl_spline
 
 # install
 INSTALL_BIN_DIR = @prefix@@bindir@/@PACKAGE_NAME@
@@ -33,70 +25,36 @@ PC_LIBS="Libs: "				\
 	"-L$(INSTALL_LIB_DIR) "			\
 	"-lc_blike_common "			\
 	"-lc_blike_drvgtk "			\
-	"-lc_blike_drvalsa "			\
-	"-lc_blike_bl3d "			\
-	"-lc_blike_bl_load_xpm "		\
-	"-lc_blike_bl_math "			\
-	"-lc_blike_bl_malloc "			\
-	"-lc_blike_bl_plot "			\
-	"-lc_blike_bl_spline "			\
 	"$(INSTALL_LIB_DIR)/$(WRAPPER_NAME) "
 
-PC_CFLAGS="Cflags: "					\
-	"-I$(INSTALL_INCLUDE_DIR) "			\
-	"-I$(INSTALL_INCLUDE_DIR)/common "		\
-	"-I$(INSTALL_INCLUDE_DIR)/omake/bl3d "		\
-	"-I$(INSTALL_INCLUDE_DIR)/omake/bl_load_xpm "	\
-	"-I$(INSTALL_INCLUDE_DIR)/omake/bl_math "	\
-	"-I$(INSTALL_INCLUDE_DIR)/omake/bl_malloc "	\
-	"-I$(INSTALL_INCLUDE_DIR)/omake/bl_plot "	\
-	"-I$(INSTALL_INCLUDE_DIR)/omake/bl_spline "
+PC_CFLAGS="Cflags: "				\
+	"-I$(INSTALL_INCLUDE_DIR) "
 
 all:
 	make -C $(WRAPPER_PATH)
 	make -C $(COMMON_PATH)
 	make -C $(DRVGTK_PATH)
-	make -C $(DRVALSA_PATH)
-	make -C $(DRVLFB_PATH)
-	make -C $(BL3D_PATH)
-	make -C $(BL_LOAD_XPM_PATH)
-	make -C $(BL_MATH_PATH)
-	make -C $(BL_PLOT_PATH)
-	make -C $(BL_SPLINE_PATH)
-	make -C $(BL_MALLOC_PATH)
 	
 clean:
 	make -C $(WRAPPER_PATH)		clean
 	make -C $(COMMON_PATH)		clean
 	make -C $(DRVGTK_PATH)		clean
-	make -C $(DRVALSA_PATH)		clean
-	make -C $(DRVLFB_PATH)		clean
-	make -C $(BL3D_PATH)		clean
-	make -C $(BL_LOAD_XPM_PATH)	clean
-	make -C $(BL_MATH_PATH)		clean
-	make -C $(BL_PLOT_PATH)		clean
-	make -C $(BL_SPLINE_PATH)	clean
-	make -C $(BL_MALLOC_PATH)	clean
 
 
 
 install-lib:
 	mkdir -p $(INSTALL_LIB_DIR)
-	cp -f $(WRAPPER_PATH)/$(WRAPPER_NAME)						$(INSTALL_LIB_DIR)
-	cp -f $(COMMON_PATH)/lib@PACKAGE_NAME@_common.so.@PACKAGE_VERSION@		$(INSTALL_LIB_DIR)
-	cp -f $(DRVGTK_PATH)/lib@PACKAGE_NAME@_drvgtk.so.@PACKAGE_VERSION@		$(INSTALL_LIB_DIR)
-	cp -f $(DRVALSA_PATH)/lib@PACKAGE_NAME@_drvalsa.so.@PACKAGE_VERSION@		$(INSTALL_LIB_DIR)
-	cp -f $(DRVLFB_PATH)/lib@PACKAGE_NAME@_drvlfb.so.@PACKAGE_VERSION@		$(INSTALL_LIB_DIR)
-	cp -f $(BL3D_PATH)/lib@PACKAGE_NAME@_bl3d.so.@PACKAGE_VERSION@			$(INSTALL_LIB_DIR)
-	cp -f $(BL_LOAD_XPM_PATH)/lib@PACKAGE_NAME@_bl_load_xpm.so.@PACKAGE_VERSION@	$(INSTALL_LIB_DIR)
-	cp -f $(BL_MATH_PATH)/lib@PACKAGE_NAME@_bl_math.so.@PACKAGE_VERSION@		$(INSTALL_LIB_DIR)
-	cp -f $(BL_PLOT_PATH)/lib@PACKAGE_NAME@_bl_plot.so.@PACKAGE_VERSION@		$(INSTALL_LIB_DIR)
-	cp -f $(BL_SPLINE_PATH)/lib@PACKAGE_NAME@_bl_spline.so.@PACKAGE_VERSION@	$(INSTALL_LIB_DIR)
-	cp -f $(BL_MALLOC_PATH)/lib@PACKAGE_NAME@_bl_malloc.so.@PACKAGE_VERSION@	$(INSTALL_LIB_DIR)
+	cp -f $(WRAPPER_PATH)/$(WRAPPER_NAME) \
+		$(INSTALL_LIB_DIR)
+	cp -f $(COMMON_PATH)/lib@PACKAGE_NAME@_common.so.@PACKAGE_VERSION@ \
+		$(INSTALL_LIB_DIR)
+	cp -f $(DRVGTK_PATH)/lib@PACKAGE_NAME@_drvgtk.so.@PACKAGE_VERSION@ \
+		$(INSTALL_LIB_DIR)
 
 install-include:
 	mkdir -p $(INSTALL_INCLUDE_DIR)
-	cp -rf $(INC_DIR)/* $(INSTALL_INCLUDE_DIR)
+	cp -f $(INC_DIR)/blike.h  $(INSTALL_INCLUDE_DIR)
+	cp -f $(INC_DIR)/blike0.h $(INSTALL_INCLUDE_DIR)
 
 install-pc:
 	make create-pc
@@ -116,10 +74,12 @@ install:
 
 
 uninstall-lib:
-	rm -rf $(INSTALL_LIB_DIR)
+	rm -f $(INSTALL_LIB_DIR)/lib@PACKAGE_NAME@_common.so.@PACKAGE_VERSION@
+	rm -f $(INSTALL_LIB_DIR)/lib@PACKAGE_NAME@_drvgtk.so.@PACKAGE_VERSION@
 
 uninstall-include:
-	rm -rf $(INSTALL_INCLUDE_DIR)
+	rm -f $(INSTALL_INCLUDE_DIR)/blike.h
+	rm -f $(INSTALL_INCLUDE_DIR)/blike0.h
 
 uninstall-pc:
 	rm -f $(INSTALL_PC_DIR)/$(PC)
@@ -140,13 +100,10 @@ create-conf:
 	echo $(INSTALL_LIB_DIR) > $(CONF)
 
 create-pc:
-create-pc:
-	echo $(PC_NAME)         > tmp_1
-	echo $(PC_DESCRIPTION)  > tmp_2
-	echo $(PC_VERSION)      > tmp_3
-	echo $(PC_REQUIRES)     > tmp_4
-	echo $(PC_LIBS)         > tmp_5
-	echo $(PC_CFLAGS)       > tmp_6
-	cat tmp_1 tmp_2 tmp_3 tmp_4 tmp_5 tmp_6 > $(PC)
-	rm -f tmp_1 tmp_2 tmp_3 tmp_4 tmp_5 tmp_6
+	echo $(PC_NAME)         > $(PC)
+	echo $(PC_DESCRIPTION)  >> $(PC)
+	echo $(PC_VERSION)      >> $(PC)
+	echo $(PC_REQUIRES)     >> $(PC)
+	echo $(PC_LIBS)         >> $(PC)
+	echo $(PC_CFLAGS)       >> $(PC)
 

@@ -1,5 +1,5 @@
 #include <gtk/gtk.h>
-#include "drvgtk_build_flag.h"
+#include "config.h"
 
 #include "drvgtk_pthread.h"
 #include "drvgtk_signal_chain.h"

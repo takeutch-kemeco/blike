@@ -1,5 +1,0 @@
-cd ../gtk
-make
-cd ../bl3d
-rm *.o
-make

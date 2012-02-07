@@ -1,19 +1,15 @@
 ＜インストール方法＞
+aclocal
 autoconf
 autoheader
 ./configure
 make
 sudo make install
 
-必要なライブラリーは libgtk-3-dev libasound2-dev liblua5.1-0-dev
-予め apt-get などでインストールしておくこと。
-
-
 
 ＜サンプルのコンパイル方法＞
 cd samples
 ./build.sh
-
 
 
 ＜たとえば自作のhello.cのコンパイル方法＞

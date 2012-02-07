@@ -23,26 +23,5 @@ A=test019a;     make SRCS="$A".c PROG=$A
 A=test020a;     make SRCS="$A".c PROG=$A
 A=test021a;     make SRCS="$A".c PROG=$A
 
-A=bball00a;	make SRCS="$A".c PROG=$A
-A=boxes00a;	make SRCS="$A".c PROG=$A
-A=kcube00a;	make SRCS="$A".c PROG=$A
-A=msgk00a;	make SRCS="$A".c PROG=$A
-A=msgk01a;	make SRCS="$A".c PROG=$A
-A=mt_xor0a;	make SRCS="$A".c PROG=$A
-
 A=test_keybord_state;	make SRCS="$A".c PROG=$A
-A=test_bl3d_triangle;	make SRCS="$A".c PROG=$A
-A=bl3d_cube;		make SRCS="$A".c PROG=$A
-A=bl3d_cube2;		make SRCS="$A".c PROG=$A
-
-A=test_bl_plot;		make SRCS="$A".c PROG=$A
-
-A=test_spline;		make SRCS="$A".c PROG=$A
-
-A=test_complex;		make SRCS="$A".c PROG=$A
-A=test_dft;		make SRCS="$A".c PROG=$A
-
-A=test_lua;		make SRCS="$A".c PROG=$A
-
-A=test_malloc;		make SRCS="$A".c PROG=$A
 
