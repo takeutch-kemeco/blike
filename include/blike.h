@@ -1,11 +1,12 @@
-#if (!defined(BLIKE_H))
-
-#define BLIKE_H	1
-
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
 #include "blike0.h"
+
+#ifndef __BLIKE_H__
+#define __BLIKE_H__
+
+#define BLIKE_H	1
 
 #if (defined(__cplusplus))
 extern "C" {
@@ -55,4 +56,5 @@ extern "C" {
 }
 #endif
 
-#endif
+#endif // __BLIKE_H__
+

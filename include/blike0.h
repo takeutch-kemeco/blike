@@ -1,8 +1,9 @@
-#if (!defined(BLIKE0_H))
-
-#define BLIKE0_H	1
-
 #include <stdarg.h>
+
+#ifndef __BLIKE0_H__
+#define __BLIKE0_H__
+
+#define BLIKE0_H 1
 
 #if (defined(__cplusplus))
 extern "C" {
@@ -94,4 +95,5 @@ void bl_drawPtrn_err_d(const char *msg, unsigned char *nam);
 }
 #endif
 
-#endif
+#endif // __BLIKE0_H__
+
