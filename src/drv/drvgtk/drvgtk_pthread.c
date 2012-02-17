@@ -47,7 +47,9 @@ static gpointer __pthread_main_program(gpointer data)
 
 static void pthread_main_program(struct DrvGtkPthreadData* data)
 {
-	data->ptid = g_thread_create(__pthread_main_program, data, TRUE, NULL);
+	data->ptid = g_thread_new("pthread_main_program",
+				  __pthread_main_program,
+				  data);
 }
 
 
