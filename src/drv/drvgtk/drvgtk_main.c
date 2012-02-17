@@ -18,8 +18,6 @@ extern void bl_exit();
 
 int __bl_main__(int argc, char** argv)
 {
-	g_thread_init (NULL);
-	
 	gdk_threads_init();
 	
 	gtk_init(NULL, NULL);
