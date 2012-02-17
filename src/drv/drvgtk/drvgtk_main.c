@@ -39,7 +39,7 @@ int __bl_main__(int argc, char** argv)
 	
 	run_DrvGtkSystem(drvgtk_pthread_data);
 	
-//	free_DrvGtkPthreadData(drvgtk_pthread_data);
+	free_DrvGtkPthreadData(drvgtk_pthread_data);
 	
 	return 0;
 }
