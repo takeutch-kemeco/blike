@@ -33,7 +33,7 @@ struct DrvGtkPthreadData* new_DrvGtkPthreadData(
 	
 	a->signal = new_DrvGtkSignal();
 	       
-	g_mutex_init(a->mutex);
+	g_mutex_init(&a->mutex);
 	
 	a->key_ring_buffer		= new_DrvGtkKeyRingBuffer(key_len, int_key, read_index, write_index, key_count);
 	
@@ -54,7 +54,7 @@ struct DrvGtkPthreadData* new_DrvGtkPthreadData(
 
 void free_DrvGtkPthreadData(struct DrvGtkPthreadData* a)
 {
-	g_mutex_clear(a->mutex);
+	g_mutex_clear(&a->mutex);
 
 	g_free(a->press);
 	g_free(a->release);

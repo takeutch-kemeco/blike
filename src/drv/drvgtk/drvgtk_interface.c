@@ -154,14 +154,14 @@ void bld_lock()
 {
 	check_and_exit_wt_run_flag();
 	
-	g_mutex_lock(drvgtk_pthread_data->mutex);
+	g_mutex_lock(&drvgtk_pthread_data->mutex);
 }
 
 void bld_unlock()
 {
 	check_and_exit_wt_run_flag();
 	
-	g_mutex_unlock(drvgtk_pthread_data->mutex);
+	g_mutex_unlock(&drvgtk_pthread_data->mutex);
 }
 
 
@@ -170,7 +170,7 @@ void __bld_get_keybord_state(unsigned long* press, unsigned long* release)
 {
 	check_and_exit_wt_run_flag();
 	
-	g_mutex_lock(drvgtk_pthread_data->mutex);
+	g_mutex_lock(&drvgtk_pthread_data->mutex);
 	
 	gint i = 8;
 	while(i-->0){
@@ -180,7 +180,7 @@ void __bld_get_keybord_state(unsigned long* press, unsigned long* release)
 	
 	next_DrvGtkKeybordState(drvgtk_pthread_data->press, drvgtk_pthread_data->release);
 	
-	g_mutex_unlock(drvgtk_pthread_data->mutex);
+	g_mutex_unlock(&drvgtk_pthread_data->mutex);
 }
 
 
