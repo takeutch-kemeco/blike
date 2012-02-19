@@ -56,6 +56,10 @@ void bl_setPtrn0(int sx, int sy, int sl, int ic, int *b, const unsigned char *c,
 void bl_drawPtrn_err_r(const char *msg, unsigned char *nam);
 void bl_drawPtrn_err_d(const char *msg, unsigned char *nam);
 
+// 起動時のコマンドライン引数 main(bl_argc, bl_argv)
+extern int bl_argc;
+extern char** bl_argv;
+
 //void bl_setFlsW(int w0, int ppw);
 
 //	intは32bit, shortが16bit, charが8bit

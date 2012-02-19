@@ -24,4 +24,5 @@ A=test020a;     make SRCS="$A".c PROG=$A
 A=test021a;     make SRCS="$A".c PROG=$A
 
 A=test_keybord_state;	make SRCS="$A".c PROG=$A
+A=test_argc;	make SRCS="$A".c PROG=$A
 

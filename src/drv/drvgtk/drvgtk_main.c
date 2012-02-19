@@ -11,6 +11,8 @@ struct BL_WORK __attribute__((aligned(16))) bl_work;
 
 struct DrvGtkPthreadData* drvgtk_pthread_data; 
 
+int bl_argc;
+char** bl_argv;
 
 
 extern void bl_init();
@@ -18,6 +20,9 @@ extern void bl_exit();
 
 int __bl_main__(int argc, char** argv)
 {
+	bl_argc = argc;
+	bl_argv = argv;
+
 	gdk_threads_init();
 	
 	gtk_init(NULL, NULL);
