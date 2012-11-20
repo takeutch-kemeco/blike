@@ -18,7 +18,7 @@ char** bl_argv;
 extern void bl_init();
 extern void bl_exit();
 
-int __bl_main__(int argc, char** argv)
+int main(int argc, char** argv)
 {
 	bl_argc = argc;
 	bl_argv = argv;
