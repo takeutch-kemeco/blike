@@ -1,0 +1,14 @@
+SRCS =
+OBJS = $(SRCS:.c=.o)
+PROG =
+
+CFLAGS = -I/usr/include/blike
+LIBS = -lblike-common -lblike-drvlfb
+
+all:
+	gcc -DHAVE_CONFIG_H $(CFLAGS) -o $(PROG) $(SRCS) $(LIBS)
+
+clean:
+	rm -f $(OBJS)
+	rm -f $(PROG)
+
