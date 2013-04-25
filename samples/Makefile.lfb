@@ -3,7 +3,7 @@ OBJS = $(SRCS:.c=.o)
 PROG =
 
 CFLAGS = -I/usr/include/blike
-LIBS = -lblike-common -lblike-drvlfb
+LIBS = -lblike-common -lblike-drvlfb -lm
 
 all:
 	gcc -DHAVE_CONFIG_H $(CFLAGS) -o $(PROG) $(SRCS) $(LIBS)
