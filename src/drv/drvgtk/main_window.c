@@ -22,8 +22,6 @@ static gboolean press_key_MainWindow(GtkWidget *wgt, GdkEventExpose *event, gpoi
 	
 	write_c_DrvGtkKeyRingBuffer(a->key_ring_buffer, &tmp);
 	
-//	g_printf("%u %s\n", key->keyval, key->string);
-
 	return TRUE;
 }
 
@@ -39,9 +37,6 @@ static gboolean release_key_MainWindow(GtkWidget *wgt, GdkEventExpose *event, gp
 	add_DrvGtkKeybordState(a->press, a->release, a->key_transform_table, &tmp);
 	
 	write_c_DrvGtkKeyRingBuffer(a->key_ring_buffer, &tmp);
-
-//	g_printf("%u %s\n", key->keyval, key->string);
-	if(key->keyval=='q'){gtk_main_quit();}
 
 	return TRUE;
 }
