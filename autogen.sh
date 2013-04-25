@@ -1,5 +1,5 @@
-aclocal --install -I m4
-libtoolize --install
+aclocal --force
+libtoolize
 autoheader
 automake -acf
 autoconf
