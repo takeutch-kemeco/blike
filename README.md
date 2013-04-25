@@ -7,8 +7,7 @@
         make
         sudo make install
 
-備考: ビルド、インストール作業には autoconf, automake, libtool が必要です。
-
+備考: ビルド、インストール作業には gcc, make, gnu/binutils, autoconf, automake, libtool, pkg-config が必要です。
 
 ### アンインストール方法
         sudo make uninstall
