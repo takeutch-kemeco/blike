@@ -26,6 +26,6 @@ AC_FUNC_MALLOC
 AC_CONFIG_FILES([Makefile
                  src/common/Makefile
 		 src/drv/drvgtk/Makefile
+		 src/drv/drvlfb/Makefile
 		 blike.pc])
 AC_OUTPUT
-
