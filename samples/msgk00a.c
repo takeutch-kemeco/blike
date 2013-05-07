@@ -6,23 +6,24 @@ blMain()
 {
         int i, j;
         static char msg[5] = "OSASK";
-        openWin(WIDTH * 8, 16);
-        setCol(0xffff00);
+        bl_openWin(WIDTH * 8, 16);
+        bl_setCol(0xffff00);
         for (;;) {
                 for (i = 0; i < sizeof msg; i++) {
                         for (j = WIDTH; i < j; ) {
                                 if (j < WIDTH) {
-                                        locate(j, 0);
-                                        putc(' ');
+                                        bl_locate(j, 0);
+                                        bl_putc(' ');
                                 }
                                 j--;
-                                locate(j, 0);
-                                putc(msg[i]);
+                                bl_locate(j, 0);
+                                bl_putc(msg[i]);
                                 wait(100);
                         }
-                        wait(1000);
+                        bl_wait(1000);
                 }
-                wait(5000);
-                cls();
+                bl_wait(5000);
+                bl_cls();
         }
 }
+
