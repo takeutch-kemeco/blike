@@ -9,10 +9,9 @@ void bl_gets(char *s)
         bl_setMode(BL_PXOR);
         s[0] = '\0';
         for (;;) {
-
-                bl_fillRect(2, 16, w.cx * 8, (y0 / 2) * 8);
+                bl_fillRect(2, 16, w.cx * 8, (y0 / 2) * 16);
                 c = bl_inkey(BL_WAITKEY | BL_GETKEY | BL_DELFFF);
-                bl_fillRect(2, 16, w.cx * 8, (y0 / 2) * 8);
+                bl_fillRect(2, 16, w.cx * 8, (y0 / 2) * 16);
 
                 if (' ' <= c && c <= 0x7e && w.cx < w.csiz_x - 1) {
                         l++;
