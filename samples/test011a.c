@@ -8,7 +8,7 @@ blMain()
 
 	while (1) {
 		bl_gets(s);
-:		bl_printf("!%s!\n", s);
+		bl_printf("!%s!\n", s);
 	}
 
 	bl_wait(-1);
