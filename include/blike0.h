@@ -62,42 +62,41 @@ extern char** bl_argv;
 
 //void bl_setFlsW(int w0, int ppw);
 
-//	intは32bit, shortが16bit, charが8bit
+// intは32bit, shortが16bit, charが8bit
 
-#define KEY_ENTER	'\n'
-#define KEY_ESC		27
-#define KEY_BACKSPACE	8
-#define KEY_TAB		9
-#define KEY_LEFT	331
-#define KEY_RIGHT	333
-#define KEY_UP		328
-#define KEY_DOWN	336
-#define KEY_INS		338
-#define KEY_DEL		339
+#define KEY_ENTER       '\n'
+#define KEY_ESC         27
+#define KEY_BACKSPACE   8
+#define KEY_TAB         9
+#define KEY_LEFT        331
+#define KEY_RIGHT       333
+#define KEY_UP          328
+#define KEY_DOWN        336
+#define KEY_INS         338
+#define KEY_DEL         339
 
-#define BL_PSET		0x00000004
-#define BL_PAND		0x00000005
-#define BL_POR		0x00000006
-#define BL_PXOR		0x00000007
-#define	BL_FULLHEIGHT	0x00000010
-#define	BL_HALFHEIGHT	0x00000018
-#define BL_DBGFLSH	0x00000040
-#define BL_RLSFLSH	0x00000060
-#define BL_DEBUG	BL_DBGFLSH
-#define BL_RELEASE	BL_RLSFLSH
+#define BL_PSET         0x00000004
+#define BL_PAND         0x00000005
+#define BL_POR          0x00000006
+#define BL_PXOR         0x00000007
+#define BL_FULLHEIGHT   0x00000010
+#define BL_HALFHEIGHT   0x00000018
+#define BL_DBGFLSH      0x00000040
+#define BL_RLSFLSH      0x00000060
+#define BL_DEBUG        BL_DBGFLSH
+#define BL_RELEASE      BL_RLSFLSH
 
-#define BL_WAITKEYF	0x00000001
-#define BL_WAITKEYNF	0x00000002
-#define BL_WAITKEY	0x00000003
-#define BL_GETKEY	0x00000004
-#define BL_CLEARREP	0x00000008
-#define BL_DELFFF	0x00000010
+#define BL_WAITKEYF     0x00000001
+#define BL_WAITKEYNF    0x00000002
+#define BL_WAITKEY      0x00000003
+#define BL_GETKEY       0x00000004
+#define BL_CLEARREP     0x00000008
+#define BL_DELFFF       0x00000010
 
-#define	BL_KEYMODE	0x00000000	// 作りかけ, make/remake/breakが見えるかどうか
+#define BL_KEYMODE      0x00000000      // 作りかけ, make/remake/breakが見えるかどうか
 
 #if (defined(__cplusplus))
 }
 #endif
 
 #endif // __BLIKE0_H__
-

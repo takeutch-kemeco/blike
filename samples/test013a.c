@@ -11,15 +11,15 @@ blMain()
     for (;;) {
         locate(b, c ); printf("O");
         locate(d, 23); printf("#####");
-		flshWin(8, 16, b * 8, c * 16);
-		flshWin(8 * 5, 16, d * 8, 23 * 16);
+                flshWin(8, 16, b * 8, c * 16);
+                flshWin(8 * 5, 16, d * 8, 23 * 16);
         if (c == 23) { break; }
         waitNF(100);
         a = inkey();
         locate(b, c ); printf(" ");
         locate(d, 23); printf("     ");
-		flshWin(8, 16, b * 8, c * 16);
-		flshWin(8 * 5, 16, d * 8, 23 * 16);
+                flshWin(8, 16, b * 8, c * 16);
+                flshWin(8 * 5, 16, d * 8, 23 * 16);
         if (b ==  0) { bb =  1; }
         if (b == 78) { bb = -1; }
         if (c ==  0) { cc =  1; }
@@ -32,5 +32,5 @@ blMain()
         if (a == '6' && d < 73) { d += 2; }
         if (a == '4' && d >  1) { d -= 2; }
     }
-	wait(-1);
+        wait(-1);
 }

@@ -2,6 +2,6 @@
 
 blMain()
 {
-	printf("hello, world\n");
-	wait(-1);
+        printf("hello, world\n");
+        wait(-1);
 }

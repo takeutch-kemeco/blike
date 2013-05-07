@@ -2,6 +2,6 @@
 
 blMain()
 {
-	bl_puts("hello");
-	wait(-1);
+        bl_puts("hello");
+        wait(-1);
 }

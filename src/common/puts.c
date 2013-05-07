@@ -1,10 +1,10 @@
 #include "blikedrv.h"
 
-#define	w	bl_work
+#define w bl_work
 
 void bl_puts(const char *s)
 {
-	while (*s)
-		bl_putc(*s++);
-	return;
+        while (*s)
+                bl_putc(*s++);
+        return;
 }
