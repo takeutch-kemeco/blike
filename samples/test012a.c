@@ -4,7 +4,7 @@ blMain()
 {
         int j = 0;
         wait(0);
-    for (;;) {
+        for (;;) {
                 int i;
                 printf("\r%03d", j++);
                 flshWin(24, 16, 0, 0);
