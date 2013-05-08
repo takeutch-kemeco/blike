@@ -7,37 +7,43 @@ import Data.Char
 foreign export ccall
   hs_bl_main :: IO ()
 
-drawA (x, y, c, f, k) | f == 0 = return ()
-                      | otherwise = do
+data PenContext = PenContext {x, y, c, f, k :: Int}
+
+drawA :: PenContext -> IO PenContext
+drawA a@(PenContext x y c f k) | f == 0 = return a
+                               | otherwise = do
   bl_setMode _BL_PXOR
   bl_setCol 0xffffff
   bl_drawRect 14 14 (x * 16 + 1) (y * 16 + 1)
   bl_flshWin 16 16 (x * 16) (y * 16)
-  return ()
+  return a
 
-getKey :: IO Int
-getKey = do
+getKey :: PenContext -> IO PenContext
+getKey a@(PenContext x y c f _) = do
   bl_waitNF 10
   k <- bl_inkey1
   case k of
-    0 -> getKey
-    otherwise -> return k
+    0 -> getKey a
+    otherwise -> return (PenContext x y c f k)
 
-drawB (x, y, c, f, k) | f == 0 = return ()
-                      | otherwise = do
+drawB :: PenContext -> IO PenContext
+drawB a@(PenContext x y c f k) | f == 0 = return a
+                                   | otherwise = do
   bl_drawRect 14 14 (x * 16 + 1) (y * 16 + 1)
   bl_setMode _BL_PSET
   bl_flshWin 16 16 (x * 16) (y * 16)
-  return ()
+  return a
 
-drawC (x, y, c, f, k) | c < 0 = return ()
-                      | otherwise = do
+drawC :: PenContext -> IO PenContext
+drawC a@(PenContext x y c f k) | c < 0 = return a
+                                   | otherwise = do
   bl_setCol c
   bl_fillRect 16 16 (x * 16) (y * 16)
   bl_flshWin 16 16 (x * 16) (y * 16)
-  return ()
+  return a
 
-controlA (x, y, _, f, k) = do
+controlA :: PenContext -> IO PenContext
+controlA (PenContext x y _ f k) = do
   x' <- (keyLeft k x >>= keyRight k)
   y' <- (keyUp k y >>= keyDown k)
   f' <- keySpace k f
@@ -50,7 +56,7 @@ controlA (x, y, _, f, k) = do
          keyH k >>=
          keyJ k >>=
          keyK k)
-  return (x', y', c', f', k)
+  return (PenContext x' y' c' f' k)
 
   where
     keyLeft k x | (k == _KEY_LEFT) && (x > 0) = return (x - 1)
@@ -92,19 +98,18 @@ controlA (x, y, _, f, k) = do
     keyK k c | k == ord 'k' = return 0xffffff
              | otherwise = return c
 
-mainLoop :: (Int, Int, Int, Int, Int) -> IO ()
-mainLoop a@(x, y, c, f, k) = do
-  drawA a
-  k' <- getKey
-  drawB a
-  a' <- controlA (x, y, c, f, k')
-  drawC a'
-  mainLoop a'
+mainLoop :: PenContext -> IO ()
+mainLoop a =
+  drawA a >>=
+  getKey >>=
+  drawB >>=
+  controlA >>=
+  drawC >>=
+  mainLoop >>
   return ()
 
 hs_bl_main :: IO ()
 hs_bl_main = do
   bl_setBCol 0xffffff
   bl_openWin 256 256
-  mainLoop (0, 0, 0, 1, 0)
-  return ()
+  mainLoop (PenContext 0 0 0 1 0)
