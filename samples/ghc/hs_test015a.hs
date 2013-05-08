@@ -53,16 +53,16 @@ controlA (x, y, _, f, k) = do
   return (x', y', c', f', k)
 
   where
-    keyLeft k x | k == _KEY_LEFT = return (x - 1)
+    keyLeft k x | (k == _KEY_LEFT) && (x > 0) = return (x - 1)
                 | otherwise = return x
 
-    keyRight k x | k == _KEY_RIGHT = return (x + 1)
+    keyRight k x | (k == _KEY_RIGHT) && (x < 15) = return (x + 1)
                  | otherwise = return x
 
-    keyUp k y | k == _KEY_UP = return (y - 1)
+    keyUp k y | (k == _KEY_UP) && (y > 0) = return (y - 1)
               | otherwise = return y
 
-    keyDown k y | k == _KEY_DOWN = return (y + 1)
+    keyDown k y | (k == _KEY_DOWN) && (y < 15) = return (y + 1)
                 | otherwise = return y
 
     keySpace k f | k == ord ' ' = return (xor f 1)
