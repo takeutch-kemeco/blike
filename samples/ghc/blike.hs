@@ -8,6 +8,15 @@ import Foreign.C.String
 foreign import ccall safe "bl_putc"
   bl_putc :: Char -> IO ()
 
+foreign import ccall safe "bl_puts"
+  __bl_puts :: CString -> IO ()
+
+bl_puts :: String -> IO ()
+bl_puts s = do
+  p <- newCAString s
+  __bl_puts p
+  free p
+
 foreign import ccall safe "bl_puts1"
   __bl_puts1 :: CString -> IO ()
 
@@ -88,6 +97,9 @@ foreign import ccall safe "bl_getPix"
 foreign import ccall safe "bl_waitNF"
   bl_waitNF :: Int -> IO ()
 
+foreign import ccall safe "bl_inkey"
+  bl_inkey :: Int -> IO Int
+
 foreign import ccall safe "bl_inkey1"
   bl_inkey1 :: IO Int
 
@@ -162,3 +174,34 @@ bl_drawPtrn_r sx sy x0 y0 c p = do
   __bl_drawPtrn_r sx sy x0 y0 c' p'
   free c'
   free p'
+
+_KEY_ENTER = 0x0a :: Int
+_KEY_ESC = 0x1b :: Int
+_KEY_BACKSPACE = 8 :: Int
+_KEY_TAB = 9 :: Int
+_KEY_LEFT = 331 :: Int
+_KEY_RIGHT = 333 :: Int
+_KEY_UP = 328 :: Int
+_KEY_DOWN = 336 :: Int
+_KEY_INS = 338 :: Int
+_KEY_DEL = 339 :: Int
+
+_BL_PSET = 0x00000004 :: Int
+_BL_PAND = 0x00000005 :: Int
+_BL_POR = 0x00000006 :: Int
+_BL_PXOR = 0x00000007 :: Int
+_BL_FULLHEIGHT = 0x00000010 :: Int
+_BL_HALFHEIGHT = 0x00000018 :: Int
+_BL_DBGFLSH = 0x00000040 :: Int
+_BL_RLSFLSH = 0x00000060 :: Int
+_BL_DEBUG = _BL_DBGFLSH
+_BL_RELEASE = _BL_RLSFLSH
+
+_BL_WAITKEYF = 0x00000001 :: Int
+_BL_WAITKEYNF = 0x00000002 :: Int
+_BL_WAITKEY = 0x00000003 :: Int
+_BL_GETKEY = 0x00000004 :: Int
+_BL_CLEARREP = 0x00000008 :: Int
+_BL_DELFFF = 0x00000010 :: Int
+
+_BL_KEYMODE = 0x00000000 :: Int
