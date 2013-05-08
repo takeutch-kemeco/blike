@@ -1,6 +1,7 @@
 module Test008a where
 
 import Blike
+import Data.Char
 
 foreign export ccall
   hs_bl_main :: IO ()
@@ -27,8 +28,8 @@ mainLoop b c bb cc d = do
   a <- bl_inkey1
   d <- return $ if (a == 333) && (d < 73) then d + 2 else d
   d <- return $ if (a == 331) && (d > 1)  then d - 2 else d
---  d <- return $ if (a == '6') && (d < 73) then d + 2 else d
---  d <- return $ if (a == '4') && (d > 1)  then d - 2 else d
+  d <- return $ if (a == ord '6') && (d < 73) then d + 2 else d
+  d <- return $ if (a == ord '4') && (d > 1)  then d - 2 else d
 
   drawString b c "O"
   drawString d 23 "#####"
