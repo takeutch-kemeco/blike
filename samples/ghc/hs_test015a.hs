@@ -28,7 +28,7 @@ getKey a@(PenContext x y c f _) = do
 
 drawB :: PenContext -> IO PenContext
 drawB a@(PenContext x y c f k) | f == 0 = return a
-                                   | otherwise = do
+                               | otherwise = do
   bl_drawRect 14 14 (x * 16 + 1) (y * 16 + 1)
   bl_setMode _BL_PSET
   bl_flshWin 16 16 (x * 16) (y * 16)
@@ -36,7 +36,7 @@ drawB a@(PenContext x y c f k) | f == 0 = return a
 
 drawC :: PenContext -> IO PenContext
 drawC a@(PenContext x y c f k) | c < 0 = return a
-                                   | otherwise = do
+                               | otherwise = do
   bl_setCol c
   bl_fillRect 16 16 (x * 16) (y * 16)
   bl_flshWin 16 16 (x * 16) (y * 16)
@@ -113,3 +113,4 @@ hs_bl_main = do
   bl_setBCol 0xffffff
   bl_openWin 256 256
   mainLoop (PenContext 0 0 0 1 0)
+
