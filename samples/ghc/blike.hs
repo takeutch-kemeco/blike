@@ -4,6 +4,7 @@ import Foreign
 import Foreign.Ptr
 import Foreign.C.Types
 import Foreign.C.String
+import Data.Char (ord)
 
 foreign import ccall safe "bl_putc"
   bl_putc :: Char -> IO ()
@@ -175,7 +176,7 @@ bl_drawPtrn_r sx sy x0 y0 c p = do
   free c'
   free p'
 
-_KEY_ENTER = 0x0a :: Int
+_KEY_ENTER = (ord '\n') :: Int
 _KEY_ESC = 0x1b :: Int
 _KEY_BACKSPACE = 8 :: Int
 _KEY_TAB = 9 :: Int
