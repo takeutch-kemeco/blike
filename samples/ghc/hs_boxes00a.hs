@@ -1,0 +1,14 @@
+module Boxes00a where
+
+import Blike
+
+foreign export ccall
+  hs_bl_main :: IO ()
+
+hs_bl_main :: IO ()
+hs_bl_main = do
+  bl_setCol 0x0000ff
+  bl_setBCol 0xc6c6c6
+  bl_openWin 160 144
+  mapM_ (\i -> bl_drawRect (19 + i * 2) (139 - i * 2) (80 - 9 - i) (72 - 69 + i)) [0,3..60]
+  bl_wait (-1)
