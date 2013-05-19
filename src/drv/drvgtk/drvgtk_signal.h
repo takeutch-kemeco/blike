@@ -16,6 +16,10 @@ struct DrvGtkSignal_show_window {
 struct DrvGtkSignal_flash_window {
         gboolean        ready;
         gpointer        src_frame_buffer;
+        gint            x;
+        gint            y;
+        gint            width;
+        gint            height;
 };
 
 struct DrvGtkSignal_exit_window {

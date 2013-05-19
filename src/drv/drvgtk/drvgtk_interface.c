@@ -43,6 +43,8 @@ void bld_openWin(int x, int y)
         drvgtk_pthread_data->signal->resize_window.height = y;
 
         wait_signal_compliate(&(drvgtk_pthread_data->signal->resize_window.ready));
+
+        bld_flshWin(0, 0, x, y);
 }
 
 void bld_flshWin(int sx, int sy, int x0, int y0)
@@ -51,6 +53,12 @@ void bld_flshWin(int sx, int sy, int x0, int y0)
 
         drvgtk_pthread_data->signal->flash_window.ready = TRUE;
         drvgtk_pthread_data->signal->flash_window.src_frame_buffer = (gpointer)(bl_work.win[0].buf);
+        drvgtk_pthread_data->signal->flash_window.x      = x0;
+        drvgtk_pthread_data->signal->flash_window.y      = y0;
+        drvgtk_pthread_data->signal->flash_window.width  = sx;
+        drvgtk_pthread_data->signal->flash_window.height = sy;
+
+        wait_signal_compliate(&(drvgtk_pthread_data->signal->flash_window.ready));
 }
 
 void bld_flshSys()

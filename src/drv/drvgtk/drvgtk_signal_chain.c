@@ -31,6 +31,7 @@ static inline void disable_sse_flash_window(guchar *dst, guint32 *src, gint i)
 
 static inline void enable_sse_flash_window(guchar *dst, guint32 *src, gint _i)
 {
+#ifdef HAVE_SSE2
         gint ii = (_i % 4) + 2;
         gint i = (_i - ii) / 4;
 
@@ -85,21 +86,89 @@ static inline void enable_sse_flash_window(guchar *dst, guint32 *src, gint _i)
         }
 
         disable_sse_flash_window(dst, src, ii);
+#endif /* HAVE_SSE2 */
 }
 
-static void flash_window(struct DrvGtkPthreadData *a, gpointer src_frame_buffer)
+static void flash_window_whole_area(struct DrvGtkPthreadData *a,
+                                    gpointer src_frame_buffer)
 {
         guint32 *src = (guint32*)src_frame_buffer;
-        guchar *dst = a->main_screen->frame_buffer;
+        guchar *dst = (guchar*)a->main_screen->frame_buffer;
 
-        gint i = a->main_screen->frame_buffer_width * a->main_screen->frame_buffer_height;
+        const guint area_len = a->main_screen->frame_buffer_width *
+                               a->main_screen->frame_buffer_height;
+
         if(src != NULL) {
 #ifdef HAVE_SSE2
-                enable_sse_flash_window(dst, src, i);
+                enable_sse_flash_window(dst, src, area_len);
 #else
-                disable_sse_flash_window(dst, src, i);
-#endif // HAVE_SSE2
+                disable_sse_flash_window(dst, src, area_len);
+#endif /* HAVE_SSE2 */
         }
+}
+
+static void flash_window_part_area(struct DrvGtkPthreadData *a,
+                                   gpointer src_frame_buffer,
+                                   const gint x,
+                                   const gint y,
+                                   const gint width,
+                                   const gint height)
+{
+        const guint32 src_top_ofst = (y * a->main_screen->frame_buffer_width) + x;
+        const guint32 dst_top_ofst = src_top_ofst * 3;
+
+        guint32 *src = ((guint32*)src_frame_buffer) + src_top_ofst;
+        guchar *dst = ((guchar*)a->main_screen->frame_buffer) + dst_top_ofst;
+
+        const guint32 src_next_ofst = a->main_screen->frame_buffer_width;
+        const guint32 dst_next_ofst = src_next_ofst * 3;
+
+        const guint line_len = width;
+
+        if(src == NULL)
+                return;
+
+        int j;
+        for (j = 0; j < height; j++) {
+                /* x, y 位置によって開始位置が128bit単位アラインでなくなる場合は、
+                 * SSE2 による flash を行うためには開始位置のアライン調整が必要だが
+                 * そのような関数は面倒なので書いてないので、常に非SSE2版を用いる。
+                 */
+                disable_sse_flash_window(dst, src, line_len);
+
+                src += src_next_ofst;
+                dst += dst_next_ofst;
+        }
+}
+
+static inline void round_range(gint *a, const gint min, const gint max)
+{
+        if (*a > max)
+                *a = max;
+        else if (*a < min)
+                *a = min;
+}
+
+static void flash_window(struct DrvGtkPthreadData *a,
+                         gpointer src_frame_buffer,
+                         gint x,
+                         gint y,
+                         gint width,
+                         gint height)
+{
+        round_range(&x, 0, a->main_screen->frame_buffer_width - 1);
+        round_range(&y, 0, a->main_screen->frame_buffer_height - 1);
+
+        round_range(&width, 0, a->main_screen->frame_buffer_width - x);
+        round_range(&height, 0, a->main_screen->frame_buffer_height - y);
+
+        if (x == 0 &&
+            y == 0 &&
+            width == a->main_screen->frame_buffer_width &&
+            height == a->main_screen->frame_buffer_height)
+                flash_window_whole_area(a, src_frame_buffer);
+        else
+                flash_window_part_area(a, src_frame_buffer, x, y, width, height);
 
         redraw_MainScreen(a->main_screen);
 }
@@ -126,7 +195,12 @@ gboolean update_DrvGtkSignalChain(gpointer data)
         }
 
         if(a->signal->flash_window.ready == TRUE) {
-                flash_window(a, a->signal->flash_window.src_frame_buffer);
+                flash_window(a,
+                             a->signal->flash_window.src_frame_buffer,
+                             a->signal->flash_window.x,
+                             a->signal->flash_window.y,
+                             a->signal->flash_window.width,
+                             a->signal->flash_window.height);
                 a->signal->flash_window.ready = FALSE;
         }
 
