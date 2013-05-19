@@ -29,7 +29,8 @@ all:
 	ghc --make -no-hs-main $(CFLAGS) blike.hs hs_msgk00a.hs hs_bl_wrapper.c $(LIBS) -o hs_msgk00a
 	ghc --make -no-hs-main $(CFLAGS) blike.hs hs_msgk01a.hs hs_bl_wrapper.c $(LIBS) -o hs_msgk01a
 	ghc --make -no-hs-main $(CFLAGS) blike.hs hs_mt_xor0a.hs hs_bl_wrapper.c $(LIBS) -o hs_mt_xor0a
+	ghc --make -no-hs-main $(CFLAGS) blike.hs hs_kcube00a.hs hs_bl_wrapper.c $(LIBS) -o hs_kcube00a
 
 clean:
-	rm -f hs_test{000,001,002,003,004,005,006,008,010,011,012,015,016,017,018,020,021}?{,.o,.hi,_stub.h} blike{.o,.hi} hs_bl_wrapper.o {hs_bball00a,hs_boxes00a,hs_msgk00a,hs_msgk01a,hs_mt_xor0a}{,.o,.hi,_stub.h}
+	rm -f hs_test{000,001,002,003,004,005,006,008,010,011,012,015,016,017,018,020,021}?{,.o,.hi,_stub.h} blike{.o,.hi} hs_bl_wrapper.o {hs_bball00a,hs_boxes00a,hs_msgk00a,hs_msgk01a,hs_mt_xor0a,hs_kcube00a}{,.o,.hi,_stub.h}
 
