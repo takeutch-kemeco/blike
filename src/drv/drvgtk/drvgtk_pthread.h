@@ -9,37 +9,34 @@
 #ifndef __DRVGTK_PTHREAD_H__
 #define __DRVGTK_PTHREAD_H__
 
-#define DRVGTK_SYGNAL_CHECK_INTERVAL	(1000/250)	/* 250Hz */
+#define DRVGTK_SYGNAL_CHECK_INTERVAL    (1000/250)      /* 250Hz */
 
 struct DrvGtkPthreadData {
-	struct MainWindow*	main_window;
-	struct MainScreen*	main_screen;
+        struct MainWindow *main_window;
+        struct MainScreen *main_screen;
 
-	
-	gpointer		shared_data;
-	gint32*			time_count;
-	
-	
-	struct DrvGtkSignal*	signal;
-	
-	GMutex			mutex;
-	
-	gboolean (*window_update_program)(gpointer data);
-	int (*control_program)();
-	void (*init_control_program)();
-	void (*close_control_program)();
-	
-	GThread*		ptid;
-	gboolean		wt_run_flag;
-	
-	
-	struct DrvGtkKeyRingBuffer*	key_ring_buffer;
-	
-	struct DrvGtkKeybordState*	press;
-	struct DrvGtkKeybordState*	release;
-	struct DrvGtkKeybordState*	key_transform_table;
+        gpointer shared_data;
+        gint32 *time_count;
+
+        struct DrvGtkSignal *signal;
+
+        GMutex mutex;
+
+        gboolean (*window_update_program)(gpointer data);
+        int (*control_program)();
+        void (*init_control_program)();
+        void (*close_control_program)();
+
+        GThread *ptid;
+        gboolean wt_run_flag;
+
+        struct DrvGtkKeyRingBuffer *key_ring_buffer;
+
+        struct DrvGtkKeybordState *press;
+        struct DrvGtkKeybordState *release;
+        struct DrvGtkKeybordState *key_transform_table;
 };
 
-extern void pthread_main(struct DrvGtkPthreadData* data);
+void pthread_main(struct DrvGtkPthreadData *data);
 
 #endif // __DRVGTK_PTHREAD_H__

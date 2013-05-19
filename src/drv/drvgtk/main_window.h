@@ -6,24 +6,19 @@
 #define __MAIN_WINDOW_H__
 
 struct MainWindow {
-	GtkWidget* 			wgt;
-	struct DrvGtkKeyRingBuffer*	key_ring_buffer;
-	
-	struct DrvGtkKeybordState*	press;
-	struct DrvGtkKeybordState*	release;
-	struct DrvGtkKeybordState*	key_transform_table;
+        GtkWidget *wgt;
+        struct DrvGtkKeyRingBuffer *key_ring_buffer;
+        struct DrvGtkKeybordState *press;
+        struct DrvGtkKeybordState *release;
+        struct DrvGtkKeybordState *key_transform_table;
 };
 
-extern struct MainWindow* new_MainWindow(
-	struct DrvGtkKeyRingBuffer* key_ring_buffer,
-	struct DrvGtkKeybordState* press,
-	struct DrvGtkKeybordState* release,
-	struct DrvGtkKeybordState* key_transform_table
-);
-
-extern void show_MainWindow(struct MainWindow* a);
-extern void hide_MainWindow(struct MainWindow* a);
-
-extern void resize_MainWindow(struct MainWindow* a, gint width, gint height);
+struct MainWindow* new_MainWindow(struct DrvGtkKeyRingBuffer *key_ring_buffer,
+                                  struct DrvGtkKeybordState *press,
+                                  struct DrvGtkKeybordState *release,
+                                  struct DrvGtkKeybordState *key_transform_table);
+void show_MainWindow(struct MainWindow *a);
+void hide_MainWindow(struct MainWindow *a);
+void resize_MainWindow(struct MainWindow *a, gint width, gint height);
 
 #endif //__MAIN_WINDOW_H__

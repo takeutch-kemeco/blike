@@ -3,5 +3,5 @@
 
 void drvgtk_msleep(guint t)
 {
-	g_usleep(t * 1000);
+        g_usleep(t * 1000);
 }
