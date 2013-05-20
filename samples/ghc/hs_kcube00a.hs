@@ -8,28 +8,39 @@ foreign export ccall
 
 type Vector = [Float]
 type Matrix = [Vector]
+type Vertex = Vector
+type Normal = Vector
+type Rotate = Vector
 
+innerProduct :: Vector -> Vector -> Float
 innerProduct a b = sum $ map (\(x, y) -> x * y) (zip a b)
 
+crossProduct :: Vector -> Vector -> Vector
 crossProduct a (bx:by:bz:[]) = concat $ mulMatrix [a] m
   where
     m = [[0,bz,(-by)],[(-bz),0,bx],[by,(-bx),0]]
 
+mulMatrix :: Matrix -> Matrix -> Matrix
 mulMatrix a b = map (\c -> map (\h -> innerProduct h c) a) $ transpose b
 
+rotMatrix :: Rotate -> Matrix
 rotMatrix (x:y:z:[]) = mulMatrix (mulMatrix mz my) mx
   where
     mx = [[1,0,0],[0,c,(-s)],[0,s,c]] where s = sin x; c = cos x
     my = [[c,0,s],[0,1,0],[(-s),0,c]] where s = sin y; c = cos y
     mz = [[c,(-s),0],[s,c,0],[0,0,1]] where s = sin z; c = cos z
 
+rotVector :: Vector -> Rotate -> Vector
 rotVector v r = concat $ mulMatrix (rotMatrix r) (transpose [v])
 
-type Vertex = Vector
-type Rotate = Vector
+diffVector :: Vector -> Vector -> Vector
+diffVector v1 v0 = map (\(a1, a0) -> a1 - a0) (zip v1 v0)
+
+toNormal :: [Vertex] -> Normal
+toNormal vs@(a:b:c:_) = crossProduct (diffVector b a) (diffVector c b)
 
 data Polygon = Polygon {poly_color :: Int, poly_center_z :: Float,
-                        poly_vertex :: [Vertex]} deriving (Show)
+                        poly_vertex :: [Vertex], poly_normal :: Vertex} deriving (Show)
 
 data Object = Object {obj_center_z :: Int, obj_polygon :: [Polygon]} deriving (Show)
 
@@ -43,39 +54,49 @@ cube = Object 0 polygon
     vertex = [[a,a,a],[a,a,b],[a,b,a],[a,b,b],[b,a,a],[b,a,b],[b,b,a],[b,b,b]] :: [Vertex]
     a = 100
     b = (-100)
-    polygon = map (\(s, c) -> Polygon c 0 (map (\i -> vertex !! i) s)) (zip square color)
+    ps = map (\(s, c) -> Polygon c 0 (map (\i -> vertex !! i) s) []) (zip square color)
+    polygon = map (\(Polygon c z vs _) -> (Polygon c z vs (toNormal vs))) ps
 
 width = 160
 height = 160
+
 scrn = Screen 150 400 (toFloat (div width 2)) (toFloat (div height 2))
        width width height [[]]
 theta = [0,0,0] :: Rotate
 
+toFloat :: (Integral a, Floating b) => a -> b
 toFloat i = fromRational $ toRational $ fromInteger $ toInteger i
 
+addRotate :: Rotate -> Rotate
 addRotate (x:y:z:[]) = (x + rad) : (y + (1.5 * rad)) : (z + (2 * rad)) : []
   where
     rad = pi / 180
 
-rotPolygon (Polygon c _ vs) r = Polygon c z' vs'
+rotPolygon :: Polygon -> Rotate -> Polygon
+rotPolygon (Polygon c _ vs n) r = Polygon c z' vs' n'
   where
     vs' = map (\v -> rotVector v r) vs
     z' = (sum $ map (\v -> v !! 2) vs') / (fromIntegral (length vs'))
+    n' = rotVector n r
 
+rotObject :: Object -> Rotate -> Object
 rotObject (Object z ps) r = Object z $ map (\p -> rotPolygon p r) ps
 
+mapPolygon2D :: Polygon -> Screen -> [[Int]]
 mapPolygon2D p s = map (\v -> f v) (poly_vertex p)
   where
-    f (x:y:z:[]) = map (\a -> floor a) $ ((scr_x0 s) + x * t) : ((scr_y0 s) + y * t) : []
+    f (x:y:z:_) = map (\a -> floor a) $ ((scr_x0 s) + x * t) : ((scr_y0 s) + y * t) : []
       where
         t = (scr_a s) / ((scr_b s) + z)
 
-type OrderingTable = [(Int,Polygon)] 
+type OrderingTable = [(Int,Polygon)]
 
 blankOT = []::[(Int,Polygon)]
 
 pushPolygonOT :: OrderingTable -> Polygon -> OrderingTable
-pushPolygonOT ot p = insertBy f ((floor (poly_center_z p)), p) ot
+pushPolygonOT ot p@(Polygon _ _ _ (_:_:z:[]))
+  | z <= 0 = ot
+  | otherwise = insertBy f ((floor (poly_center_z p)), p) ot
   where
     f (ia, a) (ib, b) | ia == ib = EQ
                       | ia > ib = LT -- 故意
@@ -87,8 +108,8 @@ pushObjectOT ot o = foldl (\ot' p -> pushPolygonOT ot' p) ot (obj_polygon o)
 drawPolygon :: Polygon -> Screen -> IO ()
 drawPolygon p s = do
   let vs = mapPolygon2D p s
-      ls = zip vs ((tail vs) ++ [(last vs)])
-  bl_setCol 0xffffff
+      ls = zip vs ((tail vs) ++ [(head vs)])
+  bl_setCol $ poly_color p
   mapM_ (\((ax:ay:[]), (bx:by:[])) -> bl_drawLine ax ay bx by) ls
   return ()
 
@@ -107,11 +128,12 @@ hs_bl_main = do
       let theta' = addRotate theta
           cube' = rotObject cube theta'
           ot = pushObjectOT blankOT cube'
-          
+
       bl_setCol 0x000000
       bl_fillRect width height 0 0
       drawOT ot scrn
       bl_wait 50
-      
+
       mainLoop theta'
       return ()
+
