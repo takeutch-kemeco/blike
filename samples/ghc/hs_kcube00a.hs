@@ -50,8 +50,7 @@ data Polygon = Polygon {poly_color :: Int, poly_center_z :: Float,
 
 data Object = Object {obj_center_z :: Int, obj_polygon :: [Polygon]} deriving (Show)
 
-data Screen = Screen {scr_a, scr_b, scr_x0, scr_y0 :: Float,
-                      x_vsize, x_bsize, y_vsize :: Int, fillbuf :: [[Int]]} deriving (Show)
+data Screen = Screen {scr_a, scr_b, scr_x0, scr_y0 :: Float} deriving (Show)
 
 cube = Object 0 polygon
   where
@@ -64,10 +63,11 @@ cube = Object 0 polygon
     polygon = map (\p -> p {poly_normal = (toNormal (poly_vertex p))}) ps
 
 width = 160
+
 height = 160
 
 scrn = Screen 150 400 (toFloat (div width 2)) (toFloat (div height 2))
-       width width height [[]]
+
 theta = [0,0,0] :: Rotate
 
 toFloat :: (Integral a, Floating b) => a -> b
@@ -126,24 +126,40 @@ splitHoriFlTr vs = ([mid,p,max], [mid,p,min])
     p = addVector min $ scaleVector l $ ((diffVector mid min) !! 1) / (l !! 1)
 
 drawFlTr :: [Vertex] -> Int -> IO ()
-drawFlTr vs@(a:b:c:[]) col = bl_setCol col >> drawHoriFlTr vsa >> drawHoriFlTr vsb
+drawFlTr vs col = bl_setCol col >> drawHoriFlTr vsa >> drawHoriFlTr vsb
   where
     (vsa, vsb) = splitHoriFlTr vs
-    drawHoriFlTr vs = mapM_ (\((ax:ay:_), (bx:by:_)) -> bl_drawLine ax ay bx by) ls
+    
+    drawHoriFlTr vs@(a:b:c:[]) = mapM_ (\((ax:ay:_), (bx:by:_)) -> bl_drawLine ax ay bx by) ls >>
+                                 bl_drawLine (ic!!0) (ic!!1) (ia!!0) (ia!!1) >>
+                                 bl_drawLine (ic!!0) (ic!!1) (ib!!0) (ib!!1)
       where
-        ls = zip vs' ((tail vs') ++ [(head vs')])
-        vs' = map (\v -> map floor v) vs
+        la = diffVector c a
+        lb = diffVector c b
+        
+        h = abs (la !! 1)
+        ih = case h of {0 -> 0; otherwise -> 1 / h}
+        da = scaleVector la ih
+        db = scaleVector lb ih
+        
+        create top d n = reverse $
+                         foldl (\ts@(t:_) a -> (addVector t d):ts) [top] (take (n - 1) $ repeat d)
+        vsa = create a da (round h)
+        vsb = create b db (round h)
+        
+        toIntVector vs = map (\v -> map round v) vs
+        ls = zip (toIntVector vsa) (toIntVector vsb)
+        
+        [ia, ib, ic] = toIntVector vs
 
 drawFlSq :: [Vertex] -> Int -> IO ()
-drawFlSq (a:b:c:d:[]) col = drawFlTr (a:b:c:[]) col >> drawFlTr (c:d:a:[]) col
+drawFlSq (a:b:c:d:[]) col = drawFlTr (a:c:b:[]) col >> drawFlTr (a:c:d:[]) col
 
 drawPolygon :: Polygon -> Screen -> IO ()
 drawPolygon p s = drawFlSq (mapPolygon2D p s) (poly_color p)
 
 drawOT :: OrderingTable -> Screen -> IO ()
-drawOT o s = do
-  mapM_ (\(_,p) -> drawPolygon p s) o
-  return ()
+drawOT o s = mapM_ (\(_,p) -> drawPolygon p s) o
 
 hs_bl_main :: IO ()
 hs_bl_main = do
@@ -162,4 +178,3 @@ hs_bl_main = do
       bl_wait 50
 
       mainLoop theta'
-      return ()
