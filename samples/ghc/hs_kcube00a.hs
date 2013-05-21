@@ -36,6 +36,12 @@ rotVector v r = concat $ mulMatrix (rotMatrix r) (transpose [v])
 diffVector :: Vector -> Vector -> Vector
 diffVector v1 v0 = map (\(a1, a0) -> a1 - a0) (zip v1 v0)
 
+addVector :: Vector -> Vector -> Vector
+addVector as bs = map (\(a, b) -> a + b) (zip as bs)
+
+scaleVector :: Vector -> Float -> Vector
+scaleVector v s = map (\a -> a * s) v
+
 toNormal :: [Vertex] -> Normal
 toNormal vs@(a:b:c:_) = crossProduct (diffVector b a) (diffVector c b)
 
@@ -55,7 +61,7 @@ cube = Object 0 polygon
     a = 100
     b = (-100)
     ps = map (\(s, c) -> Polygon c 0 (map (\i -> vertex !! i) s) []) (zip square color)
-    polygon = map (\(Polygon c z vs _) -> (Polygon c z vs (toNormal vs))) ps
+    polygon = map (\p -> p {poly_normal = (toNormal (poly_vertex p))}) ps
 
 width = 160
 height = 160
@@ -82,10 +88,10 @@ rotPolygon (Polygon c _ vs n) r = Polygon c z' vs' n'
 rotObject :: Object -> Rotate -> Object
 rotObject (Object z ps) r = Object z $ map (\p -> rotPolygon p r) ps
 
-mapPolygon2D :: Polygon -> Screen -> [[Int]]
+mapPolygon2D :: Polygon -> Screen -> [Vector]
 mapPolygon2D p s = map (\v -> f v) (poly_vertex p)
   where
-    f (x:y:z:_) = map (\a -> floor a) $ ((scr_x0 s) + x * t) : ((scr_y0 s) + y * t) : []
+    f (x:y:z:_) = ((scr_x0 s) + x * t) : ((scr_y0 s) + y * t) : []
       where
         t = (scr_a s) / ((scr_b s) + z)
 
@@ -94,24 +100,45 @@ type OrderingTable = [(Int,Polygon)]
 blankOT = []::[(Int,Polygon)]
 
 pushPolygonOT :: OrderingTable -> Polygon -> OrderingTable
-pushPolygonOT ot p@(Polygon _ _ _ (_:_:z:[]))
+pushPolygonOT ot p@(Polygon {poly_normal = (_:_:z:[])})
   | z <= 0 = ot
   | otherwise = insertBy f ((floor (poly_center_z p)), p) ot
   where
     f (ia, a) (ib, b) | ia == ib = EQ
-                      | ia > ib = LT -- 故意
-                      | ia < ib = GT -- 降順にソートする為に逆にしてある
+                      | ia > ib = LT
+                      | ia < ib = GT
 
 pushObjectOT :: OrderingTable -> Object -> OrderingTable
 pushObjectOT ot o = foldl (\ot' p -> pushPolygonOT ot' p) ot (obj_polygon o)
 
+sortVertexY :: [Vertex] -> [Vertex]
+sortVertexY vs = [min, mid, max]
+  where
+    min = foldl1 (\t@(_:ty:_) v@(_:vy:_) -> if vy < ty then v else t) vs
+    max = foldl1 (\t@(_:ty:_) v@(_:vy:_) -> if vy > ty then v else t) vs
+    mid = foldl1 (\t v -> if v /= min && v /= max then v else t) vs
+
+splitHoriFlTr :: [Vertex] -> ([Vertex], [Vertex])
+splitHoriFlTr vs = ([mid,p,max], [mid,p,min])
+  where
+    vs'@(min:mid:max:_) = sortVertexY vs
+    l = diffVector max min
+    p = addVector min $ scaleVector l $ ((diffVector mid min) !! 1) / (l !! 1)
+
+drawFlTr :: [Vertex] -> Int -> IO ()
+drawFlTr vs@(a:b:c:[]) col = bl_setCol col >> drawHoriFlTr vsa >> drawHoriFlTr vsb
+  where
+    (vsa, vsb) = splitHoriFlTr vs
+    drawHoriFlTr vs = mapM_ (\((ax:ay:_), (bx:by:_)) -> bl_drawLine ax ay bx by) ls
+      where
+        ls = zip vs' ((tail vs') ++ [(head vs')])
+        vs' = map (\v -> map floor v) vs
+
+drawFlSq :: [Vertex] -> Int -> IO ()
+drawFlSq (a:b:c:d:[]) col = drawFlTr (a:b:c:[]) col >> drawFlTr (c:d:a:[]) col
+
 drawPolygon :: Polygon -> Screen -> IO ()
-drawPolygon p s = do
-  let vs = mapPolygon2D p s
-      ls = zip vs ((tail vs) ++ [(head vs)])
-  bl_setCol $ poly_color p
-  mapM_ (\((ax:ay:[]), (bx:by:[])) -> bl_drawLine ax ay bx by) ls
-  return ()
+drawPolygon p s = drawFlSq (mapPolygon2D p s) (poly_color p)
 
 drawOT :: OrderingTable -> Screen -> IO ()
 drawOT o s = do
@@ -136,4 +163,3 @@ hs_bl_main = do
 
       mainLoop theta'
       return ()
-
