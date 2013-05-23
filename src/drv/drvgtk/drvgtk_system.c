@@ -4,7 +4,7 @@
 #include "drvgtk_pthread.h"
 #include "drvgtk_signal_chain.h"
 #include "drvgtk_key_ring_buffer.h"
-#include "drvgtk_keybord_state.h"
+#include "drvgtk_keyboard_state.h"
 
 struct DrvGtkPthreadData* new_DrvGtkPthreadData(gpointer shared_data,
                                                 gint32 *time_count,

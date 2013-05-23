@@ -4,7 +4,7 @@
 
 #include "drvgtk_language.h"
 #include "drvgtk_key_ring_buffer.h"
-#include "drvgtk_keybord_state.h"
+#include "drvgtk_keyboard_state.h"
 
 static void set_true_bit_DrvGtkKeybordState(struct DrvGtkKeybordState *a,
                                             guint32 shift)

@@ -4,7 +4,7 @@
 #include "main_screen.h"
 #include "drvgtk_signal.h"
 #include "drvgtk_key_ring_buffer.h"
-#include "drvgtk_keybord_state.h"
+#include "drvgtk_keyboard_state.h"
 
 #ifndef __DRVGTK_PTHREAD_H__
 #define __DRVGTK_PTHREAD_H__

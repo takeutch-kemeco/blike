@@ -10,7 +10,7 @@ libblike_drvgtk_la_SOURCES =		\
 	drvgtk_pthread.c		drvgtk_pthread.h		\
 	drvgtk_key_ring_buffer.c	drvgtk_key_ring_buffer.h	\
 	drvgtk_transrate_keycode.c	drvgtk_transrate_keycode.h	\
-	drvgtk_keybord_state.c		drvgtk_keybord_state.h		\
+	drvgtk_keyboard_state.c		drvgtk_keyboard_state.h		\
 	drvgtk_sleep.c			drvgtk_sleep.h			\
 	drvgtk_malloc.c			drvgtk_malloc.h			\
 	main_window.c			main_window.h			\

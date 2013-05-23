@@ -1,6 +1,6 @@
 #include "blike.h"
 
-extern void __bld_get_keybord_state(unsigned long* press, unsigned long* release);
+extern void __bld_get_keyboard_state(unsigned long* press, unsigned long* release);
 
 void print_bit(unsigned long a)
 {
@@ -44,7 +44,7 @@ blMain()
                 }
 
 
-                __bld_get_keybord_state(press, release);
+                __bld_get_keyboard_state(press, release);
 
 
                 wait(33);

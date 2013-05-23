@@ -4,7 +4,7 @@
 #include "drvgtk_sleep.h"
 #include "drvgtk_pthread.h"
 #include "drvgtk_transrate_keycode.h"
-#include "drvgtk_keybord_state.h"
+#include "drvgtk_keyboard_state.h"
 #include "drvgtk_malloc.h"
 
 #include "blikedrv.h"
@@ -143,7 +143,7 @@ void bld_unlock()
         g_mutex_unlock(&drvgtk_pthread_data->mutex);
 }
 
-void __bld_get_keybord_state(unsigned long *press, unsigned long *release)
+void __bld_get_keyboard_state(unsigned long *press, unsigned long *release)
 {
         check_and_exit_wt_run_flag();
 
