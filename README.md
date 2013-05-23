@@ -18,22 +18,24 @@ X11環境での描画には GTK+3、非X11環境でのフレームバッファ�
 X11環境（GTK+3を利用）でのアプリとしてビルドする場合は以下のようにします:
 
         cd samples
-        ./build.sh
+        make clean
+        make
 
 非X11環境（フレームバッファーを利用）でのアプリとしてビルドする場合は以下のようにします:
 （プリフィックスが lfb- のバイナリーが生成されます）
 
         cd samples
-        ./build-lfb.sh
+        make clean
+        make -f Makefile.lfb
 
 ### たとえば自作のhello.cのコンパイル方法
 X11環境（GTK+3を利用）でのアプリとしてビルドする場合:
 
-        gcc `pkg-config blike --libs --cflags` -o hello hello.c
+        gcc `pkg-config blike --libs --cflags` hello.c -o hello
 
 非X11環境（フレームバッファーを利用）でのアプリとしてビルドする場合:
 
-        gcc -lblike-common -lblike-drvlfb -lm -o hello hello.c
+        gcc -I/usr/include/blike -lblike-common -lblike-drvlfb -lm hello.c -o hello
 
 現状、非X11環境（フレームバッファーを利用）で動作させる場合は、キーボード入力を利用できません。
 まだ実装していないからです。
@@ -43,6 +45,7 @@ X11環境（GTK+3を利用）でのアプリとしてビルドする場合:
 samples/ghc 以下に、Haskell (GHC) から blike を利用する場合のサンプルがあります:
 
         cd samples/ghc
+        make clean
         make
 
 ここにある blike.hs は、FFI による blike 関数のラッパーです。
