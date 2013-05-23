@@ -130,9 +130,7 @@ drawFlTr vs col = bl_setCol col >> drawHoriFlTr vsa >> drawHoriFlTr vsb
   where
     (vsa, vsb) = splitHoriFlTr vs
     
-    drawHoriFlTr vs@(a:b:c:[]) = mapM_ (\((ax:ay:_), (bx:by:_)) -> bl_drawLine ax ay bx by) ls >>
-                                 bl_drawLine (ic!!0) (ic!!1) (ia!!0) (ia!!1) >>
-                                 bl_drawLine (ic!!0) (ic!!1) (ib!!0) (ib!!1)
+    drawHoriFlTr vs@(a:b:c:[]) = mapM_ drawLine ls 
       where
         la = diffVector c a
         lb = diffVector c b
@@ -142,15 +140,18 @@ drawFlTr vs col = bl_setCol col >> drawHoriFlTr vsa >> drawHoriFlTr vsb
         da = scaleVector la ih
         db = scaleVector lb ih
         
-        create top d n = reverse $
-                         foldl (\ts@(t:_) a -> (addVector t d):ts) [top] (take (n - 1) $ repeat d)
+        create top d n = reverse rvs
+          where
+            rvs = foldl (\ts@(t:_) a -> (addVector t d):ts) [top] (take (n - 1) $ repeat d)
+        
         vsa = create a da (round h)
         vsb = create b db (round h)
         
         toIntVector vs = map (\v -> map round v) vs
         ls = zip (toIntVector vsa) (toIntVector vsb)
-        
-        [ia, ib, ic] = toIntVector vs
+
+        drawLine ((ax:ay:_), (bx:by:_)) = bl_drawLine ax ay bx by >>
+                                          bl_drawLine ax (ay + 1) bx (by + 1) 
 
 drawFlSq :: [Vertex] -> Int -> IO ()
 drawFlSq (a:b:c:d:[]) col = drawFlTr (a:c:b:[]) col >> drawFlTr (a:c:d:[]) col
