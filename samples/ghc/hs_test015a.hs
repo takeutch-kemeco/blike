@@ -7,40 +7,44 @@ import Data.Char
 foreign export ccall
   hs_bl_main :: IO ()
 
-data PenContext = PenContext {x, y, c, f, k :: Int}
+data PenContext = PenContext {pc_x, pc_y, pc_c, pc_f, pc_k :: Int}
 
 drawA :: PenContext -> IO PenContext
-drawA a@(PenContext x y c f k) | f == 0 = return a
-                               | otherwise = do
-  bl_setMode _BL_PXOR
-  bl_setCol 0xffffff
-  bl_drawRect 14 14 (x * 16 + 1) (y * 16 + 1)
-  bl_flshWin 16 16 (x * 16) (y * 16)
-  return a
+drawA pc@(PenContext x y _ f _)
+  | f == 0 = return pc
+  | otherwise = bl_setMode _BL_PXOR >>
+                bl_setCol 0xffffff >>
+                bl_drawRect 14 14 (x * 16 + 1) (y * 16 + 1) >>
+                bl_flshWin 16 16 (x * 16) (y * 16) >>
+                return pc
 
 getKey :: PenContext -> IO PenContext
-getKey a@(PenContext x y c f _) = do
-  bl_waitNF 10
-  k <- bl_inkey1
-  case k of
-    0 -> getKey a
-    otherwise -> return (PenContext x y c f k)
+getKey pc = bl_waitNF 10 >> bl_inkey1 >>= loop
+  where
+    loop key | key == 0 = getKey pc 
+             | otherwise = return (pc {pc_k = key})
 
 drawB :: PenContext -> IO PenContext
-drawB a@(PenContext x y c f k) | f == 0 = return a
-                               | otherwise = do
-  bl_drawRect 14 14 (x * 16 + 1) (y * 16 + 1)
-  bl_setMode _BL_PSET
-  bl_flshWin 16 16 (x * 16) (y * 16)
-  return a
+drawB pc@(PenContext x y _ f _)
+  | f == 0 = return pc
+  | otherwise = bl_drawRect 14 14 (px + 1) (py + 1) >>
+                bl_setMode _BL_PSET >>
+                bl_flshWin 16 16 px py >>
+                return pc
+    where
+      px = x * 16
+      py = y * 16
 
 drawC :: PenContext -> IO PenContext
-drawC a@(PenContext x y c f k) | c < 0 = return a
-                               | otherwise = do
-  bl_setCol c
-  bl_fillRect 16 16 (x * 16) (y * 16)
-  bl_flshWin 16 16 (x * 16) (y * 16)
-  return a
+drawC pc@(PenContext x y c _ _)
+  | c < 0 = return pc
+  | otherwise = bl_setCol c >>
+                bl_fillRect 16 16 px py >>
+                bl_flshWin 16 16 px py >>
+                return pc
+    where
+      px = x * 16
+      py = y * 16
 
 controlA :: PenContext -> IO PenContext
 controlA (PenContext x y _ f k) = do
@@ -99,18 +103,9 @@ controlA (PenContext x y _ f k) = do
              | otherwise = return c
 
 mainLoop :: PenContext -> IO ()
-mainLoop a =
-  drawA a >>=
-  getKey >>=
-  drawB >>=
-  controlA >>=
-  drawC >>=
-  mainLoop >>
-  return ()
+mainLoop a = drawA a >>= getKey >>= drawB >>= controlA >>= drawC >>= mainLoop
 
 hs_bl_main :: IO ()
-hs_bl_main = do
-  bl_setBCol 0xffffff
-  bl_openWin 256 256
-  mainLoop (PenContext 0 0 0 1 0)
-
+hs_bl_main = bl_setBCol 0xffffff >> bl_openWin 256 256 >> mainLoop pc
+  where
+    pc = PenContext 0 0 0 1 0

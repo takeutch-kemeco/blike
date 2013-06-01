@@ -5,10 +5,9 @@ import Blike
 foreign export ccall
   hs_bl_main :: IO ()
 
-mainLoop :: Int -> IO ()
 mainLoop j =
   bl_locate 0 0 >>
-  bl_puts (toStr j 3) >> bl_flshWin 24 16 0 0 >>= (\x -> sleep 0) >>
+  bl_puts (toStr j 3) >> bl_flshWin 24 16 0 0 >> sleep 0 >>
   mainLoop (j + 1)
 
 toStr j n  = reverse $ take n $ (reverse $ show j) ++ (repeat '0')

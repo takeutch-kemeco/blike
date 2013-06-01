@@ -7,42 +7,38 @@ import Data.Char
 foreign export ccall
   hs_bl_main :: IO ()
 
-data Position = Position {px, py :: Int}
+data Position = Position {pos_px, pos_py :: Int}
 
-data RectContext = RectContext {x, y, w, h, col :: Int}
+data RectContext = RectContext {rc_x, rc_y, rc_w, rc_h, rc_col :: Int}
 
 data CursorContext = CursorContext {
-  pos :: Position,
-  bg :: RectContext,
-  boarder :: RectContext,
-  boarderShow :: Bool,
-  key :: Int}
+  cc_pos :: Position,
+  cc_bg :: RectContext,
+  cc_boarder :: RectContext,
+  cc_boarderShow :: Bool,
+  cc_key :: Int}
 
 drawRect :: RectContext -> (Int -> Int -> Int -> Int -> IO ()) -> Int -> IO ()
-drawRect (RectContext _ _ _ _ (-1)) _ _ = return ()
-drawRect (RectContext x y w h col) fdraw pixelMode = do
-  bl_setMode pixelMode
-  bl_setCol col
-  fdraw w h x y
-  bl_flshWin w h x y
-  return ()
+drawRect (RectContext x y w h col) draw pixelMode
+  | col == (-1) = return ()
+  | otherwise = bl_setMode pixelMode >> bl_setCol col >> draw w h x y >> bl_flshWin w h x y >> return ()
 
-xorCursorBoarder :: CursorContext -> IO ()
-xorCursorBoarder (CursorContext _ _ boarder boarderShow _) = case boarderShow of
-    True -> drawRect boarder (bl_drawRect) _BL_PXOR >> return ()
-    False -> return ()
+xorCursorBoarder :: CursorContext -> IO CursorContext
+xorCursorBoarder cc@(CursorContext _ _ boarder boarderShow _)
+  | boarderShow == True = drawRect boarder (bl_drawRect) _BL_PXOR >> return cc
+  | otherwise = return cc
 
 drawCursorBG :: CursorContext -> IO ()
 drawCursorBG (CursorContext _ bg _ _ _) = drawRect bg (bl_fillRect) _BL_PSET
 
-drawCursor :: CursorContext -> IO ()
+drawCursor :: CursorContext -> IO CursorContext
 drawCursor cc = drawCursorBG cc >> xorCursorBoarder cc
 
 getKey :: CursorContext -> IO CursorContext
 getKey cc@(CursorContext a b c d _) = bl_waitNF 10 >> bl_inkey1 >>= loop
   where
-    loop 0 = getKey cc
-    loop key = return (CursorContext a b c d key)
+    loop key | key == 0 = getKey cc
+             | otherwise = return (cc {cc_key = key})
 
 controlA :: CursorContext -> CursorContext
 controlA (CursorContext
@@ -82,22 +78,11 @@ controlA (CursorContext
              (fkey (ord 'a') (\x -> True) (\x -> 0x000000)) $ (key, -1)
 
 mainLoop :: CursorContext -> IO ()
-mainLoop cc = do
-  let cc' = controlA cc
-  drawCursor cc'
-  cc'' <- getKey cc'
-  xorCursorBoarder cc''
-  mainLoop cc''
-  return ()
+mainLoop cc = drawCursor cc' >> getKey cc' >>= xorCursorBoarder >>= mainLoop
+  where
+    cc' = controlA cc
 
 hs_bl_main :: IO ()
-hs_bl_main = do
-  bl_setBCol 0xffffff
-  bl_openWin 256 256
-  mainLoop (CursorContext
-            (Position 0 0)
-            (RectContext 0 0 16 16 0)
-            (RectContext 1 1 14 14 0xffffff) 
-            True
-            0)
-
+hs_bl_main = bl_setBCol 0xffffff >> bl_openWin 256 256 >> mainLoop cc
+  where
+    cc = CursorContext (Position 0 0) (RectContext 0 0 16 16 0) (RectContext 1 1 14 14 0xffffff) True 0
