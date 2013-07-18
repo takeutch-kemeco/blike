@@ -39,8 +39,18 @@ static gboolean release_key_MainWindow(GtkWidget *wgt, GdkEventExpose *event, gp
         return TRUE;
 }
 
+static gboolean realize_MainWindow(GtkWidget *wgt, GdkEventExpose *event, gpointer data)
+{
+        GdkWindow *gdk_window = gtk_widget_get_window(wgt);
+        gdk_window_set_cursor(gdk_window, gdk_cursor_new(GDK_BLANK_CURSOR));
+
+        return TRUE;
+}
+
 static void init_signal_MainWindow(struct MainWindow *a)
 {
+        g_signal_connect(G_OBJECT(a->wgt), "realize",
+                         G_CALLBACK(realize_MainWindow), a);
         g_signal_connect(G_OBJECT(a->wgt), "key-press-event",
                          G_CALLBACK(press_key_MainWindow), a);
         g_signal_connect(G_OBJECT(a->wgt), "key-release-event",
