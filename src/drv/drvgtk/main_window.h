@@ -1,3 +1,4 @@
+#include <gdk/gdk.h>
 #include <gtk/gtk.h>
 #include "drvgtk_key_ring_buffer.h"
 #include "drvgtk_keyboard_state.h"
@@ -7,6 +8,12 @@
 
 struct MainWindow {
         GtkWidget *wgt;
+
+        GdkDisplay *gdk_display;
+        GdkScreen *gdk_screen;
+        GdkDeviceManager *gdk_device_manager;
+        GdkDevice *gdk_device;
+
         struct DrvGtkKeyRingBuffer *key_ring_buffer;
         struct DrvGtkKeybordState *press;
         struct DrvGtkKeybordState *release;

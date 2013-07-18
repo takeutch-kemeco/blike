@@ -1,3 +1,4 @@
+#include <gdk/gdk.h>
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
 #include "config.h"
@@ -69,6 +70,11 @@ struct MainWindow* new_MainWindow(struct DrvGtkKeyRingBuffer *key_ring_buffer,
         a->wgt = gtk_window_new(GTK_WINDOW_TOPLEVEL);
         gtk_window_set_title(GTK_WINDOW(a->wgt), " ");
 
+        a->gdk_display = gdk_display_get_default();
+        a->gdk_screen = gdk_display_get_default_screen(a->gdk_display);
+        a->gdk_device_manager = gdk_display_get_device_manager(a->gdk_display);
+        a->gdk_device = gdk_device_manager_get_client_pointer(a->gdk_device_manager);
+
         a->key_ring_buffer = key_ring_buffer;
 
         a->press = press;
@@ -85,8 +91,6 @@ void show_MainWindow(struct MainWindow *a)
         gtk_widget_show_all(a->wgt);
 }
 
-
-
 void hide_MainWindow(struct MainWindow *a)
 {
         gtk_widget_hide(a->wgt);
@@ -95,4 +99,9 @@ void hide_MainWindow(struct MainWindow *a)
 void resize_MainWindow(struct MainWindow *a, gint width, gint height)
 {
         gtk_window_resize((GtkWindow*)(a->wgt), width, height);
+}
+
+void set_cursor_pos_MainWindow(struct MainWindow *a, gint x, gint y)
+{
+        gdk_device_warp(a->gdk_device, a->gdk_screen, x, y)
 }
