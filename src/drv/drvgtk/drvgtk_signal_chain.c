@@ -15,7 +15,7 @@ static void show_window(struct DrvGtkPthreadData *a)
         show_MainWindow(a->main_window);
 }
 
-static inline void disable_sse_flash_window(guchar *dst, guint32 *src, gint i)
+static inline void flash_line(guchar *dst, guint32 *src, gint i)
 {
         while (i-->0) {
                 *dst++ = ((*src)>>16) & 0xFF;
@@ -24,66 +24,6 @@ static inline void disable_sse_flash_window(guchar *dst, guint32 *src, gint i)
 
                 src++;
         }
-}
-
-static inline void enable_sse_flash_window(guchar *dst, guint32 *src, gint _i)
-{
-#ifdef HAVE_SSE2
-        gint ii = (_i % 4) + 2;
-        gint i = (_i - ii) / 4;
-
-        const guint32 __attribute__((aligned(16)))mskR[4] = {0xFF,     0xFF,     0xFF,     0xFF};
-        const guint32 __attribute__((aligned(16)))mskG[4] = {0xFF00,   0xFF00,   0xFF00,   0xFF00};
-        const guint32 __attribute__((aligned(16)))mskB[4] = {0xFF0000, 0xFF0000, 0xFF0000, 0xFF0000};
-
-        __asm__ volatile(
-                "movdqa (%0), %%xmm5;"
-                "movdqa (%1), %%xmm6;"
-                "movdqa (%2), %%xmm7;"
-                :
-                :"r"(mskR), "r"(mskG), "r"(mskB)
-        );
-
-        while(i-->0){
-                __asm__ volatile(
-                        "prefetchnta 1024(%0);"
-
-                        "movdqa (%0),   %%xmm0;"
-                        "movdqa %%xmm0, %%xmm1;"
-                        "movdqa %%xmm0, %%xmm2;"
-
-                        "psrld $16, %%xmm0;"
-                        "pslld $16, %%xmm2;"
-
-                        "andpd %%xmm5, %%xmm0;"
-                        "andpd %%xmm6, %%xmm1;"
-                        "andpd %%xmm7, %%xmm2;"
-
-                        "orpd   %%xmm2, %%xmm1;"
-                        "orpd   %%xmm1, %%xmm0;"
-
-
-                        "movq %%xmm0, 0(%1);"
-
-                        "pshufd $0xE5, %%xmm0, %%xmm3;"
-                        "movq %%xmm3, 3(%1);"
-
-                        "pshufd $0xE6, %%xmm0, %%xmm4;"
-                        "movq %%xmm4, 6(%1);"
-
-                        "pshufd $0xE7, %%xmm0, %%xmm3;"
-                        "movq %%xmm3, 9(%1);"
-                        :
-                        :"r"(src), "r"(dst)
-                        :"%eax", "memory"
-                );
-
-                src += 4;
-                dst += 12;
-        }
-
-        disable_sse_flash_window(dst, src, ii);
-#endif /* HAVE_SSE2 */
 }
 
 static void flash_window_whole_area(struct DrvGtkPthreadData *a,
@@ -95,13 +35,8 @@ static void flash_window_whole_area(struct DrvGtkPthreadData *a,
         const guint area_len =
                 a->main_window->frame_buffer_width * a->main_window->frame_buffer_height;
 
-        if(src != NULL) {
-#ifdef HAVE_SSE2
-                enable_sse_flash_window(dst, src, area_len);
-#else
-                disable_sse_flash_window(dst, src, area_len);
-#endif /* HAVE_SSE2 */
-        }
+        if(src != NULL)
+                flash_line(dst, src, area_len);
 }
 
 static void flash_window_part_area(struct DrvGtkPthreadData *a,
@@ -127,11 +62,7 @@ static void flash_window_part_area(struct DrvGtkPthreadData *a,
 
         int j;
         for (j = 0; j < height; j++) {
-                /* x, y 位置によって開始位置が128bit単位アラインでなくなる場合は、
-                 * SSE2 による flash を行うためには開始位置のアライン調整が必要だが
-                 * そのような関数は面倒なので書いてないので、常に非SSE2版を用いる。
-                 */
-                disable_sse_flash_window(dst, src, line_len);
+                flash_line(dst, src, line_len);
 
                 src += src_next_ofst;
                 dst += dst_next_ofst;
