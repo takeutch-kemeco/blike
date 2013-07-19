@@ -7,10 +7,7 @@
 static void resize_window(struct DrvGtkPthreadData *a, gint width, gint height)
 {
         resize_MainWindow(a->main_window, width, height);
-        resize_MainScreen(a->main_screen, width, height, a->main_window);
-
         show_MainWindow(a->main_window);
-        redraw_MainScreen(a->main_screen);
 }
 
 static void show_window(struct DrvGtkPthreadData *a)
@@ -93,10 +90,10 @@ static void flash_window_whole_area(struct DrvGtkPthreadData *a,
                                     gpointer src_frame_buffer)
 {
         guint32 *src = (guint32*)src_frame_buffer;
-        guchar *dst = (guchar*)a->main_screen->frame_buffer;
+        guchar *dst = (guchar*)a->main_window->frame_buffer;
 
-        const guint area_len = a->main_screen->frame_buffer_width *
-                               a->main_screen->frame_buffer_height;
+        const guint area_len =
+                a->main_window->frame_buffer_width * a->main_window->frame_buffer_height;
 
         if(src != NULL) {
 #ifdef HAVE_SSE2
@@ -114,13 +111,13 @@ static void flash_window_part_area(struct DrvGtkPthreadData *a,
                                    const gint width,
                                    const gint height)
 {
-        const guint32 src_top_ofst = (y * a->main_screen->frame_buffer_width) + x;
+        const guint32 src_top_ofst = (y * a->main_window->frame_buffer_width) + x;
         const guint32 dst_top_ofst = src_top_ofst * 3;
 
         guint32 *src = ((guint32*)src_frame_buffer) + src_top_ofst;
-        guchar *dst = ((guchar*)a->main_screen->frame_buffer) + dst_top_ofst;
+        guchar *dst = ((guchar*)a->main_window->frame_buffer) + dst_top_ofst;
 
-        const guint32 src_next_ofst = a->main_screen->frame_buffer_width;
+        const guint32 src_next_ofst = a->main_window->frame_buffer_width;
         const guint32 dst_next_ofst = src_next_ofst * 3;
 
         const guint line_len = width;
@@ -156,21 +153,21 @@ static void flash_window(struct DrvGtkPthreadData *a,
                          gint width,
                          gint height)
 {
-        round_range(&x, 0, a->main_screen->frame_buffer_width - 1);
-        round_range(&y, 0, a->main_screen->frame_buffer_height - 1);
+        round_range(&x, 0, a->main_window->frame_buffer_width - 1);
+        round_range(&y, 0, a->main_window->frame_buffer_height - 1);
 
-        round_range(&width, 0, a->main_screen->frame_buffer_width - x);
-        round_range(&height, 0, a->main_screen->frame_buffer_height - y);
+        round_range(&width, 0, a->main_window->frame_buffer_width - x);
+        round_range(&height, 0, a->main_window->frame_buffer_height - y);
 
         if (x == 0 &&
             y == 0 &&
-            width == a->main_screen->frame_buffer_width &&
-            height == a->main_screen->frame_buffer_height)
+            width == a->main_window->frame_buffer_width &&
+            height == a->main_window->frame_buffer_height)
                 flash_window_whole_area(a, src_frame_buffer);
         else
                 flash_window_part_area(a, src_frame_buffer, x, y, width, height);
 
-        redraw_MainScreen(a->main_screen);
+        redraw_MainWindow(a->main_window);
 }
 
 static void exit_window(struct DrvGtkPthreadData *a)

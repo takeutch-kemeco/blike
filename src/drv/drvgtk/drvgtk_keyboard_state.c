@@ -1,8 +1,6 @@
 #include <glib.h>
 #include <gdk/gdkkeysyms.h>
 #include "config.h"
-
-#include "drvgtk_language.h"
 #include "drvgtk_key_ring_buffer.h"
 #include "drvgtk_keyboard_state.h"
 
@@ -50,8 +48,6 @@ static void zero_DrvGtkKeybordState(struct DrvGtkKeybordState *a)
         while (i-->0)
                 a->value[i] = 0;
 }
-
-
 
 static struct DrvGtkKeybordState* new_key_transform_table_ja(void)
 {
@@ -330,37 +326,12 @@ static struct DrvGtkKeybordState* new_key_transform_table_en(void)
         return a;
 }
 
-static struct DrvGtkKeybordState* new_key_transform_table_null(void)
-{
-        struct DrvGtkKeybordState *a = g_malloc0(sizeof(*a) * 0xFFFF);
-
-        return a;
-}
-
-
-
-struct DrvGtkKeybordState* new_transform_table_DrvGtkKeybordState(guint32 language)
+struct DrvGtkKeybordState* new_transform_table_DrvGtkKeybordState(void)
 {
         struct DrvGtkKeybordState *a;
-
-        switch(language) {
-        case DRVGTK_KEYBORD_STATE_LANGUAGE_EN:
-                a = new_key_transform_table_en();
-                break;
-
-        case DRVGTK_KEYBORD_STATE_LANGUAGE_JA:
-                a = new_key_transform_table_ja();
-                break;
-
-        default:
-                a = new_key_transform_table_null();
-                break;
-        }
-
+        a = new_key_transform_table_ja();
         return a;
 }
-
-
 
 void add_DrvGtkKeybordState(struct DrvGtkKeybordState *press,
                             struct DrvGtkKeybordState *release,

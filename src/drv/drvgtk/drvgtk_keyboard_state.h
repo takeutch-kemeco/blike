@@ -121,7 +121,7 @@ struct DrvGtkKeybordState {
         unsigned long value[8];
 };
 
-struct DrvGtkKeybordState* new_transform_table_DrvGtkKeybordState(guint32 language);
+struct DrvGtkKeybordState* new_transform_table_DrvGtkKeybordState(void);
 
 void add_DrvGtkKeybordState(struct DrvGtkKeybordState *press,
                             struct DrvGtkKeybordState *release,

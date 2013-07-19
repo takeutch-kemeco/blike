@@ -4,7 +4,6 @@
 #include "config.h"
 
 #include "main_window.h"
-#include "main_screen.h"
 #include "drvgtk_key_ring_buffer.h"
 #include "drvgtk_keyboard_state.h"
 
@@ -60,6 +59,21 @@ static void init_signal_MainWindow(struct MainWindow *a)
                          G_CALLBACK(gtk_main_quit), NULL);
 }
 
+static void init_screen(struct MainWindow* a, const gint width, const gint height)
+{
+        a->frame_buffer_width  = width;
+        a->frame_buffer_height = height;
+
+        a->pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, FALSE, 8, width, height);
+        a->screen = gtk_image_new_from_pixbuf(a->pixbuf);
+
+        a->frame_buffer = gdk_pixbuf_get_pixels(a->pixbuf);
+
+        gtk_widget_set_size_request(a->screen, a->frame_buffer_width, a->frame_buffer_height);
+        gtk_widget_set_double_buffered(a->screen, TRUE);
+        gtk_container_add(GTK_CONTAINER(a->wgt), a->screen);
+}
+
 struct MainWindow* new_MainWindow(struct DrvGtkKeyRingBuffer *key_ring_buffer,
                                   struct DrvGtkKeybordState *press,
                                   struct DrvGtkKeybordState *release,
@@ -75,6 +89,8 @@ struct MainWindow* new_MainWindow(struct DrvGtkKeyRingBuffer *key_ring_buffer,
         a->gdk_device_manager = gdk_display_get_device_manager(a->gdk_display);
         a->gdk_device = gdk_device_manager_get_client_pointer(a->gdk_device_manager);
 
+        init_screen(a, 64, 64);
+
         a->key_ring_buffer = key_ring_buffer;
 
         a->press = press;
@@ -86,9 +102,16 @@ struct MainWindow* new_MainWindow(struct DrvGtkKeyRingBuffer *key_ring_buffer,
         return a;
 }
 
+void redraw_MainWindow(struct MainWindow *a)
+{
+        gtk_widget_hide(a->screen);
+        gtk_widget_show_now(a->screen);
+}
+
 void show_MainWindow(struct MainWindow *a)
 {
         gtk_widget_show_all(a->wgt);
+        redraw_MainWindow(a);
 }
 
 void hide_MainWindow(struct MainWindow *a)
@@ -96,12 +119,32 @@ void hide_MainWindow(struct MainWindow *a)
         gtk_widget_hide(a->wgt);
 }
 
-void resize_MainWindow(struct MainWindow *a, gint width, gint height)
+static void resize_screen(struct MainWindow *a, const gint width, const gint height)
 {
-        gtk_window_resize((GtkWindow*)(a->wgt), width, height);
+        gtk_container_remove(GTK_CONTAINER(a->wgt), a->screen);
+
+        a->frame_buffer_width  = width;
+        a->frame_buffer_height = height;
+
+        a->pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, FALSE, 8, width, height);
+        a->screen = gtk_image_new_from_pixbuf(a->pixbuf);
+
+        gtk_widget_set_size_request(a->screen, a->frame_buffer_width, a->frame_buffer_height);
+
+        a->frame_buffer = gdk_pixbuf_get_pixels(a->pixbuf);
+
+        gtk_container_add(GTK_CONTAINER(a->wgt), a->screen);
+
+        gtk_widget_show(a->screen);
 }
 
-void set_cursor_pos_MainWindow(struct MainWindow *a, gint x, gint y)
+void resize_MainWindow(struct MainWindow *a, const gint width, const gint height)
 {
-        gdk_device_warp(a->gdk_device, a->gdk_screen, x, y)
+        gtk_window_resize((GtkWindow*)(a->wgt), width, height);
+        resize_screen(a, width, height);
+}
+
+void set_cursor_pos_MainWindow(struct MainWindow *a, const gint x, const gint y)
+{
+        gdk_device_warp(a->gdk_device, a->gdk_screen, x, y);
 }

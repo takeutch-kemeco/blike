@@ -13,8 +13,8 @@ struct DrvGtkPthreadData* new_DrvGtkPthreadData(gpointer shared_data,
                                                 gint32 *int_key,
                                                 gint32 *read_index,
                                                 gint32 *write_index,
-                                                gint32 *key_count,
-                                                gint language);
+                                                gint32 *key_count);
+
 void free_DrvGtkPthreadData(struct DrvGtkPthreadData *a);
 void run_DrvGtkSystem(struct DrvGtkPthreadData *a);
 

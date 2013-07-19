@@ -1,7 +1,6 @@
 #include <pthread.h>
 #include <glib.h>
 #include "main_window.h"
-#include "main_screen.h"
 #include "drvgtk_signal.h"
 #include "drvgtk_key_ring_buffer.h"
 #include "drvgtk_keyboard_state.h"
@@ -13,7 +12,6 @@
 
 struct DrvGtkPthreadData {
         struct MainWindow *main_window;
-        struct MainScreen *main_screen;
 
         gpointer shared_data;
         gint32 *time_count;

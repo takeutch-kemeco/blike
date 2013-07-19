@@ -14,9 +14,7 @@ libblike_drvgtk_la_SOURCES =		\
 	drvgtk_sleep.c			drvgtk_sleep.h			\
 	drvgtk_malloc.c			drvgtk_malloc.h			\
 	main_window.c			main_window.h			\
-	main_screen.c			main_screen.h			\
 	hankaku_font.c			\
-	drvgtk_language.h		\
 	${INCLUDEDIR}/setjmp.h		\
 	${INCLUDEDIR}/blike.h		\
 	${INCLUDEDIR}/blike0.h		\
