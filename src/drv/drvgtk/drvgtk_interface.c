@@ -1,6 +1,7 @@
 #include <gtk/gtk.h>
 #include "config.h"
 
+#include "main_window.h"
 #include "drvgtk_sleep.h"
 #include "drvgtk_pthread.h"
 #include "drvgtk_transrate_keycode.h"
@@ -158,4 +159,24 @@ void __bld_get_keyboard_state(unsigned long *press, unsigned long *release)
         next_DrvGtkKeybordState(drvgtk_pthread_data->press, drvgtk_pthread_data->release);
 
         g_mutex_unlock(&drvgtk_pthread_data->mutex);
+}
+
+void __bld_set_callback_arg(void* a)
+{
+        drvgtk_pthread_data->main_window->callback_arg = a;
+}
+
+void __bld_set_callback_motion_notify(bld_callback_motion_notify_MainWindow func)
+{
+        drvgtk_pthread_data->main_window->callback_motion_notify = func;
+}
+
+void __bld_set_callback_button_press(bld_callback_button_press_MainWindow func)
+{
+        drvgtk_pthread_data->main_window->callback_button_press = func;
+}
+
+void __bld_set_callback_button_release(bld_callback_button_release_MainWindow func)
+{
+        drvgtk_pthread_data->main_window->callback_button_release = func;
 }
