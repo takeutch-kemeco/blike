@@ -52,8 +52,8 @@ static gboolean motion_notify_MainWindow(GtkWidget *wgt, GdkEventExpose *event, 
         struct MainWindow *a = (struct MainWindow*)data;
         GdkEventButton *button = (GdkEventButton*)event;
 
-        const gdouble pos_x = button->x;
-        const gdouble pos_y = button->y;
+        const gdouble pos_x = button->x - a->screen_offset_x;
+        const gdouble pos_y = button->y - a->screen_offset_y;
         const gdouble pressure = button->axes[2];
         const gdouble angle_x = button->axes[3];
         const gdouble angle_y = button->axes[4];
@@ -250,6 +250,9 @@ void set_cursor_pos_MainWindow(struct MainWindow *a, const gint x, const gint y)
         gint offx;
         gint offy;
         gdk_window_get_position(gdk_window, &offx, &offy);
+
+        offx += a->screen_offset_x;
+        offy += a->screen_offset_y;
 
         gdk_device_warp(a->gdk_device, a->gdk_screen, offx + x, offy + y);
 }
