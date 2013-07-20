@@ -51,6 +51,7 @@ static gboolean motion_notify_MainWindow(GtkWidget *wgt, GdkEventExpose *event, 
 {
         struct MainWindow *a = (struct MainWindow*)data;
         GdkEventButton *button = (GdkEventButton*)event;
+
         const gdouble pos_x = button->x;
         const gdouble pos_y = button->y;
         const gdouble pressure = button->axes[2];
@@ -107,10 +108,37 @@ static gboolean button_release_MainWindow(GtkWidget *wgt, GdkEventExpose *event,
         return TRUE;
 }
 
+static gboolean configure_MainWindow(GtkWidget *wgt, GdkEventExpose *event, gpointer data)
+{
+        struct MainWindow *a = (struct MainWindow*)data;
+
+        GdkWindow *gdk_window = gtk_widget_get_window(wgt);
+        gint wx, wy, ww, wh;
+        gdk_window_get_geometry(gdk_window, &wx, &wy, &ww, &wh);
+#ifdef DEBUG_MOUSE
+        g_printf("configure_MainWindow(), window global pos x,y,w,h:[%d, %d, %d, %d]\n",
+                 wx, wy, ww, wh);
+#endif /* DEBUG_MOUSE */
+
+        a->screen_offset_x = (ww / 2) - (a->frame_buffer_width / 2);
+        a->screen_offset_y = (wh / 2) - (a->frame_buffer_height / 2);
+#ifdef DEBUG_MOUSE
+        g_printf("configure_MainWindow(), screen offset x,y:[%d, %d]\n",
+                 a->screen_offset_x, a->screen_offset_y);
+#endif /* DEBUG_MOUSE */
+
+        return FALSE; /* 重要 */
+}
+
 static void init_signal_MainWindow(struct MainWindow *a)
 {
         g_signal_connect(G_OBJECT(a->wgt), "realize",
                          G_CALLBACK(realize_MainWindow), a);
+        g_signal_connect(G_OBJECT(a->wgt), "configure-event",
+                         G_CALLBACK(configure_MainWindow), a);
+        g_signal_connect(G_OBJECT(a->wgt), "destroy",
+                         G_CALLBACK(gtk_main_quit), NULL);
+
         g_signal_connect(G_OBJECT(a->wgt), "key-press-event",
                          G_CALLBACK(press_key_MainWindow), a);
         g_signal_connect(G_OBJECT(a->wgt), "key-release-event",
@@ -123,18 +151,19 @@ static void init_signal_MainWindow(struct MainWindow *a)
         g_signal_connect(G_OBJECT(a->wgt), "button-release-event",
                          G_CALLBACK(button_release_MainWindow), a);
 
-        g_signal_connect(G_OBJECT(a->wgt), "destroy",
-                         G_CALLBACK(gtk_main_quit), NULL);
-
         gtk_widget_set_events(a->wgt, gtk_widget_get_events(a->wgt) | GDK_ALL_EVENTS_MASK);
 }
 
-static void init_screen(struct MainWindow* a, const gint width, const gint height)
+static void init_screen(struct MainWindow* a)
 {
-        a->frame_buffer_width  = width;
-        a->frame_buffer_height = height;
+        a->frame_buffer_width  = 64;
+        a->frame_buffer_height = 64;
+        a->screen_offset_x = 0;
+        a->screen_offset_y = 0;
 
-        a->pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, FALSE, 8, width, height);
+        a->pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, FALSE, 8,
+                                   a->frame_buffer_width, a->frame_buffer_height);
+
         a->screen = gtk_image_new_from_pixbuf(a->pixbuf);
 
         a->frame_buffer = gdk_pixbuf_get_pixels(a->pixbuf);
@@ -159,7 +188,7 @@ struct MainWindow* new_MainWindow(struct DrvGtkKeyRingBuffer *key_ring_buffer,
         a->gdk_device_manager = gdk_display_get_device_manager(a->gdk_display);
         a->gdk_device = gdk_device_manager_get_client_pointer(a->gdk_device_manager);
 
-        init_screen(a, 64, 64);
+        init_screen(a);
 
         a->key_ring_buffer = key_ring_buffer;
 

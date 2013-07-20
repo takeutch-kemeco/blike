@@ -19,6 +19,8 @@ struct MainWindow {
         guchar *frame_buffer;
         gint frame_buffer_width;
         gint frame_buffer_height;
+        gint screen_offset_x;
+        gint screen_offset_y;
 
         struct DrvGtkKeyRingBuffer *key_ring_buffer;
         struct DrvGtkKeybordState *press;
