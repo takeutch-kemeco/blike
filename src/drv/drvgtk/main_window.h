@@ -6,6 +6,16 @@
 #ifndef __MAIN_WINDOW_H__
 #define __MAIN_WINDOW_H__
 
+typedef void (*bld_callback_motion_notify_MainWindow)(void* a,
+                                                      const double pos_x,
+                                                      const double pos_y,
+                                                      const double pressure,
+                                                      const double angle_x,
+                                                      const double angle_y);
+
+typedef void (*bld_callback_button_press_MainWindow)(void* a, const int button_number);
+typedef void (*bld_callback_button_release_MainWindow)(void* a, const int button_number);
+
 struct MainWindow {
         GtkWidget *wgt;
 
@@ -26,6 +36,11 @@ struct MainWindow {
         struct DrvGtkKeybordState *press;
         struct DrvGtkKeybordState *release;
         struct DrvGtkKeybordState *key_transform_table;
+
+        bld_callback_motion_notify_MainWindow callback_motion_notify;
+        bld_callback_button_press_MainWindow callback_button_press;
+        bld_callback_button_release_MainWindow callback_button_release;
+        void* callback_arg;
 };
 
 struct MainWindow* new_MainWindow(struct DrvGtkKeyRingBuffer *key_ring_buffer,

@@ -58,6 +58,9 @@ static gboolean motion_notify_MainWindow(GtkWidget *wgt, GdkEventExpose *event, 
         const gdouble angle_x = button->axes[3];
         const gdouble angle_y = button->axes[4];
 
+        if (a->callback_motion_notify != NULL)
+                a->callback_motion_notify(a->callback_arg, pos_x, pos_y, pressure, angle_x, angle_y);
+
 #ifdef DEBUG_MOUSE
         g_printf("motion_notify_MainWindow(), pos x,y:[%f, %f], angle x, y:[%f, %f], pressure:[%f]\n",
                  pos_x, pos_y, angle_x, angle_y, pressure);
@@ -71,18 +74,20 @@ static gboolean button_press_MainWindow(GtkWidget *wgt, GdkEventExpose *event, g
         struct MainWindow *a = (struct MainWindow*)data;
         GdkEventButton *button = (GdkEventButton*)event;
 
+        gint flag;
+        switch (button->button) {
+        case 1: flag |= (1 << 0); break;
+        case 2: flag |= (1 << 1); break;
+        case 3: flag |= (1 << 2); break;
+        default: flag = 0;
+        }
+
+        if (a->callback_button_press != NULL)
+                a->callback_button_press(a->callback_arg, flag);
+
 #ifdef DEBUG_MOUSE
-        g_printf("button_press_MainWindow(), button:[%x]\n", button->button);
+        g_printf("button_press_MainWindow(), button:[%x], flag:[%x]\n", button->button, flag);
 #endif /* DEBUG_MOUSE */
-
-        if (button->state & GDK_BUTTON1_MASK) {
-        }
-
-        if (button->state & GDK_BUTTON2_MASK) {
-        }
-
-        if (button->state & GDK_BUTTON3_MASK) {
-        }
 
         return TRUE;
 }
@@ -92,18 +97,20 @@ static gboolean button_release_MainWindow(GtkWidget *wgt, GdkEventExpose *event,
         struct MainWindow *a = (struct MainWindow*)data;
         GdkEventButton *button = (GdkEventButton*)event;
 
+        gint flag;
+        switch (button->button) {
+        case 1: flag |= (1 << 0); break;
+        case 2: flag |= (1 << 1); break;
+        case 3: flag |= (1 << 2); break;
+        default: flag = 0;
+        }
+
+        if (a->callback_button_release != NULL)
+                a->callback_button_release(a->callback_arg, flag);
+
 #ifdef DEBUG_MOUSE
-        g_printf("button_release_MainWindow(), button:[%x]\n", button->button);
+        g_printf("button_release_MainWindow(), button:[%x], flag:[%x]\n", button->button, flag);
 #endif /* DEBUG_MOUSE */
-
-        if (button->state & GDK_BUTTON1_MASK) {
-        }
-
-        if (button->state & GDK_BUTTON2_MASK) {
-        }
-
-        if (button->state & GDK_BUTTON3_MASK) {
-        }
 
         return TRUE;
 }
@@ -195,6 +202,11 @@ struct MainWindow* new_MainWindow(struct DrvGtkKeyRingBuffer *key_ring_buffer,
         a->press = press;
         a->release = release;
         a->key_transform_table = key_transform_table;
+
+        a->callback_motion_notify = NULL;
+        a->callback_button_press = NULL;
+        a->callback_button_release = NULL;
+        a->callback_arg = NULL;
 
         init_signal_MainWindow(a);
 
