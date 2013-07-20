@@ -146,5 +146,11 @@ void resize_MainWindow(struct MainWindow *a, const gint width, const gint height
 
 void set_cursor_pos_MainWindow(struct MainWindow *a, const gint x, const gint y)
 {
-        gdk_device_warp(a->gdk_device, a->gdk_screen, x, y);
+        GdkWindow *gdk_window = gtk_widget_get_window(a->wgt);
+
+        gint offx;
+        gint offy;
+        gdk_window_get_position(gdk_window, &offx, &offy);
+
+        gdk_device_warp(a->gdk_device, a->gdk_screen, offx + x, offy + y);
 }
