@@ -47,6 +47,66 @@ static gboolean realize_MainWindow(GtkWidget *wgt, GdkEventExpose *event, gpoint
         return TRUE;
 }
 
+static gboolean motion_notify_MainWindow(GtkWidget *wgt, GdkEventExpose *event, gpointer data)
+{
+        struct MainWindow *a = (struct MainWindow*)data;
+        GdkEventButton *button = (GdkEventButton*)event;
+        const gdouble pos_x = button->x;
+        const gdouble pos_y = button->y;
+        const gdouble pressure = button->axes[2];
+        const gdouble angle_x = button->axes[3];
+        const gdouble angle_y = button->axes[4];
+
+#ifdef DEBUG_MOUSE
+        g_printf("motion_notify_MainWindow(), pos x,y:[%f, %f], angle x, y:[%f, %f], pressure:[%f]\n",
+                 pos_x, pos_y, angle_x, angle_y, pressure);
+#endif /* DEBUG_MOUSE */
+
+        return TRUE;
+}
+
+static gboolean button_press_MainWindow(GtkWidget *wgt, GdkEventExpose *event, gpointer data)
+{
+        struct MainWindow *a = (struct MainWindow*)data;
+        GdkEventButton *button = (GdkEventButton*)event;
+
+#ifdef DEBUG_MOUSE
+        g_printf("button_press_MainWindow(), button:[%x]\n", button->button);
+#endif /* DEBUG_MOUSE */
+
+        if (button->state & GDK_BUTTON1_MASK) {
+        }
+
+        if (button->state & GDK_BUTTON2_MASK) {
+        }
+
+        if (button->state & GDK_BUTTON3_MASK) {
+        }
+
+        return TRUE;
+}
+
+static gboolean button_release_MainWindow(GtkWidget *wgt, GdkEventExpose *event, gpointer data)
+{
+        struct MainWindow *a = (struct MainWindow*)data;
+        GdkEventButton *button = (GdkEventButton*)event;
+
+#ifdef DEBUG_MOUSE
+        g_printf("button_release_MainWindow(), button:[%x]\n", button->button);
+#endif /* DEBUG_MOUSE */
+
+        if (button->state & GDK_BUTTON1_MASK) {
+        }
+
+        if (button->state & GDK_BUTTON2_MASK) {
+        }
+
+        if (button->state & GDK_BUTTON3_MASK) {
+        }
+
+        return TRUE;
+}
+
 static void init_signal_MainWindow(struct MainWindow *a)
 {
         g_signal_connect(G_OBJECT(a->wgt), "realize",
@@ -55,8 +115,18 @@ static void init_signal_MainWindow(struct MainWindow *a)
                          G_CALLBACK(press_key_MainWindow), a);
         g_signal_connect(G_OBJECT(a->wgt), "key-release-event",
                          G_CALLBACK(release_key_MainWindow), a);
+
+        g_signal_connect(G_OBJECT(a->wgt), "motion-notify-event",
+                         G_CALLBACK(motion_notify_MainWindow), a);
+        g_signal_connect(G_OBJECT(a->wgt), "button-press-event",
+                         G_CALLBACK(button_press_MainWindow), a);
+        g_signal_connect(G_OBJECT(a->wgt), "button-release-event",
+                         G_CALLBACK(button_release_MainWindow), a);
+
         g_signal_connect(G_OBJECT(a->wgt), "destroy",
                          G_CALLBACK(gtk_main_quit), NULL);
+
+        gtk_widget_set_events(a->wgt, gtk_widget_get_events(a->wgt) | GDK_ALL_EVENTS_MASK);
 }
 
 static void init_screen(struct MainWindow* a, const gint width, const gint height)
