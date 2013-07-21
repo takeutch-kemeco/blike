@@ -1,3 +1,38 @@
+/* c_blike_01f_linux -
+ * Copyright (C) 2011, 2012, 2013 Kemeco Takeutch <takeutchkemeco@gmail.com>
+ * All rights reserved.
+ *
+ * c_blike_01f -
+ * Copyright (C) 2011 H.Kawai (under KL-01)
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in
+ *    the documentation and/or other materials provided with the
+ *    distribution.
+ * 3. Neither the name of the Kemeco Takeutch nor the names of its
+ *    contributors may be used to endorse or promote products derived
+ *    from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ */
+
 #include <stdarg.h>
 
 #ifndef __BLIKE0_H__
@@ -56,13 +91,13 @@ void bl_setPtrn0(int sx, int sy, int sl, int ic, int *b, const unsigned char *c,
 void bl_drawPtrn_err_r(const char *msg, unsigned char *nam);
 void bl_drawPtrn_err_d(const char *msg, unsigned char *nam);
 
-// 起動時のコマンドライン引数 main(bl_argc, bl_argv)
+/* 起動時のコマンドライン引数 main(bl_argc, bl_argv) */
 extern int bl_argc;
 extern char** bl_argv;
 
-//void bl_setFlsW(int w0, int ppw);
+/* void bl_setFlsW(int w0, int ppw); */
 
-// intは32bit, shortが16bit, charが8bit
+/* intは32bit, shortが16bit, charが8bit */
 
 #define KEY_ENTER       '\n'
 #define KEY_ESC         27
@@ -93,10 +128,10 @@ extern char** bl_argv;
 #define BL_CLEARREP     0x00000008
 #define BL_DELFFF       0x00000010
 
-#define BL_KEYMODE      0x00000000      // 作りかけ, make/remake/breakが見えるかどうか
+#define BL_KEYMODE      0x00000000      /* 作りかけ, make/remake/breakが見えるかどうか */
 
 #if (defined(__cplusplus))
 }
 #endif
 
-#endif // __BLIKE0_H__
+#endif /* __BLIKE0_H__ */
