@@ -47,7 +47,7 @@
 extern "C" {
 #endif
 
-//#define putc            bl_putc
+#define putc            bl_putc
 #define puts            bl_puts1
 #define printf          bl_printf
 #define scanf           bl_scanf
