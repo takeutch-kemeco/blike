@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([c_blike], [1.5.4], [takeutchkemeco@gmail.com])
+AC_INIT([c_blike], [1.5.5], [takeutchkemeco@gmail.com])
 AM_INIT_AUTOMAKE([foreign])
 AC_CONFIG_SRCDIR([src/common/main.c])
 AC_CONFIG_HEADERS([include/config.h])
