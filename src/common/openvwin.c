@@ -37,23 +37,50 @@
 
 #define w bl_work
 
-void bl_openVWin(int n, int sx, int sy)
+static int __bl_openVWin_check_arg(const int n, const int sx, const int sy)
+{
+        if (n < 0 || n > BL_DBGWIN)
+                return -1;
+
+        if (w.win[n].xsiz != 0)
+                return -1;
+
+        if (sx <= 0 || sy <= 0)
+                return -1;
+
+        if (n == BL_DBGWIN) {
+                if (w.win[0].xsiz == 0)
+                        return -1; /* 先に作ってはいけない */
+
+                if (sx != w.win[0].xsiz || sy != w.win[0].ysiz)
+                        return -1;
+        }
+
+        if (sx < 160)
+                return -1;
+
+        return 0;
+}
+
+
+void __bl_openVWin_attach_vram(const int n, const int sx, const int sy, const int* vram)
 {
         int i, x, y;
-        if (n < 0 || n > BL_DBGWIN) return;
-        if (w.win[n].xsiz != 0) return;
-        if (sx <= 0 || sy <= 0) return;
-        if (n == BL_DBGWIN) {
-                if (w.win[0].xsiz == 0) return; /* 先に作ってはいけない */
-                if (sx != w.win[0].xsiz || sy != w.win[0].ysiz) return;
-        }
+
+        if (vram == NULL)
+                return;
+
+        if (__bl_openVWin_check_arg(n, sx, sy) == -1)
+                return;
+
+        w.win[n].buf = vram;
+
         if (n == 0) {
-                if (sx < 160) return;
                 w.cbuf = NULL;
                 w.ccol = NULL;
                 w.cbak = NULL;
         }
-        w.win[n].buf = bld_malloc(sx * sy * sizeof (int));
+
         if (w.win[n].buf == NULL) {
 err:
                 BL_EXIT
@@ -101,4 +128,13 @@ err:
                         bld_flshWin(sx, sy, 0, 0);
         }
         return;
+}
+
+void bl_openVWin(int n, int sx, int sy)
+{
+        if (__bl_openVWin_check_arg(n, sx, sy) == -1)
+                return;
+
+        const int *vram = bld_malloc(sx * sy * sizeof(*vram));
+        __bl_openVWin_attach_vram(n, sx, sy, vram);
 }
