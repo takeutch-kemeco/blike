@@ -37,8 +37,12 @@
 
 #define w bl_work
 
+void __bl_openWin_attach_vram(const int x, const int y, const int* vram)
+{
+        __bl_openVWin_attach_vram(w.slctwin, x, y, vram);
+}
+
 void bl_openWin(int x, int y)
 {
         bl_openVWin(w.slctwin, x, y);
-        return;
 }
