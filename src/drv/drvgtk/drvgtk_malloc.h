@@ -35,8 +35,10 @@
 #ifndef __DRVGTK_MALLOC_H__
 #define __DRVGTK_MALLOC_H__
 
-gpointer drvgtk_malloc_aligned16(gsize size);
-gpointer drvgtk_malloc_0_aligned16(gsize size);
-void drvgtk_free_aligned16(gpointer a);
+gpointer drvgtk_malloc_aligned16(const gsize bytes);
+gpointer drvgtk_malloc_0_aligned16(const gsize bytes);
+void drvgtk_free_aligned16(const gpointer a);
+
+gpointer drvgtk_malloc_rwe(const gsize bytes);
 
 #endif /* __DRVGTK_MALLOC_H__ */

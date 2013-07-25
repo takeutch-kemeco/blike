@@ -30,53 +30,60 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <stdlib.h>
+#include <sys/mman.h>
+#include <unistd.h>
 #include <glib.h>
 
-static gpointer __drvgtk_malloc_aligned16(guint8 *org)
+static gpointer drvgtk_malloc_aligned(const gsize bytes, const gsize aligned)
 {
-        guint32 org_address = (guint32)org;
-        guint32 diff_address = org_address % 16;
-
-
-        guint32* header = (guint32*)(org + diff_address);
-        *header = org_address;
-
-        guint32* a = header + 4;        // header + 16byte
-
-
-        guint32 a_address = (guint32)a;
-
-        if ((a_address % 16) !=0) {
-                g_printf("org[%p], org_address[0x%x], diff_address[[%ld]\n", org, org_address, diff_address);
-
-                g_printf(
-                        "header[%p], *header[0x%x], ret_address[%p], *ret_address[%ld], ret_address mod 16[%ld]\n\n",
-                        header, *header, a, *a, (*a) % 16
-                );
-
-                g_printf("err: drvgtk_malloc_aligned16()\n");
+        void *tmp;
+        int err = posix_memalign(&tmp, (size_t)aligned, (size_t)bytes);
+        if (err) {
+                g_printf("err: drvgtk_malloc_aligned, posix_memalign()\n");
+                exit(1);
         }
 
-        return (gpointer)a;
+        return (gpointer)tmp;
 }
 
-gpointer drvgtk_malloc_aligned16(gsize size)
+gpointer drvgtk_malloc_aligned16(const gsize bytes)
 {
-        guint8 *org = g_malloc(size + 64);
-
-        return __drvgtk_malloc_aligned16(org);
+        return drvgtk_malloc_aligned(bytes, 16);
 }
 
-gpointer drvgtk_malloc_0_aligned16(gsize size)
+gpointer drvgtk_malloc_0_aligned16(const gsize bytes)
 {
-        guint8 *org = g_malloc0(size + 64);
+        gpointer tmp = drvgtk_malloc_aligned16(bytes);
 
-        return __drvgtk_malloc_aligned16(org);
+        char *p = (char*)tmp;
+        int i;
+        for (i = 0; i < bytes; i++)
+                *p++ = 0;
+
+        return tmp;
 }
 
-void drvgtk_free_aligned16(gpointer a)
+void drvgtk_free_aligned16(const gpointer a)
 {
-        guint32 *header = ((guint32*)a) - 4;
-        guint32 org_address = *header;
-        gpointer org = (guint32*)org_address;
+        free(a);
+}
+
+gpointer drvgtk_malloc_rwe(const gsize bytes)
+{
+        size_t pagesize = sysconf(_SC_PAGE_SIZE);
+        if (pagesize == -1) {
+                g_printf("err: osecpu.c, drvgtk_malloc_rwe(), sysconf(_SC_PAGE_SIZE)\n");
+                exit(1);
+        }
+
+        gpointer tmp = drvgtk_malloc_aligned(bytes, (gsize)pagesize);
+
+        int err = mprotect((void*)tmp, (size_t)bytes, PROT_READ | PROT_WRITE | PROT_EXEC);
+        if (err) {
+                g_printf("err: drvgtk_malloc_rwe(), mprotect\n");
+                exit(1);
+        }
+
+        return tmp;
 }
