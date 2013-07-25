@@ -38,16 +38,18 @@
 #include "drvgtk_key_ring_buffer.h"
 #include "drvgtk_keyboard_state.h"
 
-struct DrvGtkPthreadData* new_DrvGtkPthreadData(gpointer shared_data,
-                                                gint32 *time_count,
-                                                int (*control_program)(),
-                                                void (*init_control_program)(),
-                                                void (*close_control_program)(),
-                                                gint32 key_len,
-                                                gint32 *int_key,
-                                                gint32 *read_index,
-                                                gint32 *write_index,
-                                                gint32 *key_count)
+struct DrvGtkPthreadData*
+new_DrvGtkPthreadData(gpointer shared_data,
+                      gint32 *time_count,
+                      int (*control_program)(),
+                      void (*init_control_program)(),
+                      void (*close_control_program)(),
+                      gint32 key_len,
+                      gint32 *int_key,
+                      gint32 *read_index,
+                      gint32 *write_index,
+                      gint32 *key_count,
+                      DrvGtkFuncPutKeyBuffer func_put_key_buffer)
 {
         struct DrvGtkPthreadData *a     = g_malloc(sizeof(*a));
 
@@ -62,7 +64,13 @@ struct DrvGtkPthreadData* new_DrvGtkPthreadData(gpointer shared_data,
 
         g_mutex_init(&a->mutex);
 
-        a->key_ring_buffer              = new_DrvGtkKeyRingBuffer(key_len, int_key, read_index, write_index, key_count);
+        a->key_ring_buffer =
+                new_DrvGtkKeyRingBuffer(key_len,
+                                        int_key,
+                                        read_index,
+                                        write_index,
+                                        key_count,
+                                        func_put_key_buffer);
 
         a->press                        = g_malloc0(sizeof(*(a->press)));
         a->release                      = g_malloc0(sizeof(*(a->release)));

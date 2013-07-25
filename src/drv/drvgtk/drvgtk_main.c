@@ -45,6 +45,8 @@ char **bl_argv;
 extern void bl_init();
 extern void bl_exit();
 
+extern void bl_putKeyB(int, int*);
+
 int main(int argc, char **argv)
 {
         bl_argc = argc;
@@ -62,7 +64,8 @@ int main(int argc, char **argv)
                 bl_work.kbuf,
                 &(bl_work.kbuf_rp),
                 &(bl_work.kbuf_wp),
-                &(bl_work.kbuf_c));
+                &(bl_work.kbuf_c),
+                bl_putKeyB);
 
         run_DrvGtkSystem(drvgtk_pthread_data);
 

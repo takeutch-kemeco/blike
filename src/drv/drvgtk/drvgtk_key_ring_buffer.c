@@ -37,11 +37,13 @@
 #include "drvgtk_key_ring_buffer.h"
 #include "drvgtk_transrate_keycode.h"
 
-struct DrvGtkKeyRingBuffer* new_DrvGtkKeyRingBuffer(gint32 key_len,
-                                                    gint32 *int_key,
-                                                    gint32 *read_index,
-                                                    gint32 *write_index,
-                                                    gint32 *key_count)
+struct DrvGtkKeyRingBuffer*
+new_DrvGtkKeyRingBuffer(gint32 key_len,
+                        gint32 *int_key,
+                        gint32 *read_index,
+                        gint32 *write_index,
+                        gint32 *key_count,
+                        DrvGtkFuncPutKeyBuffer func_put_key_buffer)
 {
         struct DrvGtkKeyRingBuffer *a = g_malloc(sizeof(*a));
 
@@ -52,6 +54,8 @@ struct DrvGtkKeyRingBuffer* new_DrvGtkKeyRingBuffer(gint32 key_len,
         a->read_index  = read_index;
         a->write_index = write_index;
         a->key_count   = key_count;
+
+        a->func_put_key_buffer = func_put_key_buffer;
 
         return a;
 }
@@ -73,11 +77,11 @@ void write_c_DrvGtkKeyRingBuffer(struct DrvGtkKeyRingBuffer *a,
                 break;
 
         case DrvGtkKeyState_press:
-                bl_putKeyB(1, &c);
+                a->func_put_key_buffer(1, &c);
                 break;
 
         case DrvGtkKeyState_release:
-                bl_putKeyB(1, &c);
+                a->func_put_key_buffer(1, &c);
                 break;
         }
 }

@@ -46,6 +46,8 @@ struct DrvGtkKey {
         enum DrvGtkKeyState state;
 };
 
+typedef void (*DrvGtkFuncPutKeyBuffer)(int, int*);
+
 struct DrvGtkKeyRingBuffer {
         struct DrvGtkKey *key;
         gint32 key_len;
@@ -53,13 +55,16 @@ struct DrvGtkKeyRingBuffer {
         gint32 *read_index;
         gint32 *write_index;
         gint32 *key_count;
+        DrvGtkFuncPutKeyBuffer func_put_key_buffer;
 };
 
-struct DrvGtkKeyRingBuffer* new_DrvGtkKeyRingBuffer(gint32 key_len,
-                                                    gint32 *int_key,
-                                                    gint32 *read_index,
-                                                    gint32 *write_index,
-                                                    gint32 *key_count);
+struct DrvGtkKeyRingBuffer*
+new_DrvGtkKeyRingBuffer(gint32 key_len,
+                        gint32 *int_key,
+                        gint32 *read_index,
+                        gint32 *write_index,
+                        gint32 *key_count,
+                        DrvGtkFuncPutKeyBuffer func_put_key_buffer);
 void free_DrvGtkKeyRingBuffer(struct DrvGtkKeyRingBuffer *a);
 void write_c_DrvGtkKeyRingBuffer(struct DrvGtkKeyRingBuffer *a,
                                  struct DrvGtkKey *key);

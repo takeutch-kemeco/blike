@@ -36,16 +36,18 @@
 #ifndef __DRVGTK_SYSTEM_H__
 #define __DEVGTK_SYSTEM_H__
 
-struct DrvGtkPthreadData* new_DrvGtkPthreadData(gpointer shared_data,
-                                                gint32 *time_count,
-                                                int (*control_program)(),
-                                                void (*init_control_program)(),
-                                                void (*close_control_program)(),
-                                                gint32 key_len,
-                                                gint32 *int_key,
-                                                gint32 *read_index,
-                                                gint32 *write_index,
-                                                gint32 *key_count);
+struct DrvGtkPthreadData*
+new_DrvGtkPthreadData(gpointer shared_data,
+                      gint32 *time_count,
+                      int (*control_program)(),
+                      void (*init_control_program)(),
+                      void (*close_control_program)(),
+                      gint32 key_len,
+                      gint32 *int_key,
+                      gint32 *read_index,
+                      gint32 *write_index,
+                      gint32 *key_count,
+                      DrvGtkFuncPutKeyBuffer func_put_key_buffer);
 
 void free_DrvGtkPthreadData(struct DrvGtkPthreadData *a);
 void run_DrvGtkSystem(struct DrvGtkPthreadData *a);
