@@ -32,11 +32,12 @@
 
 #include <stdlib.h>
 
-#ifndef __DRVLFB_MALLOC_H__
-#define __DRVLFB_MALLOC_H__
+#ifdef __DRVLFB_MALLOC_H__
 
-void* drvlfb_malloc_aligned16(size_t size);
-void* drvlfb_malloc_0_aligned16(size_t size);
-void drvlfb_free_aligned16(void *a);
+void* drvlfb_malloc_aligned16(const size_t bytes);
+void* drvlfb_malloc_0_aligned16(const size_t bytes);
+void drvlfb_free_aligned16(void* a);
+
+void* drvlfb_malloc_rwe(const size_t bytes);
 
 #endif /* __DRVLFB_MALLOC_H__ */

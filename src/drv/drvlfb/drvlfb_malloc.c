@@ -32,55 +32,59 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
+#include <sys/mman.h>
+#include <unistd.h>
 
-typedef unsigned char uint8;
-typedef unsigned long uint32;
-
-static void* __drvlfb_malloc_aligned16(uint8* org)
+static void* drvlfb_malloc_aligned(const size_t bytes, const size_t aligned)
 {
-        uint32 org_address = (uint32)org;
-        uint32 diff_address = org_address % 16;
-
-
-        uint32* header = (uint32*)(org + diff_address);
-        *header = org_address;
-
-        uint32* a = header + 4;        // header + 16byte
-
-
-        uint32 a_address = (uint32)a;
-
-        if((a_address % 16) !=0) {
-                printf("org[%p], org_address[0x%lx], diff_address[%lu]\n", org, org_address, diff_address);
-
-                printf(
-                        "header[%p], *header[0x%lx], ret_address[%p], *ret_address[%ld], ret_address mod 16[%ld]\n\n",
-                        header, *header, a, *a, (*a) % 16
-                );
-
-                printf("err: drvlfb_malloc_aligned16()\n");
+        void *tmp;
+        int err = posix_memalign(&tmp, (size_t)aligned, (size_t)bytes);
+        if (err) {
+                g_printf("err: drvlfb_malloc_aligned, posix_memalign()\n");
+                exit(1);
         }
 
-        return (void*)a;
+        return tmp;
 }
 
-void* drvlfb_malloc_aligned16(size_t size)
+void* drvlfb_malloc_aligned16(const size_t bytes)
 {
-        uint8* org = malloc(size + 64);
-
-        return __drvlfb_malloc_aligned16(org);
+        return drvlfb_malloc_aligned(bytes, 16);
 }
 
-void* drvlfb_malloc_0_aligned16(size_t size)
+void* drvlfb_malloc_0_aligned16(const size_t bytes)
 {
-        uint8* org = calloc(1, size + 64);
+        void* tmp = drvlfb_malloc_aligned16(bytes);
 
-        return __drvlfb_malloc_aligned16(org);
+        char *p = (char*)tmp;
+        int i;
+        for (i = 0; i < bytes; i++)
+                *p++ = 0;
+
+        return tmp;
 }
 
 void drvlfb_free_aligned16(void* a)
 {
-        uint32* header = ((uint32*)a) - 4;
-        uint32 org_address = *header;
-        void* org = (uint32*)org_address;
+        free(a);
+}
+
+void* drvlfb_malloc_rwe(const size_t bytes)
+{
+        size_t pagesize = sysconf(_SC_PAGE_SIZE);
+        if (pagesize == -1) {
+                g_printf("err: osecpu.c, drvlfb_malloc_rwe(), sysconf(_SC_PAGE_SIZE)\n");
+                exit(1);
+        }
+
+        void* tmp = drvlfb_malloc_aligned(bytes, pagesize);
+
+        int err = mprotect(tmp, bytes, PROT_READ | PROT_WRITE | PROT_EXEC);
+        if (err) {
+                g_printf("err: drvlfb_malloc_rwe(), mprotect\n");
+                exit(1);
+        }
+
+        return tmp;
 }
