@@ -120,6 +120,11 @@ void* bld_malloc(unsigned int bytes)
         return drvlfb_malloc_aligned16((size_t)bytes);
 }
 
+void* __bld_mallocRWE(unsigned int bytes)
+{
+        return (void*)drvlfb_malloc_rwe((size_t)bytes);
+}
+
 void bld_free(void* p, unsigned int bytes)
 {
         drvlfb_free_aligned16((void*)p);
