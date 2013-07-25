@@ -134,6 +134,11 @@ void* bld_malloc(unsigned int bytes)
         return (void*)(drvgtk_malloc_aligned16(bytes));
 }
 
+void* __bld_mallocRWE(unsigned int bytes)
+{
+        return (void*)drvgtk_malloc_rwe(bytes);
+}
+
 void bld_free(void* p, unsigned int bytes)
 {
         check_and_exit_wt_run_flag();
