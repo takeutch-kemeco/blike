@@ -122,7 +122,7 @@ void* bld_malloc(unsigned int bytes)
 
 void* __bld_mallocRWE(unsigned int bytes)
 {
-        return (void*)drvlfb_malloc_rwe((size_t)bytes);
+        return drvlfb_malloc_rwe((size_t)bytes);
 }
 
 void bld_free(void* p, unsigned int bytes)
