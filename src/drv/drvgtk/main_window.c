@@ -53,7 +53,7 @@ static gboolean key_press_MainWindow(GtkWidget *wgt, GdkEventExpose *event, gpoi
         write_c_DrvGtkKeyRingBuffer(a->key_ring_buffer, &tmp);
 
         if (a->callback_key_press != NULL)
-                a->callback_key_press(a->callback_arg, key->keyval);
+                a->callback_key_press(a->callback_arg, __drvgtk_transrate_keycode_gtk_to_vk(key->keyval));
 
         return TRUE;
 }
@@ -72,7 +72,7 @@ static gboolean key_release_MainWindow(GtkWidget *wgt, GdkEventExpose *event, gp
         write_c_DrvGtkKeyRingBuffer(a->key_ring_buffer, &tmp);
 
         if (a->callback_key_release != NULL)
-                a->callback_key_release(a->callback_arg, key->keyval);
+                a->callback_key_release(a->callback_arg, __drvgtk_transrate_keycode_gtk_to_vk(key->keyval));
 
         return TRUE;
 }
@@ -185,9 +185,9 @@ static void init_signal_MainWindow(struct MainWindow *a)
                          G_CALLBACK(gtk_main_quit), NULL);
 
         g_signal_connect(G_OBJECT(a->wgt), "key-press-event",
-                         G_CALLBACK(press_key_MainWindow), a);
+                         G_CALLBACK(key_press_MainWindow), a);
         g_signal_connect(G_OBJECT(a->wgt), "key-release-event",
-                         G_CALLBACK(release_key_MainWindow), a);
+                         G_CALLBACK(key_release_MainWindow), a);
 
         g_signal_connect(G_OBJECT(a->wgt), "motion-notify-event",
                          G_CALLBACK(motion_notify_MainWindow), a);

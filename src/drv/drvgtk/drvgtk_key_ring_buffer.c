@@ -70,7 +70,7 @@ extern void bl_putKeyB(int n, int *p);
 void write_c_DrvGtkKeyRingBuffer(struct DrvGtkKeyRingBuffer *a,
                                  struct DrvGtkKey *key)
 {
-        gint32 c = transrate_keycode_DrvGtkKey(key);
+        gint32 c = __drvgtk_transrate_keycode(key);
 
         switch(key->state) {
         case DrvGtkKeyState_none:
