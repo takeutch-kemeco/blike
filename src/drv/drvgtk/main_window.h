@@ -38,6 +38,9 @@
 #ifndef __MAIN_WINDOW_H__
 #define __MAIN_WINDOW_H__
 
+typedef void (*bld_callback_key_press_MainWindow)(void* a, const int keyval);
+typedef void (*bld_callback_key_release_MainWindow)(void* a, const int keyval);
+
 typedef void (*bld_callback_motion_notify_MainWindow)(void* a,
                                                       const double pos_x,
                                                       const double pos_y,
@@ -68,6 +71,9 @@ struct MainWindow {
         struct DrvGtkKeybordState *press;
         struct DrvGtkKeybordState *release;
         struct DrvGtkKeybordState *key_transform_table;
+
+        bld_callback_key_press_MainWindow callback_key_press;
+        bld_callback_key_release_MainWindow callback_key_release;
 
         bld_callback_motion_notify_MainWindow callback_motion_notify;
         bld_callback_button_press_MainWindow callback_button_press;

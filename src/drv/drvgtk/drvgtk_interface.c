@@ -220,3 +220,13 @@ void __bld_set_callback_button_release(bld_callback_button_release_MainWindow fu
 {
         drvgtk_pthread_data->main_window->callback_button_release = func;
 }
+
+void __bld_set_callback_key_press(bld_callback_key_press_MainWindow func)
+{
+        drvgtk_pthread_data->main_window->callback_key_press = func;
+}
+
+void __bld_set_callback_key_release(bld_callback_key_release_MainWindow func)
+{
+        drvgtk_pthread_data->main_window->callback_key_release = func;
+}

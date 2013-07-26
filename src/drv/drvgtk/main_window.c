@@ -39,7 +39,7 @@
 #include "drvgtk_key_ring_buffer.h"
 #include "drvgtk_keyboard_state.h"
 
-static gboolean press_key_MainWindow(GtkWidget *wgt, GdkEventExpose *event, gpointer data)
+static gboolean key_press_MainWindow(GtkWidget *wgt, GdkEventExpose *event, gpointer data)
 {
         struct MainWindow *a = (struct MainWindow*)data;
         GdkEventKey *key = (GdkEventKey*)event;
@@ -52,10 +52,13 @@ static gboolean press_key_MainWindow(GtkWidget *wgt, GdkEventExpose *event, gpoi
 
         write_c_DrvGtkKeyRingBuffer(a->key_ring_buffer, &tmp);
 
+        if (a->callback_key_press != NULL)
+                a->callback_key_press(a->callback_arg, key->keyval);
+
         return TRUE;
 }
 
-static gboolean release_key_MainWindow(GtkWidget *wgt, GdkEventExpose *event, gpointer data)
+static gboolean key_release_MainWindow(GtkWidget *wgt, GdkEventExpose *event, gpointer data)
 {
         struct MainWindow *a = (struct MainWindow*)data;
         GdkEventKey *key = (GdkEventKey*)event;
@@ -67,6 +70,9 @@ static gboolean release_key_MainWindow(GtkWidget *wgt, GdkEventExpose *event, gp
         add_DrvGtkKeybordState(a->press, a->release, a->key_transform_table, &tmp);
 
         write_c_DrvGtkKeyRingBuffer(a->key_ring_buffer, &tmp);
+
+        if (a->callback_key_release != NULL)
+                a->callback_key_release(a->callback_arg, key->keyval);
 
         return TRUE;
 }
@@ -235,9 +241,13 @@ struct MainWindow* new_MainWindow(struct DrvGtkKeyRingBuffer *key_ring_buffer,
         a->release = release;
         a->key_transform_table = key_transform_table;
 
+        a->callback_key_press = NULL;
+        a->callback_key_release = NULL;
+
         a->callback_motion_notify = NULL;
         a->callback_button_press = NULL;
         a->callback_button_release = NULL;
+
         a->callback_arg = NULL;
 
         init_signal_MainWindow(a);
