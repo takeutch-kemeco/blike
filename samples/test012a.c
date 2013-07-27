@@ -1,15 +1,15 @@
-#include "blike.h"
+#include <blike0.h>
 
 blMain()
 {
         int j = 0;
-        wait(0);
+        bl_wait(0);
         for (;;) {
                 int i;
-                printf("\r%03d", j++);
-                flshWin(24, 16, 0, 0);
+                bl_printf("\r%03d", j++);
+                bl_flshWin(24, 16, 0, 0);
                 for (i = 0; i < 10; i++)
-                waitNF(100);
+                bl_waitNF(100);
         }
-        wait(-1);
+        bl_wait(-1);
 }

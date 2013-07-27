@@ -1,26 +1,26 @@
-#include "blike.h"
+#include <blike0.h>
 
 blMain()
 {
         int x, y, c, f, k;
-        setBCol(0xffffff);
-        openWin(256, 256);
+        bl_setBCol(0xffffff);
+        bl_openWin(256, 256);
         x = 0; y = 0; f = 1;
         for (;;) {
                 if (f != 0) {
-                        setMode(BL_PXOR);
-                        setCol(0xffffff);
-                        drawRect(14, 14, x * 16 + 1, y * 16 + 1);
-                        flshWin(16, 16, x * 16, y * 16);
+                        bl_setMode(BL_PXOR);
+                        bl_setCol(0xffffff);
+                        bl_drawRect(14, 14, x * 16 + 1, y * 16 + 1);
+                        bl_flshWin(16, 16, x * 16, y * 16);
                 }
                 do {
-                        waitNF(10);
-                        k = inkey();
+                        bl_waitNF(10);
+                        k = bl_inkey1();
                 } while (k == 0);
                 if (f != 0) {
-                        drawRect(14, 14, x * 16 + 1, y * 16 + 1);
-                        setMode(BL_PSET);
-                        flshWin(16, 16, x * 16, y * 16);
+                        bl_drawRect(14, 14, x * 16 + 1, y * 16 + 1);
+                        bl_setMode(BL_PSET);
+                        bl_flshWin(16, 16, x * 16, y * 16);
                 }
                 c = -1;
                 if (k == '4') k = KEY_LEFT;
@@ -41,10 +41,10 @@ blMain()
                 if (k == 'j') c = 0xffff00;
                 if (k == 'k') c = 0xffffff;
                 if (c >= 0) {
-                        setCol(c);
-                        fillRect(16, 16, x * 16, y * 16);
-                        flshWin(16, 16, x * 16, y * 16);
+                        bl_setCol(c);
+                        bl_fillRect(16, 16, x * 16, y * 16);
+                        bl_flshWin(16, 16, x * 16, y * 16);
                 }
         }
-        wait(-1);
+        bl_wait(-1);
 }

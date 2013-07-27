@@ -1,9 +1,9 @@
-#include "blike.h"
+#include <blike0.h>
 
 blMain()
 {
         int x, y, c;
-        drawPtrn(20, 20, 448, 0,
+        bl_drawPtrn_d(20, 20, 448, 0,
                 "%name=block a=#AAAAAA b=#FFFFFF",
                 "abbbbbbbbbbbbbbbbbba"
                 "baaaaaaaaaaaaaaaaaab"
@@ -26,7 +26,7 @@ blMain()
                 "baaaaaaaaaaaaaaaaaab"
                 "abbbbbbbbbbbbbbbbbba"
         );
-        drawPtrn(20, 20, 448, 24,
+        bl_drawPtrn_d(20, 20, 448, 24,
                 "%name=brick a=#CCCCCC b=#FFCCCCC",
                 "aaaaaaaaaaaaaaaaaaaa"
                 "bbbbbabbbbbbbbbbabbb"
@@ -49,7 +49,7 @@ blMain()
                 "abbbbbbbbbabbbbbbbbb"
                 "abbbbbbbbbabbbbbbbbb"
         );
-        drawPtrn(20, 20, 448, 48,
+        bl_drawPtrn_d(20, 20, 448, 48,
                 "%name=smile a=#CCCCCC b=#FFCCCCC c=#FFFF00 d=#000000",
                 "aaaaaaaaaaaaaaaaaaaa"
                 "bbbbbabbbbbbbbbbabbb"
@@ -72,7 +72,7 @@ blMain()
                 "abbbbbbbbbabbbbbbbbb"
                 "abbbbbbbbbabbbbbbbbb"
         );
-        drawPtrn(20, 20, 448, 72,
+        bl_drawPtrn_d(20, 20, 448, 72,
                 "%name=card a=#CCCCCC b=#FFCCCCC c=#00FF00 d=#000000",
                 "aaaaaaaaaaaaaaaaaaaa"
                 "bbbbbabbbbbbbbbbabbb"
@@ -95,7 +95,7 @@ blMain()
                 "abbbbbbbbbabbbbbbbbb"
                 "abbbbbbbbbabbbbbbbbb"
         );
-        drawPtrn(20, 20, 448, 96,
+        bl_drawPtrn_d(20, 20, 448, 96,
 //              "%name=map A=#000000 B=#000001 C=#000002 D=#000003",
                 "%name=map A=0 B=1 C=2 D=3",
                 "AAAAAAAAAAAAAAAAAAAA"
@@ -122,9 +122,9 @@ blMain()
 
         for (y = 0; y < 20; y++) {
                 for (x = 0; x < 20; x++) {
-                        c = getPix(448 + x, 96 + y);
-                        copyRct0(20, 20, 0, 448, c * 24, 0, x * 20, y * 20);
+                        c = bl_getPix(448 + x, 96 + y);
+                        bl_copyRct0(20, 20, 0, 448, c * 24, 0, x * 20, y * 20);
                 }
         }
-        wait(-1);
+        bl_wait(-1);
 }

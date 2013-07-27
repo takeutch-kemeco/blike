@@ -1,7 +1,7 @@
-#include "blike.h"
+#include <blike0.h>
 
 blMain()
 {
-        printf("hello, world\n");
-        wait(-1);
+        bl_printf("hello, world\n");
+        bl_wait(-1);
 }

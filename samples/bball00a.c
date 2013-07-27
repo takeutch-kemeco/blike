@@ -1,4 +1,4 @@
-#include "blike.h"
+#include <blike0.h>
 
 blMain()
 {
@@ -18,8 +18,8 @@ blMain()
         int i, j;
         int x0, y0, col, dis;
 
-        openWin(200, 200);
-        setMode(BL_POR);
+        bl_openWin(200, 200);
+        bl_setMode(BL_POR);
         for (i = 0; i <= 14; i++) {
                 x0 = t[i].x;
                 y0 = t[i].y;
@@ -28,13 +28,13 @@ blMain()
                         if (dis >= 8)
                                 dis = 15 - dis; /* 逆回りに数える */
                         if (dis != 0) {
-                                setCol(c[8 - dis]);
+                                bl_setCol(c[8 - dis]);
                                 if (x0 <= t[j].x)
-                                        drawLine(x0, y0, t[j].x, t[j].y);
+                                        bl_drawLine(x0, y0, t[j].x, t[j].y);
                                 else
-                                        drawLine(t[j].x, t[j].y, x0, y0);
+                                        bl_drawLine(t[j].x, t[j].y, x0, y0);
                         }
                 }
         }
-        wait(-1);
+        bl_wait(-1);
 }

@@ -1,4 +1,5 @@
-#include "blike.h"
+#include <math.h>
+#include <blike0.h>
 
 #define PI 3.14159265358979324F
 #define Deg2Rad (PI / 180.0F)
@@ -137,7 +138,7 @@ blMain()
         float theta_x, theta_y, theta_z;
         int     i, j;
 
-        openWin(WIDTH, HEIGHT);
+        bl_openWin(WIDTH, HEIGHT);
 
         cube.polygons = 6; /* ポリゴン数 */
         cube.vertices = 8; /* 頂点数 */
@@ -187,10 +188,10 @@ blMain()
                                 center_z += polygon->vertex[j]->p3d.z;
                         polygon->center_z = center_z / polygon->vertices;
                 }
-                setCol(0x000000);
-                fillRect(WIDTH, HEIGHT, 0, 0);
+                bl_setCol(0x000000);
+                bl_fillRect(WIDTH, HEIGHT, 0, 0);
                 draw_object(&cube, &scrn);
-                wait(50);
+                bl_wait(50);
         }
 }
 
@@ -322,7 +323,7 @@ void draw_polygon(struct POLYGON *polygon, struct SCREEN *scrn)
         }
 
         /* fillbufを参照して塗りつぶし */
-        setCol(polygon->color);
+        bl_setCol(polygon->color);
         if (y_min < 0)
                 y_min = 0;
         if (y_max >= scrn->y_vsize)
@@ -340,12 +341,12 @@ void draw_polygon(struct POLYGON *polygon, struct SCREEN *scrn)
                         p0.x = 0;
                 if (p1.x >= scrn->x_vsize)
                         p1.x = scrn->x_vsize - 1;
-                drawRect(p1.x - p0.x + 1, 1, p0.x, y);
+                bl_drawRect(p1.x - p0.x + 1, 1, p0.x, y);
 #endif
                 if (p0.x <= p1.x)
-                        drawRect(p1.x - p0.x + 1, 1, p0.x, y);
+                        bl_drawRect(p1.x - p0.x + 1, 1, p0.x, y);
                 else
-                        drawRect(p0.x - p1.x + 1, 1, p1.x, y);
+                        bl_drawRect(p0.x - p1.x + 1, 1, p1.x, y);
         }
         return;
 }

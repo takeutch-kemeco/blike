@@ -1,7 +1,7 @@
-#include "blike.h"
+#include <blike0.h>
 #include "HsFFI.h"
 
-extern void hs_bl_main(void);
+void hs_bl_main(void);
 extern int bl_argc;
 extern char** bl_argv;
 

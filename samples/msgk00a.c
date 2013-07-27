@@ -1,4 +1,4 @@
-#include "blike.h"
+#include <blike0.h>
 
 #define WIDTH 60
 
@@ -18,7 +18,7 @@ blMain()
                                 j--;
                                 bl_locate(j, 0);
                                 bl_putc(msg[i]);
-                                wait(100);
+                                bl_wait(100);
                         }
                         bl_wait(1000);
                 }
