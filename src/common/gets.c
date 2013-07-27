@@ -33,7 +33,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <blikedrv.h>
+#include "blikedrv.h"
 
 #define w       bl_work
 

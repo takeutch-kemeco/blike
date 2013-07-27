@@ -31,7 +31,7 @@
  */
 
 #include "drvlfb_system.h"
-#include <blikedrv.h>
+#include "blikedrv.h"
 
 struct BL_WORK __attribute__((aligned(16))) bl_work;
 

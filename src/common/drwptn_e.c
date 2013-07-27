@@ -33,7 +33,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <blikedrv.h>
+#include "blikedrv.h"
 
 void bl_drawPtrn_err_r(const char *msg, unsigned char *nam)
 {

@@ -33,7 +33,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <blikedrv.h>
+#include "blikedrv.h"
 
 void bl_setPtrn0(int sx, int sy, int sl, int ic, int *b, const unsigned char *c, const unsigned char *p, void (*errfnc)(const char *msg, unsigned char *nam))
 {

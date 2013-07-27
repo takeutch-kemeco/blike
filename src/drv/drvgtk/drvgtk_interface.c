@@ -42,9 +42,8 @@
 #include "drvgtk_transrate_keycode.h"
 #include "drvgtk_keyboard_state.h"
 #include "drvgtk_malloc.h"
-
-#include <blikedrv.h>
-#include <blike0.h>
+#include "blikedrv.h"
+#include "blike0.h"
 
 extern struct BL_WORK __attribute__((aligned(16))) bl_work;
 

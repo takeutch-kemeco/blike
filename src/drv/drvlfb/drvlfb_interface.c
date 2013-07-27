@@ -40,8 +40,8 @@
 #include "drvlfb_system.h"
 #include "drvlfb_sleep.h"
 #include "drvlfb_malloc.h"
-#include <blikedrv.h>
-#include <blike0.h>
+#include "blikedrv.h"
+#include "blike0.h"
 
 extern struct BL_WORK __attribute__((aligned(16))) bl_work;
 
