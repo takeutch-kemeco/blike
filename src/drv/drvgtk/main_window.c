@@ -82,7 +82,7 @@ static gboolean key_release_MainWindow(GtkWidget *wgt, GdkEventExpose *event, gp
 
 #ifdef DEBUG_KEYBOARD
            g_printf("key_release_MainWindow(), callback:[%p], callback_arg:{%p], keyval:[%d]\n",
-                    (void*)(a->callback_key_press), (void*)(a->callback_arg),
+                    (void*)(a->callback_key_release), (void*)(a->callback_arg),
                     __drvgtk_transrate_keycode_gtk_to_vk(key->keyval));
 #endif /* DEBUG_KEYBOARD */
 
