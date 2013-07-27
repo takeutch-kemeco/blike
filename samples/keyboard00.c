@@ -15,6 +15,7 @@ static void my_key_press(void* __a, const int keyval)
 {
         struct MyCallbackArg* a = __a;
 
+	bl_locate(0, 0);
         bl_printf("my_key_press(), keyval:[%d]\n", keyval);
 }
 
