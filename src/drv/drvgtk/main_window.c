@@ -53,7 +53,7 @@ static gboolean key_press_MainWindow(GtkWidget *wgt, GdkEventExpose *event, gpoi
         write_c_DrvGtkKeyRingBuffer(a->key_ring_buffer, &tmp);
 
         if (a->callback_key_press != NULL)
-                a->callback_key_press(a->callback_arg, __drvgtk_transrate_keycode_gtk_to_vk(key->keyval));
+                a->callback_key_press(a->callback_arg, __drvgtk_transrate_keycode_gtk_to_osecpu(key));
 
 #ifdef DEBUG_KEYBOARD
            g_printf("key_press_MainWindow(), callback:[%p], callback_arg:{%p], keyval:[%d]\n",
@@ -78,7 +78,7 @@ static gboolean key_release_MainWindow(GtkWidget *wgt, GdkEventExpose *event, gp
         write_c_DrvGtkKeyRingBuffer(a->key_ring_buffer, &tmp);
 
         if (a->callback_key_release != NULL)
-                a->callback_key_release(a->callback_arg, __drvgtk_transrate_keycode_gtk_to_vk(key->keyval));
+                a->callback_key_release(a->callback_arg, __drvgtk_transrate_keycode_gtk_to_osecpu(key));
 
 #ifdef DEBUG_KEYBOARD
            g_printf("key_release_MainWindow(), callback:[%p], callback_arg:{%p], keyval:[%d]\n",

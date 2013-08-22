@@ -103,12 +103,16 @@ extern char** bl_argv;
 #define KEY_ESC         27
 #define KEY_BACKSPACE   8
 #define KEY_TAB         9
-#define KEY_LEFT        331
-#define KEY_RIGHT       333
-#define KEY_UP          328
-#define KEY_DOWN        336
-#define KEY_INS         338
-#define KEY_DEL         339
+#define KEY_PAGEUP      0x1020
+#define KEY_PAGEDWN     0x1021
+#define KEY_END         0x1022
+#define KEY_HOME        0x1023
+#define KEY_LEFT        0x1024
+#define KEY_UP          0x1025
+#define KEY_RIGHT       0x1026
+#define KEY_DOWN        0x1027
+#define KEY_INS         0x1028
+#define KEY_DEL         0x1029
 
 #define BL_PSET         0x00000004
 #define BL_PAND         0x00000005

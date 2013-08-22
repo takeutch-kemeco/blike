@@ -31,12 +31,13 @@
  */
 
 #include <glib.h>
+#include <gdk/gdk.h>
 #include "drvgtk_key_ring_buffer.h"
 
 #ifndef __DRVGTK_TRANSRATE_KEYCODE_H__
 #define __DRVGTK_TRANSRATE_KEYCODE_H__
 
 gint32 __drvgtk_transrate_keycode(struct DrvGtkKey *a);
-gint32 __drvgtk_transrate_keycode_gtk_to_vk(const gint32 keyval);
+gint32 __drvgtk_transrate_keycode_gtk_to_osecpu(GdkEventKey *key);
 
 #endif // __DRVGTK_TRANSRATE_KEYCODE_H__
