@@ -49,13 +49,6 @@ extern struct BL_WORK __attribute__((aligned(16))) bl_work;
 
 extern struct DrvGtkPthreadData* drvgtk_pthread_data;
 
-static void wait_signal_compliate(volatile gboolean *ready)
-{
-        while((*ready) == TRUE) {
-                /* スピンロック */
-        }
-}
-
 static gboolean check_and_exit_wt_run_flag(void)
 {
         if(drvgtk_pthread_data->wt_run_flag == FALSE)
@@ -65,8 +58,6 @@ static gboolean check_and_exit_wt_run_flag(void)
 static void bld_showWin(void)
 {
         drvgtk_pthread_data->signal->show_window.ready = TRUE;
-
-        wait_signal_compliate(&(drvgtk_pthread_data->signal->show_window.ready));
 }
 
 void bld_openWin(int x, int y)
@@ -76,8 +67,6 @@ void bld_openWin(int x, int y)
         drvgtk_pthread_data->signal->resize_window.ready  = TRUE;
         drvgtk_pthread_data->signal->resize_window.width  = x;
         drvgtk_pthread_data->signal->resize_window.height = y;
-
-        wait_signal_compliate(&(drvgtk_pthread_data->signal->resize_window.ready));
 
         bld_flshWin(0, 0, x, y);
 }
@@ -92,8 +81,6 @@ void bld_flshWin(int sx, int sy, int x0, int y0)
         drvgtk_pthread_data->signal->flash_window.y      = y0;
         drvgtk_pthread_data->signal->flash_window.width  = sx;
         drvgtk_pthread_data->signal->flash_window.height = sy;
-
-        wait_signal_compliate(&(drvgtk_pthread_data->signal->flash_window.ready));
 }
 
 void bld_flshSys()
@@ -113,8 +100,6 @@ void bld_exit()
         check_and_exit_wt_run_flag();
 
         drvgtk_pthread_data->signal->exit_window.ready = TRUE;
-
-        wait_signal_compliate(&(drvgtk_pthread_data->signal->exit_window.ready));
 }
 
 int bld_getSeed()

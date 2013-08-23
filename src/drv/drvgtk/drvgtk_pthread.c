@@ -62,9 +62,9 @@ static gpointer __pthread_main_program(gpointer data)
 {
         volatile struct DrvGtkPthreadData *a = (struct DrvGtkPthreadData*)data;
 
-        while(a->wt_run_flag == FALSE) {
-                // スピンロック
-        }
+        /* スピンロック */
+        while(a->wt_run_flag == FALSE)
+                g_usleep(DRVGTK_SYGNAL_CHECK_INTERVAL);
 
         a->init_control_program();
         a->control_program();

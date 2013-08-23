@@ -267,16 +267,25 @@ struct MainWindow* new_MainWindow(struct DrvGtkKeyRingBuffer *key_ring_buffer,
         return a;
 }
 
-void redraw_MainWindow(struct MainWindow *a)
+void redraw_MainWindow(struct MainWindow *a,
+                       const gint x, const gint y, const gint w, const gint h)
 {
-        gtk_widget_hide(a->screen);
-        gtk_widget_show_now(a->screen);
+        gtk_widget_queue_draw_area(a->screen,
+                                   a->screen_offset_x + x,
+                                   a->screen_offset_y + y,
+                                   w,
+                                   h);
 }
 
 void show_MainWindow(struct MainWindow *a)
 {
         gtk_widget_show_all(a->wgt);
-        redraw_MainWindow(a);
+
+        redraw_MainWindow(a,
+                          a->screen_offset_x,
+                          a->screen_offset_y,
+                          a->frame_buffer_width,
+                          a->frame_buffer_height);
 }
 
 void hide_MainWindow(struct MainWindow *a)

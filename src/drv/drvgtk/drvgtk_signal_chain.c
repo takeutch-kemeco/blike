@@ -98,7 +98,7 @@ static void flash_window(struct DrvGtkPthreadData *a,
                 dst += dst_next_ofst;
         }
 
-        redraw_MainWindow(a->main_window);
+        redraw_MainWindow(a->main_window, x, y, width, height);
 }
 
 static void exit_window(struct DrvGtkPthreadData *a)
