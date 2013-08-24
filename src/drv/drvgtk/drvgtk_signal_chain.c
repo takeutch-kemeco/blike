@@ -68,34 +68,46 @@ static void flash_window(struct DrvGtkPthreadData *a,
         round_range(&width, 0, a->main_window->frame_buffer_width - x);
         round_range(&height, 0, a->main_window->frame_buffer_height - y);
 
-        const guint32 src_top_ofst = (y * a->main_window->frame_buffer_width) + x;
-        const guint32 dst_top_ofst = src_top_ofst * 3;
+        const guint32 top_ofst = (y * a->main_window->frame_buffer_width) + x;
+        const guint32 src_top_ofst = top_ofst * 4;
+        const guint32 dst_top_ofst = top_ofst * 3;
 
-        guint32 *src = ((guint32*)src_frame_buffer) + src_top_ofst;
+        guchar *src = ((guchar*)src_frame_buffer) + src_top_ofst;
         guchar *dst = ((guchar*)a->main_window->frame_buffer) + dst_top_ofst;
 
-        const guint32 src_next_ofst = a->main_window->frame_buffer_width;
-        const guint32 dst_next_ofst = src_next_ofst * 3;
+        const guint32 next_ofst =  a->main_window->frame_buffer_width;
+        const guint32 src_next_ofst = next_ofst * 4;
+        const guint32 dst_next_ofst = next_ofst * 3;
 
         if(src == NULL)
                 return;
 
         int j = height;
         while (j-->0) {
-                guint32 *s = src;
-                guchar  *d = dst;
                 int i = width;
                 while (i-->0) {
-                        d[0] = (*s) >> 16;
-                        d[1] = (*s) >> 8;
-                        d[2] = (*s) >> 0;
 
-                        d += 3;
-                        s++;
+#if G_BYTE_ORDER == G_BIG_ENDIAN
+                        dst[0] = src[1];
+                        dst[1] = src[2];
+                        dst[2] = src[3];
+
+                        dst += 3;
+                        src += 4;
+
+#elif G_BYTE_ORDER == G_LITTLE_ENDIAN
+                        dst[0] = src[2];
+                        dst[1] = src[1];
+                        dst[2] = src[0];
+
+                        dst += 3;
+                        src += 4;
+
+#else
+#error "System-endian is unknown."
+#endif /* G_BYTE_ORDER */
+
                 }
-
-                src += src_next_ofst;
-                dst += dst_next_ofst;
         }
 
         redraw_MainWindow(a->main_window, x, y, width, height);
