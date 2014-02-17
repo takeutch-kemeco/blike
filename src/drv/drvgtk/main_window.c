@@ -275,6 +275,8 @@ void redraw_MainWindow(struct MainWindow *a,
                                    a->screen_offset_y + y,
                                    w,
                                    h);
+
+        gtk_image_set_from_pixbuf(a->screen, a->pixbuf);
 }
 
 void show_MainWindow(struct MainWindow *a)
