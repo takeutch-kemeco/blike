@@ -71,9 +71,9 @@ void drvgtk_free_aligned16(const gpointer a)
 
 gpointer drvgtk_malloc_rwe(const gsize bytes)
 {
-        size_t pagesize = sysconf(_SC_PAGE_SIZE);
+        size_t pagesize = sysconf(_SC_PAGESIZE);
         if (pagesize == -1) {
-                g_printf("err: osecpu.c, drvgtk_malloc_rwe(), sysconf(_SC_PAGE_SIZE)\n");
+                g_printf("err: osecpu.c, drvgtk_malloc_rwe(), sysconf(_SC_PAGESIZE)\n");
                 exit(1);
         }
 
