@@ -64,9 +64,10 @@ void bld_openWin(int x, int y)
 {
         check_and_exit_wt_run_flag();
 
-        drvgtk_pthread_data->signal->resize_window.ready  = TRUE;
         drvgtk_pthread_data->signal->resize_window.width  = x;
         drvgtk_pthread_data->signal->resize_window.height = y;
+
+        drvgtk_pthread_data->signal->resize_window.ready = TRUE;
 
         bld_flshWin(0, 0, x, y);
 }
@@ -75,12 +76,21 @@ void bld_flshWin(int sx, int sy, int x0, int y0)
 {
         check_and_exit_wt_run_flag();
 
-        drvgtk_pthread_data->signal->flash_window.ready = TRUE;
         drvgtk_pthread_data->signal->flash_window.src_frame_buffer = (gpointer)(bl_work.win[0].buf);
         drvgtk_pthread_data->signal->flash_window.x      = x0;
         drvgtk_pthread_data->signal->flash_window.y      = y0;
         drvgtk_pthread_data->signal->flash_window.width  = sx;
         drvgtk_pthread_data->signal->flash_window.height = sy;
+
+        const gint wait_msec_limit = 1000; /* 1sec */
+        gint wait_msec_count = 0;
+        drvgtk_pthread_data->signal->flash_window.ready = TRUE;
+        while (drvgtk_pthread_data->signal->flash_window.ready && (wait_msec_count < wait_msec_limit)) {
+                drvgtk_msleep(DRVGTK_SYGNAL_CHECK_INTERVAL);
+                wait_msec_count += DRVGTK_SYGNAL_CHECK_INTERVAL;
+        }
+
+        bld_showWin();
 }
 
 void bld_flshSys()
