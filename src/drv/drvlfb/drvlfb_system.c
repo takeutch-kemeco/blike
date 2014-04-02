@@ -37,6 +37,7 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <fcntl.h>
+#include <unistd.h>
 #include <sys/user.h>
 #include <sys/ioctl.h>
 #include <sys/mman.h>
