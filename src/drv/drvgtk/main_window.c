@@ -125,7 +125,7 @@ static gboolean button_press_MainWindow(GtkWidget *wgt, GdkEventExpose *event, g
         struct MainWindow *a = (struct MainWindow*)data;
         GdkEventButton *button = (GdkEventButton*)event;
 
-        gint flag;
+        gint flag = 0;
         switch (button->button) {
         case 1: flag |= (1 << 0); break;
         case 2: flag |= (1 << 1); break;
@@ -148,7 +148,7 @@ static gboolean button_release_MainWindow(GtkWidget *wgt, GdkEventExpose *event,
         struct MainWindow *a = (struct MainWindow*)data;
         GdkEventButton *button = (GdkEventButton*)event;
 
-        gint flag;
+        gint flag = 0;
         switch (button->button) {
         case 1: flag |= (1 << 0); break;
         case 2: flag |= (1 << 1); break;
