@@ -53,22 +53,22 @@ struct DRVLFB_SYSTEM* drvlfb_new_system(const char* fb_dev_name,
         struct DRVLFB_SYSTEM* a = malloc(sizeof(*a));
 
         if ((a->fh = open(fb_dev_name, O_RDWR)) == -1)
-                bl_exit();
+                exit(EXIT_FAILURE);
 
         struct stat st;
         if (fstat(a->fh, &st) == -1)
-                bl_exit();
+                exit(EXIT_FAILURE);
 
         if (!S_ISCHR(st.st_mode) || major(st.st_rdev) != 29 /* FB_MAJOR */)
-                bl_exit();
+                exit(EXIT_FAILURE);
 
         struct fb_var_screeninfo fb_var;
         if (ioctl(a->fh, FBIOGET_VSCREENINFO, &fb_var))
-                bl_exit();
+                exit(EXIT_FAILURE);
 
         struct fb_fix_screeninfo fb_fix;
         if (ioctl(a->fh, FBIOGET_FSCREENINFO, &fb_fix))
-                bl_exit();
+                exit(EXIT_FAILURE);
 
         a->screen_width  = fb_var.xres;
         a->screen_height = fb_var.yres;
@@ -76,11 +76,10 @@ struct DRVLFB_SYSTEM* drvlfb_new_system(const char* fb_dev_name,
 
         a->soff = (uint32_t)(fb_fix.smem_start) & (~PAGE_MASK);
         a->slen = (fb_fix.smem_len + a->soff + ~PAGE_MASK) & PAGE_MASK;
-        a->smem = mmap(NULL, a->slen, PROT_READ | PROT_WRITE, MAP_SHARED,
-                       a->fh, (off_t)0);
+        a->smem = mmap(NULL, a->slen, PROT_READ | PROT_WRITE, MAP_SHARED, a->fh, (off_t)0);
 
         if (a->smem == (void*)-1)
-                bl_exit();
+                exit(EXIT_FAILURE);
 
         a->smem = (void*)a->smem + a->soff;
 
