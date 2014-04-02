@@ -35,7 +35,7 @@
 
 #include <gdk/gdkkeysyms.h>
 #include "drvgtk_key_ring_buffer.h"
-#include "drvgtk_transrate_keycode.h"
+#include "drvgtk_translate_keycode.h"
 
 struct DrvGtkKeyRingBuffer*
 new_DrvGtkKeyRingBuffer(gint32 key_len,
@@ -70,7 +70,7 @@ extern void bl_putKeyB(int n, int *p);
 void write_c_DrvGtkKeyRingBuffer(struct DrvGtkKeyRingBuffer *a,
                                  struct DrvGtkKey *key)
 {
-        gint32 c = __drvgtk_transrate_keycode(key);
+        gint32 c = __drvgtk_translate_keycode(key);
 
         switch(key->state) {
         case DrvGtkKeyState_none:

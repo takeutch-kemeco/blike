@@ -39,7 +39,7 @@
 #include "drvgtk_keyboard_state.h"
 #include "blike0.h"
 
-gint32 __drvgtk_transrate_keycode(struct DrvGtkKey *a)
+gint32 __drvgtk_translate_keycode(struct DrvGtkKey *a)
 {
         // 入力が無いときは０を返す
         if (a->state == GDK_KEY_VoidSymbol)
@@ -70,7 +70,7 @@ gint32 __drvgtk_transrate_keycode(struct DrvGtkKey *a)
         return k;
 }
 
-gint32 __drvgtk_transrate_keycode_gtk_to_osecpu(GdkEventKey *key)
+gint32 __drvgtk_translate_keycode_gtk_to_osecpu(GdkEventKey *key)
 {
         if (key->state == GDK_KEY_VoidSymbol)
                 return -1;

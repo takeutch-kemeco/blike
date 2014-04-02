@@ -38,6 +38,7 @@
 #include "main_window.h"
 #include "drvgtk_key_ring_buffer.h"
 #include "drvgtk_keyboard_state.h"
+#include "drvgtk_translate_keycode.h"
 
 static gboolean key_press_MainWindow(GtkWidget *wgt, GdkEventExpose *event, gpointer data)
 {
@@ -53,12 +54,12 @@ static gboolean key_press_MainWindow(GtkWidget *wgt, GdkEventExpose *event, gpoi
         write_c_DrvGtkKeyRingBuffer(a->key_ring_buffer, &tmp);
 
         if (a->callback_key_press != NULL)
-                a->callback_key_press(a->callback_arg, __drvgtk_transrate_keycode_gtk_to_osecpu(key));
+                a->callback_key_press(a->callback_arg, __drvgtk_translate_keycode_gtk_to_osecpu(key));
 
 #ifdef DEBUG_KEYBOARD
            g_print("key_press_MainWindow(), callback:[%p], callback_arg:{%p], keyval:[%d]\n",
                    (void*)(a->callback_key_press), (void*)(a->callback_arg),
-                   __drvgtk_transrate_keycode_gtk_to_vk(key->keyval));
+                   __drvgtk_translate_keycode_gtk_to_vk(key->keyval));
 #endif /* DEBUG_KEYBOARD */
 
         return TRUE;
@@ -78,12 +79,12 @@ static gboolean key_release_MainWindow(GtkWidget *wgt, GdkEventExpose *event, gp
         write_c_DrvGtkKeyRingBuffer(a->key_ring_buffer, &tmp);
 
         if (a->callback_key_release != NULL)
-                a->callback_key_release(a->callback_arg, __drvgtk_transrate_keycode_gtk_to_osecpu(key));
+                a->callback_key_release(a->callback_arg, __drvgtk_translate_keycode_gtk_to_osecpu(key));
 
 #ifdef DEBUG_KEYBOARD
            g_print("key_release_MainWindow(), callback:[%p], callback_arg:{%p], keyval:[%d]\n",
                    (void*)(a->callback_key_release), (void*)(a->callback_arg),
-                   __drvgtk_transrate_keycode_gtk_to_vk(key->keyval));
+                   __drvgtk_translate_keycode_gtk_to_vk(key->keyval));
 #endif /* DEBUG_KEYBOARD */
 
         return TRUE;

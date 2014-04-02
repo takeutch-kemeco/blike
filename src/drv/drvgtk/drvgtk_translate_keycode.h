@@ -34,10 +34,10 @@
 #include <gdk/gdk.h>
 #include "drvgtk_key_ring_buffer.h"
 
-#ifndef __DRVGTK_TRANSRATE_KEYCODE_H__
-#define __DRVGTK_TRANSRATE_KEYCODE_H__
+#ifndef __DRVGTK_TRANSLATE_KEYCODE_H__
+#define __DRVGTK_TRANSLATE_KEYCODE_H__
 
-gint32 __drvgtk_transrate_keycode(struct DrvGtkKey *a);
-gint32 __drvgtk_transrate_keycode_gtk_to_osecpu(GdkEventKey *key);
+gint32 __drvgtk_translate_keycode(struct DrvGtkKey *a);
+gint32 __drvgtk_translate_keycode_gtk_to_osecpu(GdkEventKey *key);
 
-#endif // __DRVGTK_TRANSRATE_KEYCODE_H__
+#endif // __DRVGTK_TRANSLATE_KEYCODE_H__
