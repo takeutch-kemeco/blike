@@ -33,6 +33,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <stdarg.h>
 #include <gtk/gtk.h>
 #include "config.h"
 
@@ -160,7 +161,7 @@ int bld_vsnprintf(char *b, int n, const char *f, va_list ap)
 {
         check_and_exit_wt_run_flag();
 
-        return g_vsnprintf(b, n, f, ap);
+        return vsnprintf(b, n, f, ap);
 }
 
 void bld_lock()
