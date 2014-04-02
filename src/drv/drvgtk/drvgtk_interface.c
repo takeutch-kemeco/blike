@@ -48,7 +48,7 @@ extern struct BL_WORK __attribute__((aligned(16))) bl_work;
 
 extern struct DrvGtkPthreadData* drvgtk_pthread_data;
 
-static gboolean check_and_exit_wt_run_flag(void)
+static void check_and_exit_wt_run_flag(void)
 {
         if(drvgtk_pthread_data->wt_run_flag == FALSE)
                 g_thread_exit(NULL);
