@@ -34,6 +34,7 @@
 #include <sys/mman.h>
 #include <unistd.h>
 #include <glib.h>
+#include <gtk/gtk.h>
 
 static gpointer drvgtk_malloc_aligned(const gsize bytes, const gsize aligned)
 {
