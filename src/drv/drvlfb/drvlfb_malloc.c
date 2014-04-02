@@ -41,7 +41,7 @@ static void* drvlfb_malloc_aligned(const size_t bytes, const size_t aligned)
         void *tmp;
         int err = posix_memalign(&tmp, (size_t)aligned, (size_t)bytes);
         if (err) {
-                g_printf("err: drvlfb_malloc_aligned, posix_memalign()\n");
+                printf("err: drvlfb_malloc_aligned, posix_memalign()\n");
                 exit(1);
         }
 
@@ -74,7 +74,7 @@ void* drvlfb_malloc_rwe(const size_t bytes)
 {
         size_t pagesize = sysconf(_SC_PAGE_SIZE);
         if (pagesize == -1) {
-                g_printf("err: osecpu.c, drvlfb_malloc_rwe(), sysconf(_SC_PAGE_SIZE)\n");
+                printf("err: osecpu.c, drvlfb_malloc_rwe(), sysconf(_SC_PAGE_SIZE)\n");
                 exit(1);
         }
 
@@ -82,7 +82,7 @@ void* drvlfb_malloc_rwe(const size_t bytes)
 
         int err = mprotect(tmp, bytes, PROT_READ | PROT_WRITE | PROT_EXEC);
         if (err) {
-                g_printf("err: drvlfb_malloc_rwe(), mprotect\n");
+                printf("err: drvlfb_malloc_rwe(), mprotect\n");
                 exit(1);
         }
 
