@@ -49,6 +49,8 @@ static gpointer __pthread_main_window(gpointer data)
 
                 a->wt_run_flag = FALSE;
         }
+
+        return NULL;
 }
 
 static void pthread_main_window(struct DrvGtkPthreadData *data)
@@ -71,6 +73,8 @@ static gpointer __pthread_main_program(gpointer data)
         a->close_control_program();
 
         gtk_main_quit();
+
+        return NULL;
 }
 
 static void pthread_main_program(struct DrvGtkPthreadData *data)
