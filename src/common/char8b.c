@@ -39,7 +39,7 @@
 
 void setPix0(int x, int y, int c)
 {
-        if (0 <= x && x < w.win[BL_SLCTWIN].xsiz && 0 <= y && y < w.win[BL_SLCTWIN].xsiz)
+        if (0 <= x && x < w.win[BL_SLCTWIN].xsiz && 0 <= y && y < w.win[BL_SLCTWIN].ysiz)
                 w.win[BL_SLCTWIN].buf[x + y * w.win[BL_SLCTWIN].xsiz] = c;
         return;
 }
