@@ -41,7 +41,7 @@ static gpointer drvgtk_malloc_aligned(const gsize bytes, const gsize aligned)
         void *tmp;
         int err = posix_memalign(&tmp, (size_t)aligned, (size_t)bytes);
         if (err) {
-                g_printf("err: drvgtk_malloc_aligned, posix_memalign()\n");
+                g_print("err: drvgtk_malloc_aligned, posix_memalign()\n");
                 exit(1);
         }
 
@@ -74,7 +74,7 @@ gpointer drvgtk_malloc_rwe(const gsize bytes)
 {
         size_t pagesize = sysconf(_SC_PAGESIZE);
         if (pagesize == -1) {
-                g_printf("err: osecpu.c, drvgtk_malloc_rwe(), sysconf(_SC_PAGESIZE)\n");
+                g_print("err: osecpu.c, drvgtk_malloc_rwe(), sysconf(_SC_PAGESIZE)\n");
                 exit(1);
         }
 
@@ -82,7 +82,7 @@ gpointer drvgtk_malloc_rwe(const gsize bytes)
 
         int err = mprotect((void*)tmp, (size_t)bytes, PROT_READ | PROT_WRITE | PROT_EXEC);
         if (err) {
-                g_printf("err: drvgtk_malloc_rwe(), mprotect\n");
+                g_print("err: drvgtk_malloc_rwe(), mprotect\n");
                 exit(1);
         }
 

@@ -56,9 +56,9 @@ static gboolean key_press_MainWindow(GtkWidget *wgt, GdkEventExpose *event, gpoi
                 a->callback_key_press(a->callback_arg, __drvgtk_transrate_keycode_gtk_to_osecpu(key));
 
 #ifdef DEBUG_KEYBOARD
-           g_printf("key_press_MainWindow(), callback:[%p], callback_arg:{%p], keyval:[%d]\n",
-                    (void*)(a->callback_key_press), (void*)(a->callback_arg),
-                    __drvgtk_transrate_keycode_gtk_to_vk(key->keyval));
+           g_print("key_press_MainWindow(), callback:[%p], callback_arg:{%p], keyval:[%d]\n",
+                   (void*)(a->callback_key_press), (void*)(a->callback_arg),
+                   __drvgtk_transrate_keycode_gtk_to_vk(key->keyval));
 #endif /* DEBUG_KEYBOARD */
 
         return TRUE;
@@ -81,9 +81,9 @@ static gboolean key_release_MainWindow(GtkWidget *wgt, GdkEventExpose *event, gp
                 a->callback_key_release(a->callback_arg, __drvgtk_transrate_keycode_gtk_to_osecpu(key));
 
 #ifdef DEBUG_KEYBOARD
-           g_printf("key_release_MainWindow(), callback:[%p], callback_arg:{%p], keyval:[%d]\n",
-                    (void*)(a->callback_key_release), (void*)(a->callback_arg),
-                    __drvgtk_transrate_keycode_gtk_to_vk(key->keyval));
+           g_print("key_release_MainWindow(), callback:[%p], callback_arg:{%p], keyval:[%d]\n",
+                   (void*)(a->callback_key_release), (void*)(a->callback_arg),
+                   __drvgtk_transrate_keycode_gtk_to_vk(key->keyval));
 #endif /* DEBUG_KEYBOARD */
 
         return TRUE;
@@ -112,8 +112,8 @@ static gboolean motion_notify_MainWindow(GtkWidget *wgt, GdkEventExpose *event, 
                 a->callback_motion_notify(a->callback_arg, pos_x, pos_y, pressure, angle_x, angle_y);
 
 #ifdef DEBUG_MOUSE
-        g_printf("motion_notify_MainWindow(), pos x,y:[%f, %f], angle x, y:[%f, %f], pressure:[%f]\n",
-                 pos_x, pos_y, angle_x, angle_y, pressure);
+        g_print("motion_notify_MainWindow(), pos x,y:[%f, %f], angle x, y:[%f, %f], pressure:[%f]\n",
+                pos_x, pos_y, angle_x, angle_y, pressure);
 #endif /* DEBUG_MOUSE */
 
         return TRUE;
@@ -136,7 +136,7 @@ static gboolean button_press_MainWindow(GtkWidget *wgt, GdkEventExpose *event, g
                 a->callback_button_press(a->callback_arg, flag);
 
 #ifdef DEBUG_MOUSE
-        g_printf("button_press_MainWindow(), button:[%x], flag:[%x]\n", button->button, flag);
+        g_print("button_press_MainWindow(), button:[%x], flag:[%x]\n", button->button, flag);
 #endif /* DEBUG_MOUSE */
 
         return TRUE;
@@ -159,7 +159,7 @@ static gboolean button_release_MainWindow(GtkWidget *wgt, GdkEventExpose *event,
                 a->callback_button_release(a->callback_arg, flag);
 
 #ifdef DEBUG_MOUSE
-        g_printf("button_release_MainWindow(), button:[%x], flag:[%x]\n", button->button, flag);
+        g_print("button_release_MainWindow(), button:[%x], flag:[%x]\n", button->button, flag);
 #endif /* DEBUG_MOUSE */
 
         return TRUE;
@@ -173,15 +173,15 @@ static gboolean configure_MainWindow(GtkWidget *wgt, GdkEventExpose *event, gpoi
         gint wx, wy, ww, wh;
         gdk_window_get_geometry(gdk_window, &wx, &wy, &ww, &wh);
 #ifdef DEBUG_MOUSE
-        g_printf("configure_MainWindow(), window global pos x,y,w,h:[%d, %d, %d, %d]\n",
-                 wx, wy, ww, wh);
+        g_print("configure_MainWindow(), window global pos x,y,w,h:[%d, %d, %d, %d]\n",
+                wx, wy, ww, wh);
 #endif /* DEBUG_MOUSE */
 
         a->screen_offset_x = (ww / 2) - (a->frame_buffer_width / 2);
         a->screen_offset_y = (wh / 2) - (a->frame_buffer_height / 2);
 #ifdef DEBUG_MOUSE
-        g_printf("configure_MainWindow(), screen offset x,y:[%d, %d]\n",
-                 a->screen_offset_x, a->screen_offset_y);
+        g_print("configure_MainWindow(), screen offset x,y:[%d, %d]\n",
+                a->screen_offset_x, a->screen_offset_y);
 #endif /* DEBUG_MOUSE */
 
         return FALSE; /* 重要 */
