@@ -36,6 +36,7 @@
 #include "config.h"
 
 #include "main_window.h"
+#include "drvgtk_pthread.h"
 #include "drvgtk_key_ring_buffer.h"
 #include "drvgtk_keyboard_state.h"
 #include "drvgtk_translate_keycode.h"
@@ -188,6 +189,17 @@ static gboolean configure_MainWindow(GtkWidget *wgt, GdkEventExpose *event, gpoi
         return FALSE; /* 重要 */
 }
 
+static gboolean timeout_redraw_MainWindow(gpointer data)
+{
+        struct MainWindow *a = (struct MainWindow*)data;
+        if (a->redraw_request) {
+                gtk_image_set_from_pixbuf((GTK_IMAGE(a->screen)), a->pixbuf);
+                a->redraw_request = FALSE;
+        }
+
+        return TRUE;
+}
+
 static void init_signal_MainWindow(struct MainWindow *a)
 {
         g_signal_connect(G_OBJECT(a->wgt), "realize",
@@ -196,6 +208,9 @@ static void init_signal_MainWindow(struct MainWindow *a)
                          G_CALLBACK(configure_MainWindow), a);
         g_signal_connect(G_OBJECT(a->wgt), "destroy",
                          G_CALLBACK(gtk_main_quit), NULL);
+
+        g_timeout_add(DRVGTK_SYGNAL_CHECK_INTERVAL,
+                      timeout_redraw_MainWindow, (gpointer)a);
 
         g_signal_connect(G_OBJECT(a->wgt), "key-press-event",
                          G_CALLBACK(key_press_MainWindow), a);
@@ -248,6 +263,8 @@ struct MainWindow* new_MainWindow(struct DrvGtkKeyRingBuffer *key_ring_buffer,
 
         init_screen(a);
 
+        a->redraw_request = FALSE;
+
         a->key_ring_buffer = key_ring_buffer;
 
         a->press = press;
@@ -277,18 +294,18 @@ void redraw_MainWindow(struct MainWindow *a,
                                    w,
                                    h);
 
-        gtk_image_set_from_pixbuf((GTK_IMAGE(a->screen)), a->pixbuf);
+        a->redraw_request = TRUE;
 }
 
 void show_MainWindow(struct MainWindow *a)
 {
-        gtk_widget_show_all(a->wgt);
-
         redraw_MainWindow(a,
                           a->screen_offset_x,
                           a->screen_offset_y,
                           a->frame_buffer_width,
                           a->frame_buffer_height);
+
+        gtk_widget_show_all(a->wgt);
 }
 
 void hide_MainWindow(struct MainWindow *a)

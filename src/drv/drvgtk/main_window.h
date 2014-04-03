@@ -67,6 +67,8 @@ struct MainWindow {
         gint screen_offset_x;
         gint screen_offset_y;
 
+        gboolean redraw_request;
+
         struct DrvGtkKeyRingBuffer *key_ring_buffer;
         struct DrvGtkKeybordState *press;
         struct DrvGtkKeybordState *release;
