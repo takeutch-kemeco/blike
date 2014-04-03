@@ -75,7 +75,7 @@ static void flash_window(struct DrvGtkPthreadData *a,
         guchar *src = ((guchar*)src_frame_buffer) + src_top_ofst;
         guchar *dst = ((guchar*)a->main_window->frame_buffer) + dst_top_ofst;
 
-        const guint32 next_ofst =  a->main_window->frame_buffer_width;
+        const guint32 next_ofst =  a->main_window->frame_buffer_width - width;
         const guint32 src_next_ofst = next_ofst * 4;
         const guint32 dst_next_ofst = next_ofst * 3;
 
@@ -108,6 +108,8 @@ static void flash_window(struct DrvGtkPthreadData *a,
 #endif /* G_BYTE_ORDER */
 
                 }
+                dst += dst_next_ofst;
+                src += src_next_ofst;
         }
 
         redraw_MainWindow(a->main_window, x, y, width, height);
