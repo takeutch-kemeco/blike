@@ -1,13 +1,17 @@
 ## c_blike_01f_linux version 1.5.5
 
-### ビルド、インストール方法
+### ビルド、インストール方法（Debian系、Ubuntu等）
+
+        sudo apt update
+        sudo apt install build-essential
+        sudo apt install libgtk-3-dev
 
         ./autogen.sh
         ./configure --prefix=/usr
         make
         sudo make install
 
-備考: ビルド、インストール作業には gcc, make, gnu/binutils, autoconf, automake, libtool, pkg-config が必要です。
+備考: ビルド、インストール作業には gcc, make, gnu/binutils, autoconf, automake, libtool, pkg-config, libgtk-3-dev が必要です。
 X11環境での描画には GTK+3、非X11環境でのフレームバッファー表示には linux/fb.h による /dev/fb0 を用います。
 
 ### アンインストール方法
