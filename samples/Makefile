@@ -1,6 +1,6 @@
 CC = gcc
 
-CFLAGS = -O2 `pkg-config blike --cflags`
+CFLAGS = -O3 -march=native -mtune=native  `pkg-config blike --cflags`
 LIBS = `pkg-config blike --libs`
 
 TEST000A_PROG = test000a

@@ -52,14 +52,15 @@ typedef void (*bld_callback_button_press_MainWindow)(void* a, const int button_n
 typedef void (*bld_callback_button_release_MainWindow)(void* a, const int button_number);
 
 struct MainWindow {
+        GtkEventController *event_controller_key; // キーボード入力監視
+
+        GtkEventController *event_controller_motion; // マウス座標監視
+        GtkGesture *gesture_click_primary; // マウスクリック監視（選択ボタン）
+        GtkGesture *gesture_click_secondary; // マウスクリック監視（キャンセルボタン）
+
         GtkWidget *wgt;
-
-        GdkDisplay *gdk_display;
-        GdkScreen *gdk_screen;
-        GdkDeviceManager *gdk_device_manager;
-        GdkDevice *gdk_device;
-
-        GtkWidget *screen;
+        GtkWidget *frame;
+        GtkWidget *drawing_area;
         GdkPixbuf *pixbuf;
         guchar *frame_buffer;
         gint frame_buffer_width;
@@ -83,7 +84,8 @@ struct MainWindow {
         void* callback_arg;
 };
 
-struct MainWindow* new_MainWindow(struct DrvGtkKeyRingBuffer *key_ring_buffer,
+struct MainWindow* new_MainWindow(GtkApplication *app,
+                                  struct DrvGtkKeyRingBuffer *key_ring_buffer,
                                   struct DrvGtkKeybordState *press,
                                   struct DrvGtkKeybordState *release,
                                   struct DrvGtkKeybordState *key_transform_table);
@@ -92,7 +94,5 @@ void show_MainWindow(struct MainWindow *a);
 void hide_MainWindow(struct MainWindow *a);
 void redraw_MainWindow(struct MainWindow *a, const gint x, const gint y, const gint w, const gint h);
 void resize_MainWindow(struct MainWindow *a, const gint width, const gint height);
-
-void set_cursor_pos_MainWindow(struct MainWindow *a, const gint x, const gint y);
 
 #endif //__MAIN_WINDOW_H__

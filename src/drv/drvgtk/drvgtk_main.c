@@ -52,8 +52,6 @@ int main(int argc, char **argv)
         bl_argc = argc;
         bl_argv = argv;
 
-        gtk_init(NULL, NULL);
-
         drvgtk_pthread_data = new_DrvGtkPthreadData(
                 (gpointer)&bl_work,
                 (gint32*)&bl_work.tmcount,

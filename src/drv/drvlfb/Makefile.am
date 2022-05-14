@@ -1,5 +1,5 @@
 lib_LTLIBRARIES = libblike-drvlfb.la
-OPTIMAIZE=-O4 -march=native -mtune=native
+OPTIMAIZE=-O3 -march=native -mtune=native
 INCLUDEDIR='../../../include'
 libblike_drvlfb_la_CFLAGS = -I${INCLUDEDIR}
 libblike_drvlfb_la_SOURCES =		\

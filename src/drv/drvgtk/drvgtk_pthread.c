@@ -45,8 +45,7 @@ static gpointer __pthread_main_window(gpointer data)
                               a->window_update_program,
                               (gpointer)a);
                 a->wt_run_flag = TRUE;
-                gtk_main();
-
+                g_application_run(G_APPLICATION(a->app), 0, NULL);
                 a->wt_run_flag = FALSE;
         }
 
@@ -71,8 +70,6 @@ static gpointer __pthread_main_program(gpointer data)
         a->init_control_program();
         a->control_program();
         a->close_control_program();
-
-        gtk_main_quit();
 
         return NULL;
 }

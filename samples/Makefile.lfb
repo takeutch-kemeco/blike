@@ -1,6 +1,6 @@
 CC = gcc
 
-CFLAGS = -O2 -I/usr/include/blike
+CFLAGS = -O3 -march=native -mtune=native -I/usr/include/blike
 LIBS = -lblike-common -lblike-drvlfb -lm
 
 TEST000A_PROG = test000a

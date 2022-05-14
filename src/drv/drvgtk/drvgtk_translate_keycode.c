@@ -70,14 +70,15 @@ gint32 __drvgtk_translate_keycode(struct DrvGtkKey *a)
         return k;
 }
 
-gint32 __drvgtk_translate_keycode_gtk_to_osecpu(GdkEventKey *key)
+gint32 __drvgtk_translate_keycode_gtk_to_osecpu(struct DrvGtkKey *a)
 {
-        if (key->state == GDK_KEY_VoidSymbol)
+        // 入力が無いときは -1 を返す
+        if (a->state == GDK_KEY_VoidSymbol)
                 return -1;
 
         int i, j;
 
-        switch (key->keyval) {
+        switch (a->value) {
         case GDK_KEY_Return:    i = KEY_ENTER;      break;
         case GDK_KEY_Escape:    i = KEY_ESC;        break;
         case GDK_KEY_BackSpace: i = KEY_BACKSPACE;  break;
@@ -98,18 +99,18 @@ gint32 __drvgtk_translate_keycode_gtk_to_osecpu(GdkEventKey *key)
         if (i != -1)
                 return i;
 
-        switch (key->keyval) {
+        switch (a->value) {
         case ' ' ... 0x7e:
-                i = key->keyval;
+                i = a->value;
                 j = 0;
-                if (key->state & GDK_CONTROL_MASK)      {j |= 1 << 17;}  /* L_Ctrl */
-                if (key->state & GDK_MOD1_MASK)         {j |= 1 << 18;}  /* L_Alt */
-                if (key->state & GDK_CONTROL_MASK)      {j |= 1 << 25;}  /* R_Ctrl */
-                if (key->state & GDK_MOD1_MASK)         {j |= 1 << 26;}  /* R_Alt */
-                if (key->state & GDK_SHIFT_MASK)        {j |= 1 << 24;}  /* R_Shift */
-                if (key->state & GDK_SHIFT_MASK)        {j |= 1 << 16;}  /* L_Shift */
-                if (key->state & GDK_LOCK_MASK)         {j |= 1 << 23;}  /* CapsLock */
-                if (key->keyval == GDK_KEY_Num_Lock)    {j |= 1 << 22;}  /* NumLock */
+                if (a->value & GDK_KEY_Control_L)       {j |= 1 << 17;}  // L_Ctrl
+                if (a->value & GDK_KEY_Alt_L)           {j |= 1 << 18;}  // L_Alt
+                if (a->value & GDK_KEY_Control_R)       {j |= 1 << 25;}  // R_Ctrl
+                if (a->value & GDK_KEY_Alt_R)           {j |= 1 << 26;}  // R_Alt
+                if (a->value & GDK_KEY_Shift_R)         {j |= 1 << 24;}  // R_Shift
+                if (a->value & GDK_KEY_Shift_L)         {j |= 1 << 16;}  // L_Shift
+                if (a->value & GDK_KEY_Caps_Lock)       {j |= 1 << 23;}  // CapsLock
+                if (a->value & GDK_KEY_Num_Lock)        {j |= 1 << 22;}  // NumLock
 
                 switch (i) {
                 case 'A' ... 'Z':

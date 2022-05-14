@@ -1,7 +1,7 @@
 lib_LTLIBRARIES = libblike-drvgtk.la
-OPTIMAIZE=-O4 -march=native -mtune=native
+OPTIMAIZE=-O3 -march=native -mtune=native
 INCLUDEDIR='../../../include'
-libblike_drvgtk_la_CFLAGS = -I${INCLUDEDIR} `pkg-config gtk+-3.0 glib-2.0 --cflags` ${OPTIMAIZE}
+libblike_drvgtk_la_CFLAGS = -I${INCLUDEDIR} `pkg-config gtk4 --cflags` ${OPTIMAIZE}
 libblike_drvgtk_la_SOURCES =		\
 	drvgtk_main.c			\
 	drvgtk_interface.c		\

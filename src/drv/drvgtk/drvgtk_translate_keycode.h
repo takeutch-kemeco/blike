@@ -38,6 +38,6 @@
 #define __DRVGTK_TRANSLATE_KEYCODE_H__
 
 gint32 __drvgtk_translate_keycode(struct DrvGtkKey *a);
-gint32 __drvgtk_translate_keycode_gtk_to_osecpu(GdkEventKey *key);
+gint32 __drvgtk_translate_keycode_gtk_to_osecpu(struct DrvGtkKey *a);
 
 #endif // __DRVGTK_TRANSLATE_KEYCODE_H__

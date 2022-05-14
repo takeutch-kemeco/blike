@@ -117,7 +117,6 @@ static void flash_window(struct DrvGtkPthreadData *a,
 
 static void exit_window(struct DrvGtkPthreadData *a)
 {
-        gtk_main_quit();
 }
 
 gboolean update_DrvGtkSignalChain(gpointer data)

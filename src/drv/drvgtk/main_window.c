@@ -41,74 +41,60 @@
 #include "drvgtk_keyboard_state.h"
 #include "drvgtk_translate_keycode.h"
 
-static gboolean key_press_MainWindow(GtkWidget *wgt, GdkEventExpose *event, gpointer data)
+static gboolean
+key_press_window(
+        GtkEventControllerKey *self,
+        guint keyval,
+        guint keycode,
+        GdkModifierType state,
+        gpointer user_data)
 {
-        struct MainWindow *a = (struct MainWindow*)data;
-        GdkEventKey *key = (GdkEventKey*)event;
+        struct MainWindow *a = (struct MainWindow*)user_data;
 
-        struct DrvGtkKey tmp;
-        tmp.state = DrvGtkKeyState_press;
-        tmp.value = key->keyval;
-
+        struct DrvGtkKey tmp = {keyval, DrvGtkKeyState_press};
         add_DrvGtkKeybordState(a->press, a->release, a->key_transform_table, &tmp);
-
         write_c_DrvGtkKeyRingBuffer(a->key_ring_buffer, &tmp);
 
         if (a->callback_key_press != NULL)
-                a->callback_key_press(a->callback_arg, __drvgtk_translate_keycode_gtk_to_osecpu(key));
-
-#ifdef DEBUG_KEYBOARD
-           g_print("key_press_MainWindow(), callback:[%p], callback_arg:{%p], keyval:[%d]\n",
-                   (void*)(a->callback_key_press), (void*)(a->callback_arg),
-                   __drvgtk_translate_keycode_gtk_to_vk(key->keyval));
-#endif /* DEBUG_KEYBOARD */
+                a->callback_key_press(a->callback_arg, __drvgtk_translate_keycode_gtk_to_osecpu(&tmp));
 
         return TRUE;
 }
 
-static gboolean key_release_MainWindow(GtkWidget *wgt, GdkEventExpose *event, gpointer data)
+static gboolean
+key_release_window(
+        GtkEventControllerKey *self,
+        guint keyval,
+        guint keycode,
+        GdkModifierType state,
+        gpointer user_data)
 {
-        struct MainWindow *a = (struct MainWindow*)data;
-        GdkEventKey *key = (GdkEventKey*)event;
+        struct MainWindow *a = (struct MainWindow*)user_data;
 
-        struct DrvGtkKey tmp;
-        tmp.state = DrvGtkKeyState_release;
-        tmp.value = key->keyval;
-
+        struct DrvGtkKey tmp = {keyval, DrvGtkKeyState_release};
         add_DrvGtkKeybordState(a->press, a->release, a->key_transform_table, &tmp);
-
         write_c_DrvGtkKeyRingBuffer(a->key_ring_buffer, &tmp);
 
         if (a->callback_key_release != NULL)
-                a->callback_key_release(a->callback_arg, __drvgtk_translate_keycode_gtk_to_osecpu(key));
-
-#ifdef DEBUG_KEYBOARD
-           g_print("key_release_MainWindow(), callback:[%p], callback_arg:{%p], keyval:[%d]\n",
-                   (void*)(a->callback_key_release), (void*)(a->callback_arg),
-                   __drvgtk_translate_keycode_gtk_to_vk(key->keyval));
-#endif /* DEBUG_KEYBOARD */
+                a->callback_key_release(a->callback_arg, __drvgtk_translate_keycode_gtk_to_osecpu(&tmp));
 
         return TRUE;
 }
 
-static gboolean realize_MainWindow(GtkWidget *wgt, GdkEventExpose *event, gpointer data)
+static void
+mouse_motion_window(
+        GtkEventControllerMotion* self,
+        gdouble x,
+        gdouble y,
+        gpointer user_data)
 {
-        GdkWindow *gdk_window = gtk_widget_get_window(wgt);
-        gdk_window_set_cursor(gdk_window, gdk_cursor_new(GDK_BLANK_CURSOR));
+        struct MainWindow *a = (struct MainWindow*)user_data;
 
-        return TRUE;
-}
-
-static gboolean motion_notify_MainWindow(GtkWidget *wgt, GdkEventExpose *event, gpointer data)
-{
-        struct MainWindow *a = (struct MainWindow*)data;
-        GdkEventButton *button = (GdkEventButton*)event;
-
-        const gdouble pos_x = button->x - a->screen_offset_x;
-        const gdouble pos_y = button->y - a->screen_offset_y;
-        const gdouble pressure = button->axes[2];
-        const gdouble angle_x = button->axes[3];
-        const gdouble angle_y = button->axes[4];
+        const gdouble pos_x = x - a->screen_offset_x;
+        const gdouble pos_y = y - a->screen_offset_y;
+        const gdouble pressure = 0;
+        const gdouble angle_x = 0;
+        const gdouble angle_y = 0;
 
         if (a->callback_motion_notify != NULL)
                 a->callback_motion_notify(a->callback_arg, pos_x, pos_y, pressure, angle_x, angle_y);
@@ -116,152 +102,214 @@ static gboolean motion_notify_MainWindow(GtkWidget *wgt, GdkEventExpose *event, 
 #ifdef DEBUG_MOUSE
         g_print("motion_notify_MainWindow(), pos x,y:[%f, %f], angle x, y:[%f, %f], pressure:[%f]\n",
                 pos_x, pos_y, angle_x, angle_y, pressure);
-#endif /* DEBUG_MOUSE */
-
-        return TRUE;
+#endif // DEBUG_MOUSE
 }
 
-static gboolean button_press_MainWindow(GtkWidget *wgt, GdkEventExpose *event, gpointer data)
+static void
+mouse_press_primary_window(
+        GtkGestureClick* self,
+        gint n_press,
+        gdouble x,
+        gdouble y,
+        gpointer user_data)
 {
-        struct MainWindow *a = (struct MainWindow*)data;
-        GdkEventButton *button = (GdkEventButton*)event;
+        struct MainWindow *a = (struct MainWindow*)user_data;
 
-        gint flag = 0;
-        switch (button->button) {
-        case 1: flag |= (1 << 0); break;
-        case 2: flag |= (1 << 1); break;
-        case 3: flag |= (1 << 2); break;
-        default: flag = 0;
-        }
+        gint flag = 1;
 
         if (a->callback_button_press != NULL)
                 a->callback_button_press(a->callback_arg, flag);
-
-#ifdef DEBUG_MOUSE
-        g_print("button_press_MainWindow(), button:[%x], flag:[%x]\n", button->button, flag);
-#endif /* DEBUG_MOUSE */
-
-        return TRUE;
 }
 
-static gboolean button_release_MainWindow(GtkWidget *wgt, GdkEventExpose *event, gpointer data)
+static void
+mouse_release_primary_window(
+        GtkGestureClick* self,
+        gint n_press,
+        gdouble x,
+        gdouble y,
+        gpointer user_data)
 {
-        struct MainWindow *a = (struct MainWindow*)data;
-        GdkEventButton *button = (GdkEventButton*)event;
+        struct MainWindow *a = (struct MainWindow*)user_data;
 
-        gint flag = 0;
-        switch (button->button) {
-        case 1: flag |= (1 << 0); break;
-        case 2: flag |= (1 << 1); break;
-        case 3: flag |= (1 << 2); break;
-        default: flag = 0;
-        }
+        gint flag = 1;
 
         if (a->callback_button_release != NULL)
                 a->callback_button_release(a->callback_arg, flag);
+}
 
-#ifdef DEBUG_MOUSE
-        g_print("button_release_MainWindow(), button:[%x], flag:[%x]\n", button->button, flag);
-#endif /* DEBUG_MOUSE */
+static void
+mouse_press_secondary_window(
+        GtkGestureClick* self,
+        gint n_press,
+        gdouble x,
+        gdouble y,
+        gpointer user_data)
+{
+        struct MainWindow *a = (struct MainWindow*)user_data;
+
+        gint flag = 2;
+
+        if (a->callback_button_press != NULL)
+                a->callback_button_press(a->callback_arg, flag);
+}
+
+static void
+mouse_release_secondary_window(
+        GtkGestureClick* self,
+        gint n_press,
+        gdouble x,
+        gdouble y,
+        gpointer user_data)
+{
+        struct MainWindow *a = (struct MainWindow*)user_data;
+
+        gint flag = 2;
+
+        if (a->callback_button_release != NULL)
+                a->callback_button_release(a->callback_arg, flag);
+}
+
+static gboolean realize_window(GtkWindow *window, gpointer user_data)
+{
+        // とくに何もしない
 
         return TRUE;
 }
 
-static gboolean configure_MainWindow(GtkWidget *wgt, GdkEventExpose *event, gpointer data)
+static gboolean unrealize_window(GtkWindow *window, gpointer user_data)
 {
-        struct MainWindow *a = (struct MainWindow*)data;
+        // とくに何もしない
 
-        GdkWindow *gdk_window = gtk_widget_get_window(wgt);
-        gint wx, wy, ww, wh;
-        gdk_window_get_geometry(gdk_window, &wx, &wy, &ww, &wh);
-#ifdef DEBUG_MOUSE
-        g_print("configure_MainWindow(), window global pos x,y,w,h:[%d, %d, %d, %d]\n",
-                wx, wy, ww, wh);
-#endif /* DEBUG_MOUSE */
-
-        a->screen_offset_x = (ww / 2) - (a->frame_buffer_width / 2);
-        a->screen_offset_y = (wh / 2) - (a->frame_buffer_height / 2);
-#ifdef DEBUG_MOUSE
-        g_print("configure_MainWindow(), screen offset x,y:[%d, %d]\n",
-                a->screen_offset_x, a->screen_offset_y);
-#endif /* DEBUG_MOUSE */
-
-        return FALSE; /* 重要 */
+        return TRUE;
 }
 
-static gboolean timeout_redraw_MainWindow(gpointer data)
+static gboolean timeout_redraw_window(gpointer user_data)
 {
-        struct MainWindow *a = (struct MainWindow*)data;
+        struct MainWindow *a = (struct MainWindow*)user_data;
         if (a->redraw_request) {
-                gtk_image_set_from_pixbuf((GTK_IMAGE(a->screen)), a->pixbuf);
+                // 再描画　（もっと良い方法無い？？？）
+                gtk_widget_hide(a->frame);
+                gtk_widget_show(a->frame);
+
                 a->redraw_request = FALSE;
         }
 
         return TRUE;
 }
 
-static void init_signal_MainWindow(struct MainWindow *a)
+static void
+draw_window(GtkDrawingArea *drawing_area,
+            cairo_t *cr,
+            int width,
+            int height,
+            gpointer user_data)
 {
-        g_signal_connect(G_OBJECT(a->wgt), "realize",
-                         G_CALLBACK(realize_MainWindow), a);
-        g_signal_connect(G_OBJECT(a->wgt), "configure-event",
-                         G_CALLBACK(configure_MainWindow), a);
-        g_signal_connect(G_OBJECT(a->wgt), "destroy",
-                         G_CALLBACK(gtk_main_quit), NULL);
-
-        g_timeout_add(DRVGTK_SYGNAL_CHECK_INTERVAL,
-                      timeout_redraw_MainWindow, (gpointer)a);
-
-        g_signal_connect(G_OBJECT(a->wgt), "key-press-event",
-                         G_CALLBACK(key_press_MainWindow), a);
-        g_signal_connect(G_OBJECT(a->wgt), "key-release-event",
-                         G_CALLBACK(key_release_MainWindow), a);
-
-        g_signal_connect(G_OBJECT(a->wgt), "motion-notify-event",
-                         G_CALLBACK(motion_notify_MainWindow), a);
-        g_signal_connect(G_OBJECT(a->wgt), "button-press-event",
-                         G_CALLBACK(button_press_MainWindow), a);
-        g_signal_connect(G_OBJECT(a->wgt), "button-release-event",
-                         G_CALLBACK(button_release_MainWindow), a);
-
-        gtk_widget_set_events(a->wgt, gtk_widget_get_events(a->wgt) | GDK_ALL_EVENTS_MASK);
+        struct MainWindow *a = (struct MainWindow*)user_data;
+        gdk_cairo_set_source_pixbuf(cr, a->pixbuf, 0, 0);
+        cairo_paint (cr);
 }
 
-static void init_screen(struct MainWindow* a)
+static void
+resize_window(
+        GtkWindow *window,
+        const gint width,
+        const gint height,
+        gpointer user_data)
 {
-        a->frame_buffer_width  = 64;
-        a->frame_buffer_height = 64;
-        a->screen_offset_x = 0;
-        a->screen_offset_y = 0;
+        struct MainWindow *a = (struct MainWindow*)user_data;
 
-        a->pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, FALSE, 8,
-                                   a->frame_buffer_width, a->frame_buffer_height);
+        a->frame_buffer_width  = width;
+        a->frame_buffer_height = height;
 
-        a->screen = gtk_image_new_from_pixbuf(a->pixbuf);
+        a->pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, FALSE, 8, width, height);
+        a->drawing_area = gtk_image_new_from_pixbuf(a->pixbuf);
+
+        gtk_widget_set_size_request(a->drawing_area, a->frame_buffer_width, a->frame_buffer_height);
 
         a->frame_buffer = gdk_pixbuf_get_pixels(a->pixbuf);
 
-        gtk_widget_set_size_request(a->screen, a->frame_buffer_width, a->frame_buffer_height);
-        gtk_widget_set_double_buffered(a->screen, TRUE);
-        gtk_container_add(GTK_CONTAINER(a->wgt), a->screen);
+        gtk_widget_show(a->drawing_area);
 }
 
-struct MainWindow* new_MainWindow(struct DrvGtkKeyRingBuffer *key_ring_buffer,
+static void init_signal_window(GtkWindow *window, gpointer user_data)
+{
+        struct MainWindow *a = (struct MainWindow*)user_data;
+
+        g_timeout_add_full(G_PRIORITY_HIGH, DRVGTK_SYGNAL_CHECK_INTERVAL, timeout_redraw_window, user_data, NULL);
+
+        g_signal_connect(GTK_WINDOW(window), "realize", G_CALLBACK(realize_window), a);
+        g_signal_connect(GTK_WINDOW(window), "unrealize", G_CALLBACK(unrealize_window), a);
+
+        g_signal_connect(a->event_controller_key, "key-pressed", G_CALLBACK(key_press_window), user_data);
+        g_signal_connect(a->event_controller_key, "key-released", G_CALLBACK(key_release_window), user_data);
+
+        g_signal_connect(a->event_controller_motion, "motion", G_CALLBACK(mouse_motion_window), user_data);
+
+        g_signal_connect(GTK_GESTURE(a->gesture_click_primary), "pressed", G_CALLBACK(mouse_press_primary_window), user_data);
+        g_signal_connect(GTK_GESTURE(a->gesture_click_primary), "released", G_CALLBACK(mouse_release_primary_window), user_data);
+
+        g_signal_connect(GTK_GESTURE(a->gesture_click_secondary), "pressed", G_CALLBACK(mouse_press_secondary_window), user_data);
+        g_signal_connect(GTK_GESTURE(a->gesture_click_secondary), "released", G_CALLBACK(mouse_release_secondary_window),user_data);
+}
+
+static void activate_window(GtkWindow *window, gpointer user_data)
+{
+        struct MainWindow *a = (struct MainWindow*)user_data;
+
+        gtk_window_set_title(GTK_WINDOW(window), " ");
+
+        a->frame = gtk_frame_new(NULL);
+        gtk_window_set_child(GTK_WINDOW(window), a->frame);
+
+        a->drawing_area = gtk_drawing_area_new();
+        gtk_widget_set_size_request(a->drawing_area, a->frame_buffer_width, a->frame_buffer_height);
+        gtk_frame_set_child(GTK_FRAME(a->frame), a->drawing_area);
+        gtk_drawing_area_set_draw_func(GTK_DRAWING_AREA(a->drawing_area), draw_window, user_data, NULL);
+
+        a->pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, FALSE, 8, a->frame_buffer_width, a->frame_buffer_height);
+        a->drawing_area = gtk_image_new_from_pixbuf(a->pixbuf);
+
+        a->frame_buffer = gdk_pixbuf_get_pixels(a->pixbuf);
+
+        // キーボード入力コントローラーを、ウインドウへ登録
+        a->event_controller_key = gtk_event_controller_key_new();
+        gtk_widget_add_controller(GTK_WIDGET(window), a->event_controller_key);
+
+        // マウス入力（位置）コントローラーを、ウインドウへ登録
+        a->event_controller_motion = gtk_event_controller_motion_new();
+        gtk_widget_add_controller(GTK_WIDGET(window), a->event_controller_motion);
+
+        // マウス入力（選択ボタン）コントローラーを、ウインドウへ登録
+        a->gesture_click_primary = gtk_gesture_click_new();
+        gtk_gesture_single_set_button(GTK_GESTURE_SINGLE(a->gesture_click_primary), GDK_BUTTON_PRIMARY);
+        gtk_widget_add_controller(GTK_WIDGET(window), GTK_EVENT_CONTROLLER(a->gesture_click_primary));
+
+        // マウス入力（キャンセルボタン）コントローラーを、ウインドウへ登録
+        a->gesture_click_secondary = gtk_gesture_click_new();
+        gtk_gesture_single_set_button(GTK_GESTURE_SINGLE(a->gesture_click_secondary), GDK_BUTTON_SECONDARY);
+        gtk_widget_add_controller(GTK_WIDGET(window), GTK_EVENT_CONTROLLER(a->gesture_click_secondary));
+
+        init_signal_window(window, user_data);
+}
+
+static void
+activate_GtkApplication(
+        GtkApplication *app,
+        gpointer user_data)
+{
+        struct MainWindow *a = (struct MainWindow*)user_data;
+
+        a->wgt = gtk_application_window_new(app);
+        activate_window(GTK_WINDOW(a->wgt), user_data);
+}
+
+struct MainWindow* new_MainWindow(GtkApplication *app,
+                                  struct DrvGtkKeyRingBuffer *key_ring_buffer,
                                   struct DrvGtkKeybordState *press,
                                   struct DrvGtkKeybordState *release,
                                   struct DrvGtkKeybordState *key_transform_table)
 {
         struct MainWindow *a = g_malloc(sizeof(*a));
-
-        a->wgt = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-        gtk_window_set_title(GTK_WINDOW(a->wgt), " ");
-
-        a->gdk_display = gdk_display_get_default();
-        a->gdk_screen = gdk_display_get_default_screen(a->gdk_display);
-        a->gdk_device_manager = gdk_display_get_device_manager(a->gdk_display);
-        a->gdk_device = gdk_device_manager_get_client_pointer(a->gdk_device_manager);
-
-        init_screen(a);
 
         a->redraw_request = FALSE;
 
@@ -280,7 +328,12 @@ struct MainWindow* new_MainWindow(struct DrvGtkKeyRingBuffer *key_ring_buffer,
 
         a->callback_arg = NULL;
 
-        init_signal_MainWindow(a);
+        a->frame_buffer_width  = 64;
+        a->frame_buffer_height = 64;
+        a->screen_offset_x = 0;
+        a->screen_offset_y = 0;
+
+        g_signal_connect(app, "activate", G_CALLBACK(activate_GtkApplication), a);
 
         return a;
 }
@@ -288,12 +341,7 @@ struct MainWindow* new_MainWindow(struct DrvGtkKeyRingBuffer *key_ring_buffer,
 void redraw_MainWindow(struct MainWindow *a,
                        const gint x, const gint y, const gint w, const gint h)
 {
-        gtk_widget_queue_draw_area(a->screen,
-                                   a->screen_offset_x + x,
-                                   a->screen_offset_y + y,
-                                   w,
-                                   h);
-
+        gtk_widget_queue_draw(a->drawing_area);
         a->redraw_request = TRUE;
 }
 
@@ -305,7 +353,7 @@ void show_MainWindow(struct MainWindow *a)
                           a->frame_buffer_width,
                           a->frame_buffer_height);
 
-        gtk_widget_show_all(a->wgt);
+        gtk_widget_show(a->wgt);
 }
 
 void hide_MainWindow(struct MainWindow *a)
@@ -313,41 +361,8 @@ void hide_MainWindow(struct MainWindow *a)
         gtk_widget_hide(a->wgt);
 }
 
-static void resize_screen(struct MainWindow *a, const gint width, const gint height)
-{
-        gtk_container_remove(GTK_CONTAINER(a->wgt), a->screen);
-
-        a->frame_buffer_width  = width;
-        a->frame_buffer_height = height;
-
-        a->pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, FALSE, 8, width, height);
-        a->screen = gtk_image_new_from_pixbuf(a->pixbuf);
-
-        gtk_widget_set_size_request(a->screen, a->frame_buffer_width, a->frame_buffer_height);
-
-        a->frame_buffer = gdk_pixbuf_get_pixels(a->pixbuf);
-
-        gtk_container_add(GTK_CONTAINER(a->wgt), a->screen);
-
-        gtk_widget_show(a->screen);
-}
-
 void resize_MainWindow(struct MainWindow *a, const gint width, const gint height)
 {
-        gtk_window_resize((GtkWindow*)(a->wgt), width, height);
-        resize_screen(a, width, height);
-}
-
-void set_cursor_pos_MainWindow(struct MainWindow *a, const gint x, const gint y)
-{
-        GdkWindow *gdk_window = gtk_widget_get_window(a->wgt);
-
-        gint offx;
-        gint offy;
-        gdk_window_get_position(gdk_window, &offx, &offy);
-
-        offx += a->screen_offset_x;
-        offy += a->screen_offset_y;
-
-        gdk_device_warp(a->gdk_device, a->gdk_screen, offx + x, offy + y);
+        gtk_window_set_default_size((GtkWindow*)(a->wgt), width, height);
+        resize_window((GtkWindow*)a->wgt, width, height, (gpointer)a);
 }

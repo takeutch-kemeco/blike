@@ -46,6 +46,8 @@
 #define DRVGTK_SYGNAL_CHECK_INTERVAL    (1000/250)      /* 250Hz */
 
 struct DrvGtkPthreadData {
+        GtkApplication *app;
+
         struct MainWindow *main_window;
 
         gpointer shared_data;

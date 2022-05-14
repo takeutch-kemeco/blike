@@ -6,9 +6,9 @@ datarootdir=@datarootdir@
 datadir=@datadir@
 
 Name: blike
-Description: c-blike for gtk+-3.0
+Description: c-blike for gtk4
 Version: @VERSION@
-Requires: gtk+-3.0 glib-2.0
+Requires: gtk4 glib-2.0
 Libs: -L${libdir} -lblike-common -lblike-drvgtk -lm
 Cflags: -I${includedir}/blike
 

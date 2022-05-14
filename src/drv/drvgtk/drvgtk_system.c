@@ -53,6 +53,8 @@ new_DrvGtkPthreadData(gpointer shared_data,
 {
         struct DrvGtkPthreadData *a     = g_malloc(sizeof(*a));
 
+        a->app = gtk_application_new ("org.gtk.blike", G_APPLICATION_FLAGS_NONE);
+
         a->shared_data                  = shared_data;
         a->time_count                   = time_count;
         a->window_update_program        = update_DrvGtkSignalChain;
@@ -76,7 +78,7 @@ new_DrvGtkPthreadData(gpointer shared_data,
         a->release                      = g_malloc0(sizeof(*(a->release)));
         a->key_transform_table          = new_transform_table_DrvGtkKeybordState();
 
-        a->main_window = new_MainWindow(a->key_ring_buffer, a->press, a->release, a->key_transform_table);
+        a->main_window = new_MainWindow(a->app, a->key_ring_buffer, a->press, a->release, a->key_transform_table);
 
         a->wt_run_flag                  = FALSE;
 
@@ -94,6 +96,8 @@ void free_DrvGtkPthreadData(struct DrvGtkPthreadData *a)
         free_DrvGtkKeyRingBuffer(a->key_ring_buffer);
 
         free_DrvGtkSignal(a->signal);
+
+        g_object_unref(a->app);
 
         g_free(a);
 }
