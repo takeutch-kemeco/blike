@@ -183,18 +183,11 @@ static gboolean unrealize_window(GtkWindow *window, gpointer user_data)
         return TRUE;
 }
 
-static gboolean timeout_redraw_window(gpointer user_data)
+static void redraw_window(struct MainWindow *a)
 {
-        struct MainWindow *a = (struct MainWindow*)user_data;
-        if (a->redraw_request) {
-                // 再描画　（もっと良い方法無い？？？）
-                gtk_widget_hide(a->frame);
-                gtk_widget_show(a->frame);
-
-                a->redraw_request = FALSE;
-        }
-
-        return TRUE;
+        // 再描画　（もっと良い方法無い？？？）
+        gtk_widget_hide(a->frame);
+        gtk_widget_show(a->frame);
 }
 
 static void
@@ -306,7 +299,7 @@ static void __flash_window(GtkWindow *window, gint x, gint y, gint w, gint h)
         }
 
         gtk_widget_queue_draw(a->main_window->drawing_area);
-        a->main_window->redraw_request = TRUE;
+        redraw_window(a->main_window);
 }
 
 static void __resize_window(GtkWindow *window, gint w, gint h)
@@ -324,7 +317,7 @@ static void __show_window(GtkWindow *window)
         struct DrvGtkPthreadData *a = drvgtk_pthread_data;
 
         gtk_widget_queue_draw(a->main_window->drawing_area);
-        a->main_window->redraw_request = TRUE;
+        redraw_window(a->main_window);
 
         gtk_widget_show(GTK_WIDGET(window));
 }
@@ -339,8 +332,6 @@ static void __exit_window(GtkWindow *window)
 static void init_signal_window(GtkWindow *window, gpointer user_data)
 {
         struct MainWindow *a = (struct MainWindow*)user_data;
-
-        g_timeout_add_full(G_PRIORITY_HIGH, DRVGTK_SYGNAL_CHECK_INTERVAL, timeout_redraw_window, user_data, NULL);
 
         g_signal_connect(GTK_WINDOW(window), "realize", G_CALLBACK(realize_window), a);
         g_signal_connect(GTK_WINDOW(window), "unrealize", G_CALLBACK(unrealize_window), a);
@@ -449,8 +440,6 @@ struct MainWindow* new_MainWindow(GtkApplication *app,
                                   struct DrvGtkKeybordState *key_transform_table)
 {
         struct MainWindow *a = g_malloc(sizeof(*a));
-
-        a->redraw_request = FALSE;
 
         a->key_ring_buffer = key_ring_buffer;
 
