@@ -70,37 +70,37 @@ static void flash_window(struct DrvGtkPthreadData *a,
 
         const guint32 top_ofst = (y * a->main_window->frame_buffer_width) + x;
         const guint32 src_top_ofst = top_ofst * 4;
-        const guint32 dst_top_ofst = top_ofst * 3;
+        const guint32 dst_top_ofst = top_ofst * 4;
 
         guchar *src = ((guchar*)src_frame_buffer) + src_top_ofst;
         guchar *dst = ((guchar*)a->main_window->frame_buffer) + dst_top_ofst;
 
         const guint32 next_ofst =  a->main_window->frame_buffer_width - width;
         const guint32 src_next_ofst = next_ofst * 4;
-        const guint32 dst_next_ofst = next_ofst * 3;
+        const guint32 dst_next_ofst = next_ofst * 4;
 
         if(src == NULL)
                 return;
 
-        int j = height;
-        while (j-->0) {
-                int i = width;
-                while (i-->0) {
-
+        for (int j = 0; j < height; j++) {
+                for (int i = 0; i < width; i++) {
+                        // gdk-pixbuf: RGBA <- Windows: BGRX
+                        // ただし A <- 0xff 固定
 #if G_BYTE_ORDER == G_BIG_ENDIAN
-                        dst[0] = src[1];
-                        dst[1] = src[2];
-                        dst[2] = src[3];
-
-                        dst += 3;
+                        dst[0] = 0xff;   // gdk A <- 0 --- 0 <- win X
+                        dst[1] = src[3]; // gdk B <- 3 \ / 1 <- win R
+                        dst[2] = src[2]; // gdk G <- 2 -.- 2 <- win G
+                        dst[3] = src[1]; // gdk R <- 1 / \ 3 <- win B
+                        dst += 4;
                         src += 4;
 
 #elif G_BYTE_ORDER == G_LITTLE_ENDIAN
-                        dst[0] = src[2];
-                        dst[1] = src[1];
-                        dst[2] = src[0];
+                        dst[0] = src[2]; // gdk R <- 2 \ / 0 <- win B
+                        dst[1] = src[1]; // gdk G <- 1 -.- 1 <- win G
+                        dst[2] = src[0]; // gdk B <- 0 / \ 2 <- win R
+                        dst[3] = 0xff;   // gdk A <- 3 --- 3 <- win X
 
-                        dst += 3;
+                        dst += 4;
                         src += 4;
 
 #else

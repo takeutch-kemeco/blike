@@ -221,7 +221,7 @@ resize_window(
         a->frame_buffer_width  = width;
         a->frame_buffer_height = height;
 
-        a->pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, FALSE, 8, width, height);
+        a->pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, width, height); // RGBA
         a->drawing_area = gtk_image_new_from_pixbuf(a->pixbuf);
 
         gtk_widget_set_size_request(a->drawing_area, a->frame_buffer_width, a->frame_buffer_height);
