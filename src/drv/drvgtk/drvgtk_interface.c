@@ -82,15 +82,7 @@ void bld_flshWin(int sx, int sy, int x0, int y0)
         drvgtk_pthread_data->signal->flash_window.width  = sx;
         drvgtk_pthread_data->signal->flash_window.height = sy;
 
-        const gint wait_msec_limit = 1000; /* 1sec */
-        gint wait_msec_count = 0;
         drvgtk_pthread_data->signal->flash_window.ready = TRUE;
-        while (drvgtk_pthread_data->signal->flash_window.ready && (wait_msec_count < wait_msec_limit)) {
-                drvgtk_msleep(DRVGTK_SYGNAL_CHECK_INTERVAL_MS);
-                wait_msec_count += DRVGTK_SYGNAL_CHECK_INTERVAL_MS;
-        }
-
-        bld_showWin();
 }
 
 void bld_flshSys()
