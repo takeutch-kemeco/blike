@@ -88,5 +88,3 @@ struct MainWindow* new_MainWindow(GtkApplication *app,
                                   struct DrvGtkKeybordState *press,
                                   struct DrvGtkKeybordState *release,
                                   struct DrvGtkKeybordState *key_transform_table);
-
-void hide_MainWindow(struct MainWindow *a);

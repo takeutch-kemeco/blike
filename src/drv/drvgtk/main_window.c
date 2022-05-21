@@ -477,8 +477,3 @@ struct MainWindow* new_MainWindow(GtkApplication *app,
 
         return a;
 }
-
-void hide_MainWindow(struct MainWindow *a)
-{
-        gtk_widget_hide(a->wgt);
-}
