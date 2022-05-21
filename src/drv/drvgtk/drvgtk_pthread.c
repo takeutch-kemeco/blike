@@ -43,7 +43,7 @@ static gpointer __pthread_main_program(gpointer data)
         // MainWindowが登録されるまで待機
         // スピンロック
         while (g_application_get_is_registered(G_APPLICATION(a->app)) == FALSE) {
-                g_usleep(DRVGTK_SYGNAL_CHECK_INTERVAL);
+                drvgtk_msleep(DRVGTK_SYGNAL_CHECK_INTERVAL_MS);
         }
 
         a->control_program(); // bl_main()

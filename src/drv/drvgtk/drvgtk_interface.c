@@ -86,8 +86,8 @@ void bld_flshWin(int sx, int sy, int x0, int y0)
         gint wait_msec_count = 0;
         drvgtk_pthread_data->signal->flash_window.ready = TRUE;
         while (drvgtk_pthread_data->signal->flash_window.ready && (wait_msec_count < wait_msec_limit)) {
-                drvgtk_msleep(DRVGTK_SYGNAL_CHECK_INTERVAL);
-                wait_msec_count += DRVGTK_SYGNAL_CHECK_INTERVAL;
+                drvgtk_msleep(DRVGTK_SYGNAL_CHECK_INTERVAL_MS);
+                wait_msec_count += DRVGTK_SYGNAL_CHECK_INTERVAL_MS;
         }
 
         bld_showWin();
@@ -102,7 +102,7 @@ void bld_waitNF()
 {
         check_and_exit_wt_run_flag();
 
-        drvgtk_msleep(DRVGTK_SYGNAL_CHECK_INTERVAL);
+        drvgtk_msleep(DRVGTK_SYGNAL_CHECK_INTERVAL_MS);
 }
 
 void bld_exit()

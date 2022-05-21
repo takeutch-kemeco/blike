@@ -43,7 +43,7 @@
 #include "drvgtk_keyboard_state.h"
 #include "blikedrv.h"
 
-#define DRVGTK_SYGNAL_CHECK_INTERVAL    (1000/250)      /* 250Hz */
+#define DRVGTK_SYGNAL_CHECK_INTERVAL_MS (1000/250) // 4ms (250Hz)
 
 struct DrvGtkPthreadData {
         GtkApplication *app;

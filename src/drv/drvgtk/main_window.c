@@ -334,7 +334,7 @@ static void init_signal_window(GtkWindow *window, gpointer user_data)
 {
         struct MainWindow *a = (struct MainWindow*)user_data;
 
-        g_timeout_add_full(G_PRIORITY_HIGH, DRVGTK_SYGNAL_CHECK_INTERVAL, update_DrvGtkSignalChain, (gpointer)drvgtk_pthread_data, NULL);
+        g_timeout_add_full(G_PRIORITY_HIGH, DRVGTK_SYGNAL_CHECK_INTERVAL_MS, update_DrvGtkSignalChain, (gpointer)drvgtk_pthread_data, NULL);
 
         g_signal_connect(GTK_WINDOW(window), "realize", G_CALLBACK(realize_window), a);
         g_signal_connect(GTK_WINDOW(window), "unrealize", G_CALLBACK(unrealize_window), a);
