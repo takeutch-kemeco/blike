@@ -30,10 +30,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <glib.h>
+#pragma once
 
-#ifndef __DRVGTK_SIGNAL_H__
-#define __DRVGTK_SIGNAL_H__
+#include <glib.h>
 
 struct DrvGtkSignal_resize_window {
         gboolean        ready;
@@ -67,5 +66,3 @@ struct DrvGtkSignal {
 
 struct DrvGtkSignal *new_DrvGtkSignal(void);
 void free_DrvGtkSignal(struct DrvGtkSignal *a);
-
-#endif /* __DRVGTK_SIGNAL_H__ */

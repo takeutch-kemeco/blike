@@ -30,14 +30,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+#pragma once
+
 #include <glib.h>
 #include <gdk/gdk.h>
 #include "drvgtk_key_ring_buffer.h"
 
-#ifndef __DRVGTK_TRANSLATE_KEYCODE_H__
-#define __DRVGTK_TRANSLATE_KEYCODE_H__
-
 gint32 __drvgtk_translate_keycode(struct DrvGtkKey *a);
 gint32 __drvgtk_translate_keycode_gtk_to_osecpu(struct DrvGtkKey *a);
-
-#endif // __DRVGTK_TRANSLATE_KEYCODE_H__

@@ -30,10 +30,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <glib.h>
+#pragma once
 
-#ifndef __DRVGTK_KEY_RING_BUFFER_H__
-#define __DRVGTK_KEY_RING_BUFFER_H__
+#include <glib.h>
 
 enum DrvGtkKeyState {
         DrvGtkKeyState_press   = 1,
@@ -68,5 +67,3 @@ new_DrvGtkKeyRingBuffer(gint32 key_len,
 void free_DrvGtkKeyRingBuffer(struct DrvGtkKeyRingBuffer *a);
 void write_c_DrvGtkKeyRingBuffer(struct DrvGtkKeyRingBuffer *a,
                                  struct DrvGtkKey *key);
-
-#endif /* __DRVGTK_KEY_RING_BUFFER_H__ */

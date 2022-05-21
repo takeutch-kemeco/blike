@@ -30,11 +30,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+#pragma once
+
 #include <gtk/gtk.h>
 #include "drvgtk_pthread.h"
-
-#ifndef __DRVGTK_SYSTEM_H__
-#define __DEVGTK_SYSTEM_H__
 
 struct DrvGtkPthreadData*
 new_DrvGtkPthreadData(gpointer shared_data,
@@ -49,5 +48,3 @@ new_DrvGtkPthreadData(gpointer shared_data,
 
 void free_DrvGtkPthreadData(struct DrvGtkPthreadData *a);
 void run_DrvGtkSystem(struct DrvGtkPthreadData *a);
-
-#endif /* __DRVGTK_SYSTEM_H__ */

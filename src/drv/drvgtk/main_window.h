@@ -30,13 +30,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+#pragma once
+
 #include <gdk/gdk.h>
 #include <gtk/gtk.h>
 #include "drvgtk_key_ring_buffer.h"
 #include "drvgtk_keyboard_state.h"
-
-#ifndef __MAIN_WINDOW_H__
-#define __MAIN_WINDOW_H__
 
 typedef void (*bld_callback_key_press_MainWindow)(void* a, const int keyval);
 typedef void (*bld_callback_key_release_MainWindow)(void* a, const int keyval);
@@ -94,5 +93,3 @@ void show_MainWindow(struct MainWindow *a);
 void hide_MainWindow(struct MainWindow *a);
 void redraw_MainWindow(struct MainWindow *a, const gint x, const gint y, const gint w, const gint h);
 void resize_MainWindow(struct MainWindow *a, const gint width, const gint height);
-
-#endif //__MAIN_WINDOW_H__

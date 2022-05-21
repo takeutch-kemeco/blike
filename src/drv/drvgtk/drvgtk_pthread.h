@@ -33,15 +33,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+#pragma once
+
 #include <pthread.h>
 #include <glib.h>
 #include "main_window.h"
 #include "drvgtk_signal.h"
 #include "drvgtk_key_ring_buffer.h"
 #include "drvgtk_keyboard_state.h"
-
-#ifndef __DRVGTK_PTHREAD_H__
-#define __DRVGTK_PTHREAD_H__
 
 #define DRVGTK_SYGNAL_CHECK_INTERVAL    (1000/250)      /* 250Hz */
 
@@ -71,5 +70,3 @@ struct DrvGtkPthreadData {
 };
 
 void pthread_main(struct DrvGtkPthreadData *data);
-
-#endif /* __DRVGTK_PTHREAD_H__ */

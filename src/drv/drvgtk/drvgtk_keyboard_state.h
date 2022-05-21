@@ -30,10 +30,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "drvgtk_key_ring_buffer.h"
+#pragma once
 
-#ifndef __DRVGTK_KEYBORD_STATE_H__
-#define __DRVGTK_KEYBORD_STATE_H__
+#include "drvgtk_key_ring_buffer.h"
 
 #define VK_BACK         0x08
 #define VK_TAB          0x09
@@ -162,5 +161,3 @@ void add_DrvGtkKeybordState(struct DrvGtkKeybordState *press,
 
 void next_DrvGtkKeybordState(struct DrvGtkKeybordState *press,
                              struct DrvGtkKeybordState *release);
-
-#endif /* __DRVGTK_KEYBORD_STATE_H__ */
