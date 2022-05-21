@@ -32,11 +32,9 @@
  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+#pragma once
 
 #include <stdarg.h>
-
-#ifndef __BLIKE0_H__
-#define __BLIKE0_H__
 
 #define BLIKE0_H 1
 
@@ -137,5 +135,3 @@ extern char** bl_argv;
 #if (defined(__cplusplus))
 }
 #endif
-
-#endif /* __BLIKE0_H__ */

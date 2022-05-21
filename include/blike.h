@@ -32,14 +32,12 @@
  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+#pragma once
 
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
 #include <blike0.h>
-
-#ifndef __BLIKE_H__
-#define __BLIKE_H__
 
 #define BLIKE_H 1
 
@@ -90,5 +88,3 @@ extern "C" {
 #if (defined(__cplusplus))
 }
 #endif
-
-#endif /* __BLIKE_H__ */
