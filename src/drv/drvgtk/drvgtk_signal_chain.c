@@ -47,6 +47,14 @@ static void show_window(struct DrvGtkPthreadData *a)
         show_MainWindow(a->main_window);
 }
 
+static void round_range(gint *a, gint min, gint max)
+{
+        if (*a > max)
+                *a = max;
+        else if (*a < min)
+                *a = min;
+}
+
 static void flash_window(struct DrvGtkPthreadData *a,
                          gpointer src_frame_buffer,
                          gint x,
@@ -54,13 +62,11 @@ static void flash_window(struct DrvGtkPthreadData *a,
                          gint width,
                          gint height)
 {
-        void round_range(gint *a, gint min, gint max)
-        {
-                if (*a > max)
-                        *a = max;
-                else if (*a < min)
-                        *a = min;
-        }
+        if (src_frame_buffer == NULL)
+                return;
+
+        if (a->main_window->frame_buffer == NULL)
+                return;
 
         round_range(&x, 0, a->main_window->frame_buffer_width - 1);
         round_range(&y, 0, a->main_window->frame_buffer_height - 1);
@@ -78,9 +84,6 @@ static void flash_window(struct DrvGtkPthreadData *a,
         const guint32 next_ofst =  a->main_window->frame_buffer_width - width;
         const guint32 src_next_ofst = next_ofst * 4;
         const guint32 dst_next_ofst = next_ofst * 4;
-
-        if(src == NULL)
-                return;
 
         for (int j = 0; j < height; j++) {
                 for (int i = 0; i < width; i++) {

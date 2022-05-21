@@ -328,6 +328,7 @@ struct MainWindow* new_MainWindow(GtkApplication *app,
 
         a->callback_arg = NULL;
 
+        a->frame_buffer = NULL;
         a->frame_buffer_width  = 64;
         a->frame_buffer_height = 64;
         a->screen_offset_x = 0;
