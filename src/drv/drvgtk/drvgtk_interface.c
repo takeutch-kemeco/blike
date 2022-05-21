@@ -112,13 +112,13 @@ void bld_exit()
         drvgtk_pthread_data->signal->exit_window.ready = TRUE;
 }
 
+// 乱数シード値を得るための関数
 int bld_getSeed()
 {
-        check_and_exit_wt_run_flag();
-
-        GTimeVal a;
-        g_get_current_time(&a);
-        return (int)(a.tv_sec);
+        GRand *a = g_rand_new(); // 乱数のインスタンスを作成
+        guint32 x = g_rand_int(a); // 乱数を得る
+        g_rand_free(a); // インスタンスを開放
+        return x;
 }
 
 void* bld_malloc(unsigned int bytes)
