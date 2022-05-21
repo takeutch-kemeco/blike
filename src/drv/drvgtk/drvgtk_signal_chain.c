@@ -30,12 +30,46 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+/**
+ * @file drvgtk_signal_chain.c
+ * @brief blMain側スレッドと、GtkApplication側スレッドとの、スレッド間通信の仲介をする関数と構造体です。
+ * @brief 以下の流れとなります。
+ * @par blMain側スレッドから、GtkApplication側への、スレッド間通信の仲介
+ * @msc
+ * a[label="blMain"], b[label="bld_???()"], x[label="struct DrvGtkSignalChain"], y[label="GtkApplication"];
+ * a=>b [label="bld_???()"];
+ * b=>x [label="bld_???() -> param"];
+ * a<=b [label="return"];
+ * x<=y [label="check (timeout)"];
+ * x=>y [label="param -> message"];
+ * @endmsc
+ * @brief 図の左側２つ（blMain, bld_???）が、blMain側スレッド
+ * @brief 図の右側(GtkApplication)が、GtkApplication側スレッド
+ * @brief 図の中央(DrvGtkSignalChain構造体)が、両スレッドから読み書きできるデータ
+ * @brief blMain が bld_??? 関数を実行すると、それに対応するパラメーターを DrvGtkSignalChain構造体へ書き込みます。
+ * その後処理はすぐに戻ります。
+ * @brief GtkApplication側スレッドは、タイムアウトループで定期的に DrvGtkSignalChain構造体の内容変化を監視しています。
+ * そして内容変化あった場合は、命令（例えば画面描画など）を自身へシグナルとして送信し、実際の描画がされます。
+ * @brief blMain側スレッドはコールバック関数的な状態なので、戻った時点では必ずしもbld_???の目的（例えば画面表示など）が完了してるとは限りません。
+ * なので、場合によっては（画面表示完了前に、次の画像をフレームバッファへ書き込む等が起きれば）画面表示に崩れなどが生じるかもしれません。
+ * @brief それを防ぐには、コールバック関数的な挙動にはせずに、スピンロックで待機（GtkApplication側スレッドでの実際の描画が完了するまで）をさせる方法が良いと思います。
+ * しかし、それは現在は実装してません。
+ */
+
 #include <glib.h>
 #include "config.h"
 
 #include "drvgtk_pthread.h"
 #include "drvgtk_signal_chain.h"
 
+/** @fn gboolean update_DrvGtkSignalChain(gpointer data)
+@brief DrvGtkSignalChain構造体の内容を監視し、必要な場合はシグナルをGtkApplicationへ送信します。
+@param (gpointer data): 実態の型は (struct DrvGtkSignalChain *) です。これは g_timeout_add_???() に対応する型とするために gpointer として定義してます。
+@return (gboolean): g_timeout_add_???() では、登録された関数の戻り値が TRUE なら継続、FALSE なら終了のルールとなっています。
+g_timeout_add_???()はシステムで常に動かしたままとしたいので、ここでは常にTRUEを返します。
+@sa bld_showWin, bld_openWin, bld_flshWin, bld_exit
+@brief これら関数が struct DrvGtkSignalChain 構造体へ不定期に内容を書き込みます。それをGtkApplication側スレッドから内容監視するのが目的です。
+ */
 gboolean update_DrvGtkSignalChain(gpointer data)
 {
         struct DrvGtkPthreadData *a = (struct DrvGtkPthreadData*)data;
