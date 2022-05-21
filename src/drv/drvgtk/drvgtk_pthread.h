@@ -59,8 +59,6 @@ struct DrvGtkPthreadData {
 
         gboolean (*window_update_program)(gpointer data);
         int (*control_program)();
-        void (*init_control_program)();
-        void (*close_control_program)();
 
         GThread *ptid;
         gboolean wt_run_flag;

@@ -67,9 +67,7 @@ static gpointer __pthread_main_program(gpointer data)
         while(a->wt_run_flag == FALSE)
                 g_usleep(DRVGTK_SYGNAL_CHECK_INTERVAL);
 
-        a->init_control_program();
-        a->control_program();
-        a->close_control_program();
+        a->control_program(); // bl_main()
 
         return NULL;
 }

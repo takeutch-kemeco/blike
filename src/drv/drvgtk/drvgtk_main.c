@@ -42,10 +42,8 @@ struct DrvGtkPthreadData *drvgtk_pthread_data;
 int bl_argc;
 char **bl_argv;
 
-extern void bl_init();
-extern void bl_exit();
-
-extern void bl_putKeyB(int, int*);
+int bl_main();
+void bl_putKeyB(int, int*);
 
 int main(int argc, char **argv)
 {
@@ -55,9 +53,7 @@ int main(int argc, char **argv)
         drvgtk_pthread_data = new_DrvGtkPthreadData(
                 (gpointer)&bl_work,
                 (gint32*)&bl_work.tmcount,
-                blMain,
-                bl_init,
-                bl_exit,
+                bl_main,
                 BL_SIZ_KBUF,
                 bl_work.kbuf,
                 &(bl_work.kbuf_rp),

@@ -40,8 +40,6 @@ struct DrvGtkPthreadData*
 new_DrvGtkPthreadData(gpointer shared_data,
                       gint32 *time_count,
                       int (*control_program)(),
-                      void (*init_control_program)(),
-                      void (*close_control_program)(),
                       gint32 key_len,
                       gint32 *int_key,
                       gint32 *read_index,
