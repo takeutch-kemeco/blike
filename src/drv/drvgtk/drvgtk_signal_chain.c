@@ -63,12 +63,12 @@
 #include "drvgtk_signal_chain.h"
 
 /** @fn gboolean update_DrvGtkSignalChain(gpointer data)
-@brief DrvGtkSignalChain構造体の内容を監視し、必要な場合はシグナルをGtkApplicationへ送信します。
-@param (gpointer data): 実態の型は (struct DrvGtkSignalChain *) です。これは g_timeout_add_???() に対応する型とするために gpointer として定義してます。
-@return (gboolean): g_timeout_add_???() では、登録された関数の戻り値が TRUE なら継続、FALSE なら終了のルールとなっています。
-g_timeout_add_???()はシステムで常に動かしたままとしたいので、ここでは常にTRUEを返します。
-@sa bld_showWin, bld_openWin, bld_flshWin, bld_exit
-@brief これら関数が struct DrvGtkSignalChain 構造体へ不定期に内容を書き込みます。それをGtkApplication側スレッドから内容監視するのが目的です。
+ * @brief DrvGtkSignalChain構造体の内容を監視し、必要な場合はシグナルをGtkApplicationへ送信します。
+ * @param (gpointer data): 実態の型は (struct DrvGtkSignalChain *) です。これは g_timeout_add_???() に対応する型とするために gpointer として定義してます。
+ * @return (gboolean): g_timeout_add_???() では、登録された関数の戻り値が TRUE なら継続、FALSE なら終了のルールとなっています。
+ * g_timeout_add_???()はシステムで常に動かしたままとしたいので、ここでは常にTRUEを返します。
+ * @sa bld_showWin, bld_openWin, bld_flshWin, bld_exit
+ * @brief これら関数が struct DrvGtkSignalChain 構造体へ不定期に内容を書き込みます。それをGtkApplication側スレッドから内容監視するのが目的です。
  */
 gboolean update_DrvGtkSignalChain(gpointer data)
 {

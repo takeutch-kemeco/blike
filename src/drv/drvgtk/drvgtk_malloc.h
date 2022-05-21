@@ -30,12 +30,39 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+/**
+ * @file drvgtk_malloc.h
+ * @brief メモリーアロケーター
+ * @par アライメント調整済みのメモリー確保・開放関連の関数群です。
+ */
+
 #pragma once
 
 #include <glib.h>
 
+/** @fn gpointer drvgtk_malloc_aligned16(const gsize bytes)
+ * @brief メモリーアドレスのアライメントが16Byte単位となるように、先頭アドレスを16で割り切れるアドレスとしてメモリーを確保します。
+ * @param (const gsize bytes): 確保するメモリーサイズ（バイト単位）
+ * @return (gpointer): 確保したメモリーの先頭アドレス
+ */
 gpointer drvgtk_malloc_aligned16(const gsize bytes);
+
+/** @fn gpointer drvgtk_malloc_0_aligned16(const gsize bytes)
+ * @brief メモリーアドレスのアライメントが16Byte単位となるように、先頭アドレスを16で割り切れるアドレスとしてメモリーを確保し、内容を0でクリアーします。
+ * @param (const gsize bytes): 確保するメモリーサイズ（バイト単位）
+ * @return (gpointer): 確保したメモリーの先頭アドレス
+ */
 gpointer drvgtk_malloc_0_aligned16(const gsize bytes);
+
+/** @fn void drvgtk_free_aligned16(const gpointer a)
+ * @brief メモリーを開放します。通常のfree()関数のラッパー関数です。
+ * @param (const gpointer a): 開放するメモリーの先頭アドレス
+ */
 void drvgtk_free_aligned16(const gpointer a);
 
+/** @fn gpointer drvgtk_malloc_rwe(const gsize bytes)
+ * @brief メモリーアドレスのアライメントが16Byte単位となるように、先頭アドレスを16で割り切れるアドレスとしてメモリーを確保し、メモリー属性に「実行許可」のパーミッションを付加して返します。
+ * @param (const gsize bytes): 確保するメモリーサイズ（バイト単位）
+ * @return (gpointer): 確保したメモリーの先頭アドレス
+ */
 gpointer drvgtk_malloc_rwe(const gsize bytes);
