@@ -51,7 +51,7 @@ extern struct DrvGtkPthreadData* drvgtk_pthread_data;
 
 static void check_and_exit_wt_run_flag(void)
 {
-        if(drvgtk_pthread_data->wt_run_flag == FALSE)
+        if (g_application_get_is_registered(G_APPLICATION(drvgtk_pthread_data->app)) == FALSE)
                 g_thread_exit(NULL);
 }
 

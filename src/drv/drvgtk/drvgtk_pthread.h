@@ -60,7 +60,6 @@ struct DrvGtkPthreadData {
         int (*control_program)();
 
         GThread *ptid;
-        gboolean wt_run_flag;
 
         struct DrvGtkKeyRingBuffer *key_ring_buffer;
 

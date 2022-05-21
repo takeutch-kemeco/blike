@@ -76,8 +76,6 @@ new_DrvGtkPthreadData(gpointer shared_data,
 
         a->main_window = new_MainWindow(a->app, a->key_ring_buffer, a->press, a->release, a->key_transform_table);
 
-        a->wt_run_flag                  = FALSE;
-
         return a;
 }
 
