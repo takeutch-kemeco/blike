@@ -36,23 +36,6 @@
 #include "drvgtk_pthread.h"
 #include "drvgtk_sleep.h"
 
-static gpointer __pthread_main_window(gpointer data)
-{
-        volatile struct DrvGtkPthreadData *a = (struct DrvGtkPthreadData*)data;
-
-        g_timeout_add(DRVGTK_SYGNAL_CHECK_INTERVAL, a->window_update_program, (gpointer)a);
-        g_application_run(G_APPLICATION(a->app), 0, NULL);
-
-        return NULL;
-}
-
-static void pthread_main_window(struct DrvGtkPthreadData *data)
-{
-        __pthread_main_window(data);
-}
-
-
-
 static gpointer __pthread_main_program(gpointer data)
 {
         volatile struct DrvGtkPthreadData *a = (struct DrvGtkPthreadData*)data;
@@ -78,7 +61,7 @@ static void pthread_main_program(struct DrvGtkPthreadData *data)
 void pthread_main(struct DrvGtkPthreadData *data)
 {
         pthread_main_program(data);
-        pthread_main_window(data);
+        g_application_run(G_APPLICATION(data->app), 0, NULL);
 
         g_thread_join(data->ptid);
 }

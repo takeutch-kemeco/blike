@@ -57,7 +57,6 @@ struct DrvGtkPthreadData {
 
         GMutex mutex;
 
-        gboolean (*window_update_program)(gpointer data);
         int (*control_program)();
 
         GThread *ptid;

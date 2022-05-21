@@ -55,7 +55,6 @@ new_DrvGtkPthreadData(struct BL_WORK *bl_work,
 
         a->bl_work                      = bl_work;
         a->time_count                   = time_count;
-        a->window_update_program        = update_DrvGtkSignalChain;
         a->control_program              = control_program;
 
         a->signal = new_DrvGtkSignal();

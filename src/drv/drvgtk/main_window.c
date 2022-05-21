@@ -37,6 +37,7 @@
 
 #include "main_window.h"
 #include "drvgtk_pthread.h"
+#include "drvgtk_signal_chain.h"
 #include "drvgtk_key_ring_buffer.h"
 #include "drvgtk_keyboard_state.h"
 #include "drvgtk_translate_keycode.h"
@@ -332,6 +333,8 @@ static void __exit_window(GtkWindow *window)
 static void init_signal_window(GtkWindow *window, gpointer user_data)
 {
         struct MainWindow *a = (struct MainWindow*)user_data;
+
+        g_timeout_add_full(G_PRIORITY_HIGH, DRVGTK_SYGNAL_CHECK_INTERVAL, update_DrvGtkSignalChain, (gpointer)drvgtk_pthread_data, NULL);
 
         g_signal_connect(GTK_WINDOW(window), "realize", G_CALLBACK(realize_window), a);
         g_signal_connect(GTK_WINDOW(window), "unrealize", G_CALLBACK(unrealize_window), a);
