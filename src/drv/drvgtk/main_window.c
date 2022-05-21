@@ -231,6 +231,100 @@ resize_window(
         gtk_widget_show(a->drawing_area);
 }
 
+static gint round_range(gint a, gint min, gint max)
+{
+        if (a > max)
+                a = max;
+        else if (a < min)
+                a = min;
+
+        return a;
+}
+
+static void __flash_window(GtkWindow *window, gint x, gint y, gint w, gint h)
+{
+        struct DrvGtkPthreadData *a = drvgtk_pthread_data;
+
+        gpointer src_frame_buffer = a->bl_work->win[0].buf;
+
+        if (src_frame_buffer == NULL)
+                return;
+
+        if (a->main_window->frame_buffer == NULL)
+                return;
+
+        round_range(x, 0, a->main_window->frame_buffer_width - 1);
+        round_range(y, 0, a->main_window->frame_buffer_height - 1);
+
+        round_range(w, 0, a->main_window->frame_buffer_width - x);
+        round_range(h, 0, a->main_window->frame_buffer_height - y);
+
+        const guint32 top_ofst = (y * a->main_window->frame_buffer_width) + x;
+        const guint32 src_top_ofst = top_ofst * 4;
+        const guint32 dst_top_ofst = top_ofst * 4;
+
+        guchar *src = ((guchar*)src_frame_buffer) + src_top_ofst;
+        guchar *dst = ((guchar*)a->main_window->frame_buffer) + dst_top_ofst;
+
+        const guint32 next_ofst =  a->main_window->frame_buffer_width - w;
+        const guint32 src_next_ofst = next_ofst * 4;
+        const guint32 dst_next_ofst = next_ofst * 4;
+
+        for (int j = 0; j < h; j++) {
+                for (int i = 0; i < w; i++) {
+                        // gdk-pixbuf: RGBA <- Windows: BGRX
+                        // ただし A <- 0xff 固定
+#if G_BYTE_ORDER == G_BIG_ENDIAN
+                        dst[0] = 0xff;   // gdk A <- 0 --- 0 <- win X
+                        dst[1] = src[3]; // gdk B <- 3 \ / 1 <- win R
+                        dst[2] = src[2]; // gdk G <- 2 -.- 2 <- win G
+                        dst[3] = src[1]; // gdk R <- 1 / \ 3 <- win B
+                        dst += 4;
+                        src += 4;
+
+#elif G_BYTE_ORDER == G_LITTLE_ENDIAN
+                        dst[0] = src[2]; // gdk R <- 2 \ / 0 <- win B
+                        dst[1] = src[1]; // gdk G <- 1 -.- 1 <- win G
+                        dst[2] = src[0]; // gdk B <- 0 / \ 2 <- win R
+                        dst[3] = 0xff;   // gdk A <- 3 --- 3 <- win X
+
+                        dst += 4;
+                        src += 4;
+
+#else
+#error "System-endian is unknown."
+#endif // G_BYTE_ORDER
+
+                }
+                dst += dst_next_ofst;
+                src += src_next_ofst;
+        }
+
+        redraw_MainWindow(a->main_window, x, y, w, h);
+}
+
+static void __resize_window(GtkWindow *window, gint w, gint h)
+{
+        struct DrvGtkPthreadData *a = drvgtk_pthread_data;
+
+        resize_MainWindow(a->main_window, a->signal->resize_window.width, a->signal->resize_window.height);
+        show_MainWindow(a->main_window);
+}
+
+static void __show_window(GtkWindow *window)
+{
+        struct DrvGtkPthreadData *a = drvgtk_pthread_data;
+
+        show_MainWindow(a->main_window);
+}
+
+static void __exit_window(GtkWindow *window)
+{
+        struct DrvGtkPthreadData *a = drvgtk_pthread_data;
+
+        g_application_quit(G_APPLICATION(a->app));
+}
+
 static void init_signal_window(GtkWindow *window, gpointer user_data)
 {
         struct MainWindow *a = (struct MainWindow*)user_data;
@@ -239,6 +333,11 @@ static void init_signal_window(GtkWindow *window, gpointer user_data)
 
         g_signal_connect(GTK_WINDOW(window), "realize", G_CALLBACK(realize_window), a);
         g_signal_connect(GTK_WINDOW(window), "unrealize", G_CALLBACK(unrealize_window), a);
+
+        g_signal_connect(GTK_WINDOW(window), "drvgtk-flash-window", G_CALLBACK(__flash_window), NULL);
+        g_signal_connect(GTK_WINDOW(window), "drvgtk-resize-window", G_CALLBACK(__resize_window), NULL);
+        g_signal_connect(GTK_WINDOW(window), "drvgtk-show-window", G_CALLBACK(__show_window), NULL);
+        g_signal_connect(GTK_WINDOW(window), "drvgtk-exit-window", G_CALLBACK(__exit_window), NULL);
 
         g_signal_connect(a->event_controller_key, "key-pressed", G_CALLBACK(key_press_window), user_data);
         g_signal_connect(a->event_controller_key, "key-released", G_CALLBACK(key_release_window), user_data);
@@ -252,9 +351,38 @@ static void init_signal_window(GtkWindow *window, gpointer user_data)
         g_signal_connect(GTK_GESTURE(a->gesture_click_secondary), "released", G_CALLBACK(mouse_release_secondary_window),user_data);
 }
 
+// window に独自シグナルを追加
+static void add_signal_window(GtkWindow *window)
+{
+        // インスタンス(window)のクラス(GtkWindowClass)のクラスインスタンスを得る
+        GObjectClass *window_class = G_OBJECT_GET_CLASS(G_OBJECT(window));
+
+        // ウィンドウの画像更新シグナル
+        g_signal_new("drvgtk-flash-window", G_TYPE_FROM_CLASS(window_class),
+                     G_SIGNAL_RUN_LAST | G_SIGNAL_NO_RECURSE | G_SIGNAL_NO_HOOKS,
+                     0, NULL, NULL, NULL, G_TYPE_NONE, 4, G_TYPE_INT, G_TYPE_INT, G_TYPE_INT, G_TYPE_INT);
+
+        // ウインドウのリサイズシグナル
+        g_signal_new("drvgtk-resize-window", G_TYPE_FROM_CLASS(window_class),
+                     G_SIGNAL_RUN_LAST | G_SIGNAL_NO_RECURSE | G_SIGNAL_NO_HOOKS,
+                     0, NULL, NULL, NULL, G_TYPE_NONE, 2, G_TYPE_INT, G_TYPE_INT);
+
+        // ウインドウの表示シグナル
+        g_signal_new("drvgtk-show-window", G_TYPE_FROM_CLASS(window_class),
+                     G_SIGNAL_RUN_LAST | G_SIGNAL_NO_RECURSE | G_SIGNAL_NO_HOOKS,
+                     0, NULL, NULL, NULL, G_TYPE_NONE, 0);
+
+        // ウインドウの終了シグナル
+        g_signal_new("drvgtk-exit-window", G_TYPE_FROM_CLASS(window_class),
+                     G_SIGNAL_RUN_LAST | G_SIGNAL_NO_RECURSE | G_SIGNAL_NO_HOOKS,
+                     0, NULL, NULL, NULL, G_TYPE_NONE, 0);
+}
+
 static void activate_window(GtkWindow *window, gpointer user_data)
 {
         struct MainWindow *a = (struct MainWindow*)user_data;
+
+        add_signal_window(window); // window に独自シグナルを追加
 
         gtk_window_set_title(GTK_WINDOW(window), " ");
 
