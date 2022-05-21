@@ -38,21 +38,12 @@
 
 static void resize_window(struct DrvGtkPthreadData *a, gint width, gint height)
 {
-        resize_MainWindow(a->main_window, width, height);
-        show_MainWindow(a->main_window);
+        g_signal_emit_by_name(a->main_window->wgt, "drvgtk-resize-window", width, height);
 }
 
 static void show_window(struct DrvGtkPthreadData *a)
 {
-        show_MainWindow(a->main_window);
-}
-
-static void round_range(gint *a, gint min, gint max)
-{
-        if (*a > max)
-                *a = max;
-        else if (*a < min)
-                *a = min;
+        g_signal_emit_by_name(a->main_window->wgt, "drvgtk-show-window");
 }
 
 static void flash_window(struct DrvGtkPthreadData *a,
@@ -62,64 +53,12 @@ static void flash_window(struct DrvGtkPthreadData *a,
                          gint width,
                          gint height)
 {
-        if (src_frame_buffer == NULL)
-                return;
-
-        if (a->main_window->frame_buffer == NULL)
-                return;
-
-        round_range(&x, 0, a->main_window->frame_buffer_width - 1);
-        round_range(&y, 0, a->main_window->frame_buffer_height - 1);
-
-        round_range(&width, 0, a->main_window->frame_buffer_width - x);
-        round_range(&height, 0, a->main_window->frame_buffer_height - y);
-
-        const guint32 top_ofst = (y * a->main_window->frame_buffer_width) + x;
-        const guint32 src_top_ofst = top_ofst * 4;
-        const guint32 dst_top_ofst = top_ofst * 4;
-
-        guchar *src = ((guchar*)src_frame_buffer) + src_top_ofst;
-        guchar *dst = ((guchar*)a->main_window->frame_buffer) + dst_top_ofst;
-
-        const guint32 next_ofst =  a->main_window->frame_buffer_width - width;
-        const guint32 src_next_ofst = next_ofst * 4;
-        const guint32 dst_next_ofst = next_ofst * 4;
-
-        for (int j = 0; j < height; j++) {
-                for (int i = 0; i < width; i++) {
-                        // gdk-pixbuf: RGBA <- Windows: BGRX
-                        // ただし A <- 0xff 固定
-#if G_BYTE_ORDER == G_BIG_ENDIAN
-                        dst[0] = 0xff;   // gdk A <- 0 --- 0 <- win X
-                        dst[1] = src[3]; // gdk B <- 3 \ / 1 <- win R
-                        dst[2] = src[2]; // gdk G <- 2 -.- 2 <- win G
-                        dst[3] = src[1]; // gdk R <- 1 / \ 3 <- win B
-                        dst += 4;
-                        src += 4;
-
-#elif G_BYTE_ORDER == G_LITTLE_ENDIAN
-                        dst[0] = src[2]; // gdk R <- 2 \ / 0 <- win B
-                        dst[1] = src[1]; // gdk G <- 1 -.- 1 <- win G
-                        dst[2] = src[0]; // gdk B <- 0 / \ 2 <- win R
-                        dst[3] = 0xff;   // gdk A <- 3 --- 3 <- win X
-
-                        dst += 4;
-                        src += 4;
-
-#else
-#error "System-endian is unknown."
-#endif /* G_BYTE_ORDER */
-
-                }
-                dst += dst_next_ofst;
-                src += src_next_ofst;
-        }
-
-        redraw_MainWindow(a->main_window, x, y, width, height);
+        g_signal_emit_by_name(a->main_window->wgt, "drvgtk-flash-window", x, y, width, height);
 }
 
 static void exit_window(struct DrvGtkPthreadData *a)
 {
+        g_signal_emit_by_name(a->main_window->wgt, "drvgtk-exit-window");
 }
 
 gboolean update_DrvGtkSignalChain(gpointer data)

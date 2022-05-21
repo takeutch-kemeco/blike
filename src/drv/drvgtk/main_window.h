@@ -89,7 +89,4 @@ struct MainWindow* new_MainWindow(GtkApplication *app,
                                   struct DrvGtkKeybordState *release,
                                   struct DrvGtkKeybordState *key_transform_table);
 
-void show_MainWindow(struct MainWindow *a);
 void hide_MainWindow(struct MainWindow *a);
-void redraw_MainWindow(struct MainWindow *a, const gint x, const gint y, const gint w, const gint h);
-void resize_MainWindow(struct MainWindow *a, const gint width, const gint height);

@@ -241,6 +241,11 @@ static gint round_range(gint a, gint min, gint max)
         return a;
 }
 
+static void __flash_window(GtkWindow *window, gint x, gint y, gint w, gint h);
+static void __resize_window(GtkWindow *window, gint w, gint h);
+static void __show_window(GtkWindow *window);
+static void __exit_window(GtkWindow *window);
+
 static void __flash_window(GtkWindow *window, gint x, gint y, gint w, gint h)
 {
         struct DrvGtkPthreadData *a = drvgtk_pthread_data;
@@ -300,22 +305,28 @@ static void __flash_window(GtkWindow *window, gint x, gint y, gint w, gint h)
                 src += src_next_ofst;
         }
 
-        redraw_MainWindow(a->main_window, x, y, w, h);
+        gtk_widget_queue_draw(a->main_window->drawing_area);
+        a->main_window->redraw_request = TRUE;
 }
 
 static void __resize_window(GtkWindow *window, gint w, gint h)
 {
         struct DrvGtkPthreadData *a = drvgtk_pthread_data;
 
-        resize_MainWindow(a->main_window, a->signal->resize_window.width, a->signal->resize_window.height);
-        show_MainWindow(a->main_window);
+        gtk_window_set_default_size(window, w, h);
+        resize_window(window, w, h, (gpointer)a->main_window);
+
+        __show_window(window);
 }
 
 static void __show_window(GtkWindow *window)
 {
         struct DrvGtkPthreadData *a = drvgtk_pthread_data;
 
-        show_MainWindow(a->main_window);
+        gtk_widget_queue_draw(a->main_window->drawing_area);
+        a->main_window->redraw_request = TRUE;
+
+        gtk_widget_show(GTK_WIDGET(window));
 }
 
 static void __exit_window(GtkWindow *window)
@@ -467,31 +478,7 @@ struct MainWindow* new_MainWindow(GtkApplication *app,
         return a;
 }
 
-void redraw_MainWindow(struct MainWindow *a,
-                       const gint x, const gint y, const gint w, const gint h)
-{
-        gtk_widget_queue_draw(a->drawing_area);
-        a->redraw_request = TRUE;
-}
-
-void show_MainWindow(struct MainWindow *a)
-{
-        redraw_MainWindow(a,
-                          a->screen_offset_x,
-                          a->screen_offset_y,
-                          a->frame_buffer_width,
-                          a->frame_buffer_height);
-
-        gtk_widget_show(a->wgt);
-}
-
 void hide_MainWindow(struct MainWindow *a)
 {
         gtk_widget_hide(a->wgt);
-}
-
-void resize_MainWindow(struct MainWindow *a, const gint width, const gint height)
-{
-        gtk_window_set_default_size((GtkWindow*)(a->wgt), width, height);
-        resize_window((GtkWindow*)a->wgt, width, height, (gpointer)a);
 }
