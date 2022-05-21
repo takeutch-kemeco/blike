@@ -41,6 +41,7 @@
 #include "drvgtk_key_ring_buffer.h"
 #include "drvgtk_keyboard_state.h"
 #include "drvgtk_translate_keycode.h"
+#include "drvgtk_sleep.h"
 
 static gboolean
 key_press_window(
@@ -425,12 +426,29 @@ static void activate_window(GtkWindow *window, gpointer user_data)
         init_signal_window(window, user_data);
 }
 
+static gpointer thread_bl_main(gpointer data)
+{
+        struct DrvGtkPthreadData *a = (struct DrvGtkPthreadData*)data;
+
+        // MainWindowが登録されるまで待機
+        // スピンロック
+        while (g_application_get_is_registered(G_APPLICATION(a->app)) == FALSE) {
+                drvgtk_msleep(DRVGTK_SYGNAL_CHECK_INTERVAL_MS);
+        }
+
+        a->control_program(); // bl_main()
+
+        return NULL;
+}
+
 static void
 activate_GtkApplication(
         GtkApplication *app,
         gpointer user_data)
 {
         struct MainWindow *a = (struct MainWindow*)user_data;
+
+        drvgtk_pthread_data->ptid = g_thread_new("thread_bl_main", thread_bl_main, (gpointer)drvgtk_pthread_data);
 
         a->wgt = gtk_application_window_new(app);
         activate_window(GTK_WINDOW(a->wgt), user_data);

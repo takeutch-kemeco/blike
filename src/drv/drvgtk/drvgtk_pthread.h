@@ -69,5 +69,3 @@ struct DrvGtkPthreadData {
 };
 
 extern struct DrvGtkPthreadData* drvgtk_pthread_data;
-
-void pthread_main(struct DrvGtkPthreadData *data);

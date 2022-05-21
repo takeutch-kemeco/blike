@@ -97,5 +97,6 @@ void free_DrvGtkPthreadData(struct DrvGtkPthreadData *a)
 
 void run_DrvGtkSystem(struct DrvGtkPthreadData *a)
 {
-        pthread_main(a);
+        g_application_run(G_APPLICATION(a->app), 0, NULL);
+        g_thread_join(a->ptid); // join bl_main
 }
