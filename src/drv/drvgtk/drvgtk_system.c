@@ -39,7 +39,7 @@
 #include "drvgtk_keyboard_state.h"
 
 struct DrvGtkPthreadData*
-new_DrvGtkPthreadData(gpointer shared_data,
+new_DrvGtkPthreadData(struct BL_WORK *bl_work,
                       gint32 *time_count,
                       int (*control_program)(),
                       gint32 key_len,
@@ -53,7 +53,7 @@ new_DrvGtkPthreadData(gpointer shared_data,
 
         a->app = gtk_application_new ("org.gtk.blike", G_APPLICATION_FLAGS_NONE);
 
-        a->shared_data                  = shared_data;
+        a->bl_work                      = bl_work;
         a->time_count                   = time_count;
         a->window_update_program        = update_DrvGtkSignalChain;
         a->control_program              = control_program;

@@ -41,6 +41,7 @@
 #include "drvgtk_signal.h"
 #include "drvgtk_key_ring_buffer.h"
 #include "drvgtk_keyboard_state.h"
+#include "blikedrv.h"
 
 #define DRVGTK_SYGNAL_CHECK_INTERVAL    (1000/250)      /* 250Hz */
 
@@ -49,7 +50,7 @@ struct DrvGtkPthreadData {
 
         struct MainWindow *main_window;
 
-        gpointer shared_data;
+        struct BL_WORK *bl_work;
         gint32 *time_count;
 
         struct DrvGtkSignal *signal;
@@ -67,5 +68,7 @@ struct DrvGtkPthreadData {
         struct DrvGtkKeybordState *release;
         struct DrvGtkKeybordState *key_transform_table;
 };
+
+extern struct DrvGtkPthreadData* drvgtk_pthread_data;
 
 void pthread_main(struct DrvGtkPthreadData *data);
