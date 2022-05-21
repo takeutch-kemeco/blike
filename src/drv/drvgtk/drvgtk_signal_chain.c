@@ -150,7 +150,7 @@ gboolean update_DrvGtkSignalChain(gpointer data)
 
         if(a->signal->exit_window.ready == TRUE) {
                 exit_window(a);
-                a->signal->exit_window.ready == FALSE;
+                a->signal->exit_window.ready = FALSE;
         }
 
         return TRUE;
