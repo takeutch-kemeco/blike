@@ -33,8 +33,19 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+/**
+ * @file drvgtk_sleep.h
+ * @brief スリープ関数関連
+ */
+
 #pragma once
 
 #include <glib.h>
 
+/** @fn void drvgtk_msleep(guint t)
+ * @brief ミリ秒単位のスリープ
+ * @par 指定したミリ秒まで、呼出し元スレッドの処理を停止し、時間経過後にスレッドを再開し、関数から戻ります。
+ * @param (guint t): スリープする時間（ミリ秒単位）
+ * @return なし
+ */
 void drvgtk_msleep(guint t);
