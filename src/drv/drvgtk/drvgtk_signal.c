@@ -34,6 +34,7 @@
 #include "config.h"
 
 #include "drvgtk_signal.h"
+#include "drvgtk_pthread.h"
 
 struct DrvGtkSignal* new_DrvGtkSignal(void)
 {
@@ -50,4 +51,36 @@ struct DrvGtkSignal* new_DrvGtkSignal(void)
 void free_DrvGtkSignal(struct DrvGtkSignal *a)
 {
         g_free(a);
+}
+
+gboolean update_DrvGtkSignalChain(gpointer data)
+{
+        struct DrvGtkPthreadData *a = (struct DrvGtkPthreadData*)data;
+        struct MainWindow *m = a->main_window;
+
+        (*(a->time_count)) += DRVGTK_SYGNAL_CHECK_INTERVAL_MS;
+
+        if(a->signal->resize_window.ready == TRUE) {
+                struct DrvGtkSignal_resize_window *s = &a->signal->resize_window;
+                g_signal_emit_by_name(m->wgt, "drvgtk-resize-window",s->width, s->height);
+                a->signal->resize_window.ready = FALSE;
+        }
+
+        if(a->signal->show_window.ready == TRUE) {
+                g_signal_emit_by_name(m->wgt, "drvgtk-show-window");
+                a->signal->show_window.ready = FALSE;
+        }
+
+        if(a->signal->flash_window.ready == TRUE) {
+                struct DrvGtkSignal_flash_window *s = &a->signal->flash_window;
+                g_signal_emit_by_name(m->wgt, "drvgtk-flash-window", s->x, s->y, s->width, s->height);
+                a->signal->flash_window.ready = FALSE;
+        }
+
+        if(a->signal->exit_window.ready == TRUE) {
+                g_signal_emit_by_name(m->wgt, "drvgtk-exit-window");
+                a->signal->exit_window.ready = FALSE;
+        }
+
+        return TRUE;
 }

@@ -30,8 +30,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+
+
 #pragma once
 
-#include <glib.h>
-
-gboolean update_DrvGtkSignalChain(gpointer data);
+#include "drvgtk_signal.h"
