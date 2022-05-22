@@ -6,7 +6,6 @@ libblike_drvgtk_la_SOURCES =		\
 	drvgtk_main.c			\
 	drvgtk_interface.c		\
 	drvgtk_system.c			drvgtk_system.h			\
-	drvgtk_signal_chain.c		drvgtk_signal_chain.h		\
 	drvgtk_signal.c			drvgtk_signal.h			\
 	drvgtk_pthread.c		drvgtk_pthread.h		\
 	drvgtk_key_ring_buffer.c	drvgtk_key_ring_buffer.h	\

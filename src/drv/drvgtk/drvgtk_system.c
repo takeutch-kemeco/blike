@@ -34,7 +34,7 @@
 #include "config.h"
 
 #include "drvgtk_pthread.h"
-#include "drvgtk_signal_chain.h"
+#include "drvgtk_signal.h"
 #include "drvgtk_key_ring_buffer.h"
 #include "drvgtk_keyboard_state.h"
 
