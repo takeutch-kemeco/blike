@@ -51,7 +51,7 @@ int main(int argc, char **argv)
         bl_argv = argv;
 
         drvgtk_pthread_data = new_DrvGtkPthreadData(
-                (gpointer)&bl_work,
+                &bl_work,
                 (gint32*)&bl_work.tmcount,
                 bl_main,
                 BL_SIZ_KBUF,
