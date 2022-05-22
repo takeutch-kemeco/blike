@@ -33,10 +33,42 @@
 #pragma once
 
 #include <gtk/gtk.h>
-#include "drvgtk_pthread.h"
+#include <glib.h>
+#include "main_window.h"
+#include "drvgtk_signal.h"
+#include "drvgtk_key_ring_buffer.h"
+#include "drvgtk_keyboard_state.h"
+#include "blikedrv.h"
+
+#define DRVGTK_SYGNAL_CHECK_INTERVAL_MS 1 // 1ms (1000Hz)
+
+struct DrvGtkPthreadData {
+        GtkApplication *app;
+
+        struct MainWindow *main_window;
+
+        struct BL_WORK *bl_work;
+        gint32 *time_count;
+
+        struct DrvGtkSignal *signal;
+
+        GMutex mutex;
+
+        int (*control_program)();
+
+        GThread *ptid;
+
+        struct DrvGtkKeyRingBuffer *key_ring_buffer;
+
+        struct DrvGtkKeybordState *press;
+        struct DrvGtkKeybordState *release;
+        struct DrvGtkKeybordState *key_transform_table;
+};
+
+extern struct DrvGtkPthreadData* drvgtk_pthread_data;
 
 struct DrvGtkPthreadData*
-new_DrvGtkPthreadData(gpointer shared_data,
+new_DrvGtkPthreadData(struct BL_WORK *bl_work,
                       gint32 *time_count,
                       int (*control_program)(),
                       gint32 key_len,
@@ -45,6 +77,5 @@ new_DrvGtkPthreadData(gpointer shared_data,
                       gint32 *write_index,
                       gint32 *key_count,
                       DrvGtkFuncPutKeyBuffer func_put_key_buffer);
-
 void free_DrvGtkPthreadData(struct DrvGtkPthreadData *a);
 void run_DrvGtkSystem(struct DrvGtkPthreadData *a);

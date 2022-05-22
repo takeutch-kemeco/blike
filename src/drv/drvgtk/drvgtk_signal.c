@@ -33,8 +33,8 @@
 #include <glib.h>
 #include "config.h"
 
+#include "drvgtk_system.h"
 #include "drvgtk_signal.h"
-#include "drvgtk_pthread.h"
 
 struct DrvGtkSignal* new_DrvGtkSignal(void)
 {

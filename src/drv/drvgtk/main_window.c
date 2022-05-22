@@ -35,8 +35,8 @@
 #include <gdk/gdkkeysyms.h>
 #include "config.h"
 
+#include "drvgtk_system.h"
 #include "main_window.h"
-#include "drvgtk_pthread.h"
 #include "drvgtk_signal.h"
 #include "drvgtk_key_ring_buffer.h"
 #include "drvgtk_keyboard_state.h"

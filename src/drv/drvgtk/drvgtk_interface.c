@@ -37,17 +37,15 @@
 #include <gtk/gtk.h>
 #include "config.h"
 
+#include "drvgtk_system.h"
 #include "main_window.h"
 #include "drvgtk_sleep.h"
-#include "drvgtk_pthread.h"
 #include "drvgtk_translate_keycode.h"
 #include "drvgtk_malloc.h"
 #include "blikedrv.h"
 #include "blike0.h"
 
 extern struct BL_WORK __attribute__((aligned(16))) bl_work;
-
-extern struct DrvGtkPthreadData* drvgtk_pthread_data;
 
 static void check_and_exit_wt_run_flag(void)
 {
