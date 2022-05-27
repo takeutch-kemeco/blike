@@ -49,6 +49,7 @@ libblike_common_la_SOURCES =	\
 	drwptn_e.c 		\
 	drwptn_r.c 		\
 	drwptn_d.c 		\
+	leapflsh.c		\
 	test.c			\
 	${INCLUDEDIR}setjmp.h	\
 	${INCLUDEDIR}blike.h	\

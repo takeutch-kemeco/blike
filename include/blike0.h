@@ -1,5 +1,5 @@
 /* c_blike_01f_linux -
- * Copyright (C) 2011, 2012, 2013 Kemeco Takeutch <takeutchkemeco@gmail.com>
+ * Copyright (C) 2011, 2012, 2013, 2022 Kemeco Takeutch <takeutchkemeco@gmail.com>
  * All rights reserved.
  *
  * c_blike_01f -
@@ -88,6 +88,7 @@ void bl_readyWin(int n);
 void bl_setPtrn0(int sx, int sy, int sl, int ic, int *b, const unsigned char *c, const unsigned char *p, void (*errfnc)(const char *msg, unsigned char *nam));
 void bl_drawPtrn_err_r(const char *msg, unsigned char *nam);
 void bl_drawPtrn_err_d(const char *msg, unsigned char *nam);
+void bl_leapFlush(int msec);
 
 /* 起動時のコマンドライン引数 main(bl_argc, bl_argv) */
 extern int bl_argc;
